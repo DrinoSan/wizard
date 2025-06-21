@@ -2,3 +2,9 @@
 1. source .env
 2. make
 3. Done
+
+
+
+
+# Credit
+Check sheet-credits.csv

@@ -1,6 +1,7 @@
 // System Headers
 #include <cstdint>
 #include <iostream>
+#include <fstream>
 
 // Project Headers
 #include "Player.h"
@@ -15,6 +16,34 @@ int main( void )
 
    InitWindow( screenWidth, screenHeight, "Wizard" );
 
+   //Texture2D tileMapLayout = LoadTexture( "resources/dungonmapAdjusted.tmx" );
+   std::ifstream file("resources/dungonmapAdjusted.tmx");
+   std::string str;
+   std::vector<int32_t> tileMapLayout{ 0 };
+   while (std::getline(file, str))
+   {
+      char* head = str.data();
+      char* tail = head;
+      while( *head != '\0' )
+      {
+         if( *head != ',' )
+         {
+            ++head;
+            continue;
+         }
+
+         std::string num{ tail, head };
+         tileMapLayout.push_back( std::stoi( num ) );
+
+         ++head;
+         tail = head;
+      }
+   }
+
+   Texture2D tileMapPNG    = LoadTexture( "resources/kenney_tinyDungeon/Tilemap/tilemap.png" );
+   Rectangle tileSrc = { 0.0f, 0.0f, static_cast<float>( tileMapPNG.width / 30 ), static_cast<float>( tileMapPNG.height / 20 ) };
+   Rectangle tileDest= { 0.0f, 0.0f, static_cast<float>( tileMapPNG.width / 30 ), static_cast<float>( tileMapPNG.height / 20 ) };
+
    int framesCounter = 0;
    Player_t player;
 
@@ -24,6 +53,7 @@ int main( void )
    // Main game loop
    while ( !WindowShouldClose() )   // Detect window close button or ESC key
    {
+      ++framesCounter;
       // Update
       //----------------------------------------------------------------------------------
       if ( IsKeyDown( KEY_D ) )
@@ -52,6 +82,15 @@ int main( void )
       BeginDrawing();
 
       ClearBackground( RAYWHITE );
+
+      for( int32_t i = 0; i < tileMapLayout.size(); ++i )
+      {
+         // Todo get width and height from 1d vector of the layout to the src
+         //Texture2D tileMapPNG -> contains the whole png texture
+         //Rectangle tileSrc = is the recatngle inside the pngTexture
+         //Rectangle tileDest= is the rectangle inside our wizard map
+
+      }
 
       player.draw();
 

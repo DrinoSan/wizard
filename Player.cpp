@@ -20,7 +20,7 @@ Player_t::Player_t()
 
    currentFrame  = 0;
    framesCounter = 0;
-   framesSpeed   = 8;   // Number of spritesheet frames shown by second
+   framesSpeed   = 13;   // Number of spritesheet frames shown by second
 }
 
 //-----------------------------------------------------------------------------
@@ -50,7 +50,6 @@ Player_t::Player_t( Vector2 pos )
 void Player_t::goRight( int& framesCounter, float movement )
 {
    playerPosition.x += movement;
-   framesCounter++;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -69,7 +68,6 @@ void Player_t::goRight( int& framesCounter, float movement )
 void Player_t::goLeft( int& framesCounter, float movement )
 {
    playerPosition.x -= movement;
-   framesCounter++;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -88,7 +86,6 @@ void Player_t::goLeft( int& framesCounter, float movement )
 void Player_t::goUp( int& framesCounter, float movement )
 {
    playerPosition.y -= movement;
-   framesCounter++;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -107,7 +104,6 @@ void Player_t::goUp( int& framesCounter, float movement )
 void Player_t::goDown( int& framesCounter, float movement )
 {
    playerPosition.y += movement;
-   framesCounter++;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {

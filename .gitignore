@@ -3,3 +3,5 @@ tags
 main
 main.dSYM
 .DS_Store
+*.o
+wizard

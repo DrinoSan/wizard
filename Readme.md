@@ -11,7 +11,7 @@
 
 # Progress
 Current Image of game
-- Now Collision
+- No Collision
 - Only Player movement and drawing of map
 ![Game Progress 06-07-2025](progress/06-07-25-init2.png)
 

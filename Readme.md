@@ -5,9 +5,15 @@
 
 
 # Roadmap
-1. Make game somehow playable with animations, skill tree, enemies, map generator
+1. Make game somehow playable with animations, skill tree, enemies, map generator(Dynamically change map on events)
 2. Support multiplayer on single machine
 3. Support multiplayer via network
+
+# Progress
+Current Image of game
+- Now Collision
+- Only Player movement and drawing of map
+![Game Progress 06-07-2025](progress/06-07-25-init.png)
 
 
 

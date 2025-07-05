@@ -1,20 +1,23 @@
 #pragma once
 #include <cstdint>
 
+#include "Graphic.h"
 #include "raylib.h"
 
-class Player_t
+class Player_t : public Graphic_t
 {
  public:
    Player_t();
    Player_t( Vector2 pos );
 
+   virtual ~Player_t() = default;
+
    // Movements
    // Moves Player and texture rectangle
-   void goRight( int& framesCounter, float movement = 2.0f );
-   void goLeft( int& framesCounter, float movement = 2.0f );
-   void goUp( int& framesCounter, float movement = 2.0f );
-   void goDown( int& framesCounter, float movement = 2.0f );
+   void goRight( float movement = 2.0f );
+   void goLeft( float movement = 2.0f );
+   void goUp( float movement = 2.0f );
+   void goDown( float movement = 2.0f );
 
    // Moves player but no animation movement
    void moveRight( float movement = 2.0f );
@@ -29,11 +32,12 @@ class Player_t
    Rectangle frameRec;
    Texture2D playerTexture;
    Vector2   playerPosition;
-   int currentFrame  = 0;
-   int framesCounter = 0;
-   int framesSpeed   = 8;   // Number of spritesheet frames shown by second
+   int       currentFrame  = 0;
+   int       framesCounter = 0;
+   int       framesSpeed = 8;   // Number of spritesheet frames shown by second
 
-   void draw();
+   void draw() override;
+   void handleMovement() override;
 
    const int32_t screenWidth  = 800;
    const int32_t screenHeight = 450;

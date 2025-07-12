@@ -32,36 +32,26 @@ void World_t::loadTileLayoutAndTileMap()
    tileMapPNG =
        LoadTexture( "resources/kenney_tinyDungeon/Tilemap/tilemap_packed.png" );
 }
-
-//-----------------------------------------------------------------------------
 void World_t::draw()
 {
+   float tileWidth  = 800.0f / 30;   // Screen width / columns
+   float tileHeight = 450.0f / 20;   // Screen height / rows
+
    for ( int32_t i = 0; i < tileMapLayout.size(); ++i )
    {
-      // Todo get width and height from 1d vector of the layout to the src
-      // Texture2D tileMapPNG -> contains the whole png texture
-      // Rectangle tileSrc = is the recatngle inside the pngTexture
-      // Rectangle tileDest= is the rectangle inside our wizard map
+      auto indexInSrc =
+          tileMapLayout[ i ] - 1;   // Convert 1-based to 0-based indexing
+      // Source rectangle (from tilemap PNG, 12 columns x 11 rows)
+      tileSrc.x      = ( indexInSrc % 12 ) * 16;
+      tileSrc.y      = ( indexInSrc / 12 ) * 16;
+      tileSrc.width  = 16;
+      tileSrc.height = 16;
 
-      // tileMapPNG 12x12
-      // IndexInSrc = 26
-      auto indexInSrc = tileMapLayout[ i ];
-      auto x          = ( indexInSrc % 12 ) - 1;
-      auto y          = ( indexInSrc / 12 ) * 16;
-      tileSrc.x       = x * 16;
-      tileSrc.y       = y;
-
-      tileDest.x = ( i % 30 ) * static_cast<float>( 800 / 30 );
-      tileDest.y = ( i / 30 ) * static_cast<float>( 450 / 20 );
-
-      //std::cout << "------------------------------\n";
-      //std::cout << "indexInSrc: " << indexInSrc << " i: " << i << " x: " << x
-      //          << " y: " << y << "\n";
-      //std::cout << "tileSrc.x: " << tileSrc.x << " tileSrc.y: " << tileSrc.y
-      //          << "\n";
-      //std::cout << "tileDest.x: " << tileDest.x << " tileDest.y: " << tileDest.y
-      //          << "\n";
-      //std::cout << "++++++++++++++++++++++++++++++\n";
+      // Destination rectangle (on screen)
+      tileDest.x      = ( i % 30 ) * tileWidth;
+      tileDest.y      = ( i / 30 ) * tileHeight;
+      tileDest.width  = tileWidth;
+      tileDest.height = tileHeight;
 
       DrawTexturePro( tileMapPNG, tileSrc, tileDest, { 0, 0 }, 0, WHITE );
    }

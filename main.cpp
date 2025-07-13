@@ -24,8 +24,8 @@ int main( void )
 
    // Creating World
    auto world = new World_t();
-   // Loading Tilemap
-   world->loadTileLayoutAndTileMap();
+   // Prepare world (tilemap,layout and so on)
+   world->preapreWorld();
 
    // Adding all objects to senior manager
    // The sequence of adding objects to the world is important because if world is added after player the player will be drawn behind the map.

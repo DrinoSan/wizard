@@ -1,5 +1,6 @@
 #include "World.h"
 
+// ----------------------------------------------------------------------------
 void World_t::loadTileLayoutAndTileMap()
 {
    // This part loads the tileMapLayout it contains 30x20 entries where the
@@ -32,7 +33,9 @@ void World_t::loadTileLayoutAndTileMap()
    tileMapPNG =
        LoadTexture( "resources/kenney_tinyDungeon/Tilemap/tilemap_packed.png" );
 }
-void World_t::draw()
+
+// ----------------------------------------------------------------------------
+void World_t::updateTiles()
 {
    float tileWidth  = 800.0f / 30;   // Screen width / columns
    float tileHeight = 450.0f / 20;   // Screen height / rows
@@ -53,6 +56,22 @@ void World_t::draw()
       tileDest.width  = tileWidth;
       tileDest.height = tileHeight;
 
-      DrawTexturePro( tileMapPNG, tileSrc, tileDest, { 0, 0 }, 0, WHITE );
+      worldMap.push_back({ TileType_t::COLLISION, indexInSrc, tileSrc, tileDest });
    }
+}
+
+// ----------------------------------------------------------------------------
+void World_t::draw()
+{
+   for( const auto& tile : worldMap )
+   {
+      DrawTexturePro( tileMapPNG, tile.tileSrc, tile.tileDest, { 0, 0 }, 0, WHITE );
+   }
+}
+
+// ----------------------------------------------------------------------------
+void World_t::preapreWorld()
+{
+   loadTileLayoutAndTileMap();
+   updateTiles();
 }

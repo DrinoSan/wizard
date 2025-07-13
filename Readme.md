@@ -13,7 +13,7 @@
 Current Image of game
 - No Collision
 - Only Player movement and drawing of map
-![Game Progress 06-07-2025](progress/06-07-25-init2.png)
+![Game Progress 13-07-2025](progress/13-07-25-correct-map-draw.png)
 
 
 

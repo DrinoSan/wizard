@@ -5,6 +5,7 @@
 
 // Project Headers
 #include "GameWorldManager.h"
+#include "Globals.h"
 #include "Player.h"
 #include "World.h"
 #include "raylib.h"
@@ -13,9 +14,6 @@ int main( void )
 {
    // Initialization
    //--------------------------------------------------------------------------------------
-   constexpr int32_t screenWidth  = 800;
-   constexpr int32_t screenHeight = 450;
-
    InitWindow( screenWidth, screenHeight, "Wizard" );
 
    // I like to leak memory

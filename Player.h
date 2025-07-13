@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 
+#include "Globals.h"
 #include "Graphic.h"
 #include "raylib.h"
 
@@ -14,16 +15,16 @@ class Player_t : public Graphic_t
 
    // Movements
    // Moves Player and texture rectangle
-   void goRight( float movement = 2.0f );
-   void goLeft( float movement = 2.0f );
-   void goUp( float movement = 2.0f );
-   void goDown( float movement = 2.0f );
+   void goRight( float movement = PLAYER_MOVEMENT_SPEED );
+   void goLeft( float movement = PLAYER_MOVEMENT_SPEED );
+   void goUp( float movement = PLAYER_MOVEMENT_SPEED );
+   void goDown( float movement = PLAYER_MOVEMENT_SPEED );
 
    // Moves player but no animation movement
-   void moveRight( float movement = 2.0f );
-   void moveLeft( float movement = 2.0f );
-   void moveUp( float movement = 2.0f );
-   void moveDown( float movement = 2.0f );
+   void moveRight( float movement = PLAYER_MOVEMENT_SPEED );
+   void moveLeft( float movement = PLAYER_MOVEMENT_SPEED );
+   void moveUp( float movement = PLAYER_MOVEMENT_SPEED );
+   void moveDown( float movement = PLAYER_MOVEMENT_SPEED );
 
    int32_t   ANIMATION_WALK_UP_Y;
    int32_t   ANIMATION_WALK_LEFT_Y;
@@ -38,7 +39,4 @@ class Player_t : public Graphic_t
 
    void draw() override;
    void handleMovement() override;
-
-   const int32_t screenWidth  = 800;
-   const int32_t screenHeight = 450;
 };

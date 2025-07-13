@@ -1,3 +1,4 @@
+#include "Globals.h"
 #include "World.h"
 
 // ----------------------------------------------------------------------------
@@ -37,8 +38,8 @@ void World_t::loadTileLayoutAndTileMap()
 // ----------------------------------------------------------------------------
 void World_t::updateTiles()
 {
-   float tileWidth  = 800.0f / 30;   // Screen width / columns
-   float tileHeight = 450.0f / 20;   // Screen height / rows
+   float tileWidth  = screenWidth / 30;   // Screen width / columns
+   float tileHeight = screenHeight / 20;   // Screen height / rows
 
    for ( int32_t i = 0; i < tileMapLayout.size(); ++i )
    {

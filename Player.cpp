@@ -116,8 +116,9 @@ void Player_t::goDown( float movement )
 //-----------------------------------------------------------------------------
 void Player_t::draw()
 {
-   DrawTextureRec( playerTexture, frameRec, playerPosition,
-                   WHITE );   // Draw part of the texture
+   //DrawTextureRec( playerTexture, frameRec, playerPosition,
+                   //WHITE );   // Draw part of the texture
+   DrawTexturePro( playerTexture, frameRec, { playerPosition.x, playerPosition.y, 40, 40 }, { 0, 0 }, 0, WHITE );
 }
 
 //-----------------------------------------------------------------------------

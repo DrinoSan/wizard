@@ -16,6 +16,10 @@ Current Image of game
 ![Game Progress 13-07-2025](progress/13-07-25-correct-map-draw.png)
 
 
+# Open TODO's
+- Getting rid of magic numbers
+
+
 
 # Credit
 Check sheet-credits.csv

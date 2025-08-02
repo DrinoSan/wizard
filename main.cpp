@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "World.h"
 #include "raylib.h"
+#include "events/KeyEvent.h"
 
 int main( void )
 {
@@ -43,8 +44,27 @@ int main( void )
       {
          break;
       }
+		if ( IsKeyDown( KEY_D ) )
+		{
+         KeyPressedEvent_t event( KEY_D );
+         gameWorldManager.onEvent( event );
+		}
+		if ( IsKeyDown( KEY_A ) )
+		{
+         KeyPressedEvent_t event( KEY_A );
+         gameWorldManager.onEvent( event );
+		}
+		if ( IsKeyDown( KEY_W ) )
+		{
+         KeyPressedEvent_t event( KEY_W );
+         gameWorldManager.onEvent( event );
+		}
+		if ( IsKeyDown( KEY_S ) )
+		{
+         KeyPressedEvent_t event( KEY_S );
+         gameWorldManager.onEvent( event );
+		}
 
-      gameWorldManager.handleMovements( );
       //----------------------------------------------------------------------------------
 
       // Draw

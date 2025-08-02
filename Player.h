@@ -4,6 +4,10 @@
 #include "Globals.h"
 #include "Graphic.h"
 #include "raylib.h"
+#include "events/KeyEvent.h"
+
+#define BIND_EVENT_FN( x )                                                     \
+   std::bind( &Player_t::x, this, std::placeholders::_1 )
 
 class Player_t : public Graphic_t
 {
@@ -38,5 +42,6 @@ class Player_t : public Graphic_t
    int       framesSpeed = 8;   // Number of spritesheet frames shown by second
 
    void draw() override;
-   void handleMovement() override;
+	bool handleMovement( KeyPressedEvent_t& e ) override;
+	void onEvent( Event_t& e ) override;
 };

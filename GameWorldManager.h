@@ -1,11 +1,12 @@
 #pragma once
 
 // System Headers
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 // Project Headers
 #include "Graphic.h"
+#include "events/KeyEvent.h"
 
 class GameWorldManager_t
 {
@@ -22,23 +23,15 @@ class GameWorldManager_t
       }
    }
 
-   inline void handleMovements()
-   {
-      for ( auto& obj : worldObjects )
-      {
-         if ( obj->type == OBJECT_TYPE::PLAYER )
-         {
-            obj->handleMovement();
-         }
-      }
-   }
-
    /// Function to add objects to World
    /// @TODO: Use move semantic
    inline void addObject( Graphic_t* object )
    {
       worldObjects.push_back( object );
    }
+
+   void onEvent( Event_t& e );
+	void onKeyEvent( KeyEvent_t& event );
 
  private:
    std::vector<Graphic_t*> worldObjects;

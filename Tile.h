@@ -39,7 +39,8 @@ class Tile_t : public Graphic_t
 
    void draw() override {}
 
-   void handleMovement() override {}
+   bool handleMovement( KeyPressedEvent_t& e ) override { return false; };
+   void onEvent( Event_t& e ) override {}
 
    TileType_t tileType;
    Rectangle  tileSrc  = { 0.0f, 0.0f, 16.0f, 16.0f };

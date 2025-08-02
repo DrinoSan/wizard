@@ -38,8 +38,8 @@ void World_t::loadTileLayoutAndTileMap()
 // ----------------------------------------------------------------------------
 void World_t::updateTiles()
 {
-   float tileWidth  = screenWidth / 30;   // Screen width / columns
-   float tileHeight = screenHeight / 20;   // Screen height / rows
+   float tileWidth  = screenWidth / 30;   // @TODO: Take size (30) from metdata in xml file
+   float tileHeight = screenHeight / 20;   // @TODO: Take size (20) from metdata in xml file
 
    for ( int32_t i = 0; i < tileMapLayout.size(); ++i )
    {

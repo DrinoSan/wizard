@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "events/KeyEvent.h"
 #include <iostream>
 
 //-----------------------------------------------------------------------------
@@ -122,23 +123,32 @@ void Player_t::draw()
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::handleMovement()
+void Player_t::onEvent( Event_t& e )
+{
+   EventDispatcher_t dispatcher( e );
+   dispatcher.Dispatch<KeyPressedEvent_t>( BIND_EVENT_FN( handleMovement ) );
+}
+
+//-----------------------------------------------------------------------------
+bool Player_t::handleMovement( KeyPressedEvent_t& e )
 {
    ++framesCounter;
-   if ( IsKeyDown( KEY_D ) )
+   if ( e.getKeyCode() == KEY_D )
    {
       goRight();
    }
-   if ( IsKeyDown( KEY_A ) )
+   if ( e.getKeyCode() == KEY_A )
    {
       goLeft();
    }
-   if ( IsKeyDown( KEY_W ) )
+   if ( e.getKeyCode() == KEY_W )
    {
       goUp();
    }
-   if ( IsKeyDown( KEY_S ) )
+   if ( e.getKeyCode() == KEY_S )
    {
       goDown();
    }
+
+	return true;
 }

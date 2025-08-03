@@ -31,7 +31,6 @@ class GameWorldManager_t
    }
 
    void onEvent( Event_t& e );
-	void onKeyEvent( KeyEvent_t& event );
 
  private:
    std::vector<Graphic_t*> worldObjects;

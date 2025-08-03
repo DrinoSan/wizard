@@ -15,5 +15,11 @@ wizard: $(OBJ_FILES)
 %.o : %.cpp
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
+collisionCreator: CollisionLayoutCreator.o
+	$(CXX) CollisionLayoutCreator.o -o bin/$@
+
+CollisionLayoutCreator.o: utils/CollisionLayoutCreator.cpp
+	$(CXX) -c $< -o $@
+
 clean:
-	rm -f *.o wizard
+	rm -f *.o wizard collisionCreator

@@ -5,3 +5,4 @@ main.dSYM
 .DS_Store
 *.o
 wizard
+bin

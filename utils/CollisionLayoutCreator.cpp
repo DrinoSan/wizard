@@ -28,7 +28,16 @@ int main()
             continue;
          }
 
-         line.push_back( { tail, head } );
+         // @TODO: Make this better currently i assu below 49 is a tile which
+         // should have a collision
+         std::string element{ tail, head };
+         char        tileType{ 'C' };
+         if ( std::stoi( element ) > 42 )
+         {
+            tileType = 'N';
+         }
+
+         line.push_back( element + "-" + tileType );
 
          ++head;
          tail = head;
@@ -38,14 +47,18 @@ int main()
       line.clear();
    }
 
+   std::ofstream out( "tilemapWithTypes.sand" );
+
    for ( const auto& line : layout )
    {
       for ( const auto& c : line )
       {
-         std::cout << c << ',';
+         out << c + ',';
+         std::cout << c << ',' << '\t';
       }
       std::cout << '\n';
    }
 
+   out.close();
    f.close();
 }

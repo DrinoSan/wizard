@@ -1,5 +1,5 @@
-#include "Globals.h"
 #include "World.h"
+#include "Globals.h"
 
 // ----------------------------------------------------------------------------
 void World_t::loadTileLayoutAndTileMap()
@@ -20,8 +20,21 @@ void World_t::loadTileLayoutAndTileMap()
             continue;
          }
 
-         std::string num{ tail, head };
-         tileMapLayout.push_back( std::stoi( num ) );
+         std::string tileElement{ tail, head };
+         // Delimiter == '-'
+         // Here i have the form 3-C
+         auto delimiterIt = tileElement.find( '-' );
+
+         std::pair<int32_t, TileType_t> tile;
+         tile.first  = std::stoi( tileElement.substr( 0, delimiterIt ) );
+         tile.second = TileType_t::NO_COLLISION;
+
+         if ( ( delimiterIt + 1 ) == 'C' )
+         {
+            tile.second = TileType_t::COLLISION;
+         }
+
+         tileMapLayout.push_back( tile );
 
          ++head;
          tail = head;
@@ -38,13 +51,17 @@ void World_t::loadTileLayoutAndTileMap()
 // ----------------------------------------------------------------------------
 void World_t::updateTiles()
 {
-   float tileWidth  = screenWidth / 30;   // @TODO: Take size (30) from metdata in xml file
-   float tileHeight = screenHeight / 20;   // @TODO: Take size (20) from metdata in xml file
+   float tileWidth =
+       screenWidth / 30;   // @TODO: Take size (30) from metdata in xml file
+   float tileHeight =
+       screenHeight / 20;   // @TODO: Take size (20) from metdata in xml file
 
    for ( int32_t i = 0; i < tileMapLayout.size(); ++i )
    {
+      // tileMapLayout first = index
+      // tileMapLayout second = tile type (COLLISION or Not)
       auto indexInSrc =
-          tileMapLayout[ i ] - 1;   // Convert 1-based to 0-based indexing
+          tileMapLayout[ i ].first - 1;   // Convert 1-based to 0-based indexing
       // Source rectangle (from tilemap PNG, 12 columns x 11 rows)
       tileSrc.x      = ( indexInSrc % 12 ) * 16;
       tileSrc.y      = ( indexInSrc / 12 ) * 16;
@@ -57,16 +74,18 @@ void World_t::updateTiles()
       tileDest.width  = tileWidth;
       tileDest.height = tileHeight;
 
-      worldMap.push_back({ TileType_t::COLLISION, indexInSrc, tileSrc, tileDest });
+      worldMap.push_back(
+          { tileMapLayout[ i ].second, indexInSrc, tileSrc, tileDest } );
    }
 }
 
 // ----------------------------------------------------------------------------
 void World_t::draw()
 {
-   for( const auto& tile : worldMap )
+   for ( const auto& tile : worldMap )
    {
-      DrawTexturePro( tileMapPNG, tile.tileSrc, tile.tileDest, { 0, 0 }, 0, WHITE );
+      DrawTexturePro( tileMapPNG, tile.tileSrc, tile.tileDest, { 0, 0 }, 0,
+                      WHITE );
    }
 }
 

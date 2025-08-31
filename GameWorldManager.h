@@ -25,13 +25,13 @@ class GameWorldManager_t
 
    /// Function to add objects to World
    /// @TODO: Use move semantic
-   inline void addObject( Graphic_t* object )
+   inline void addObject( std::unique_ptr<Graphic_t> object )
    {
-      worldObjects.push_back( object );
+      worldObjects.push_back( std::move( object ) );
    }
 
    void onEvent( Event_t& e );
 
  private:
-   std::vector<Graphic_t*> worldObjects;
+   std::vector<std::unique_ptr<Graphic_t>> worldObjects;
 };

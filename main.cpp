@@ -1,7 +1,5 @@
 // System Headers
-#include <cstdint>
-#include <fstream>
-#include <iostream>
+#include <memory>
 
 // Project Headers
 #include "GameWorldManager.h"
@@ -11,7 +9,7 @@
 #include "events/KeyEvent.h"
 #include "raylib.h"
 
-int main( void )
+int main()
 {
    // Initialization
    //--------------------------------------------------------------------------------------
@@ -19,10 +17,11 @@ int main( void )
 
    // I like to leak memory
    // Creating Player
-   auto player = new Player_t();
+   // @TODO: make unique
+   auto player = std::make_unique<Player_t>();
 
    // Creating World
-   auto world = new World_t();
+   auto world = std::make_unique<World_t>();
    // Prepare world (tilemap,layout and so on)
    world->preapreWorld();
 
@@ -30,8 +29,8 @@ int main( void )
    // The sequence of adding objects to the world is important because if world
    // is added after player the player will be drawn behind the map.
    GameWorldManager_t gameWorldManager;
-   gameWorldManager.addObject( world );
-   gameWorldManager.addObject( player );
+   gameWorldManager.addObject( std::move( world ) );
+   gameWorldManager.addObject( std::move( player ) );
 
    SetTargetFPS( 60 );   // Set our game to run at 60 frames-per-second
    //--------------------------------------------------------------------------------------

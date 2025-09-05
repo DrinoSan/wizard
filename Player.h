@@ -35,6 +35,7 @@ class Player_t : public Graphic_t
    int32_t   ANIMATION_WALK_DOWN_Y;
    int32_t   ANIMATION_WALK_RIGHT_Y;
    Rectangle frameRec;
+   Rectangle hitbox;
    Texture2D playerTexture;
    Vector2   playerPosition;
    int       currentFrame  = 0;

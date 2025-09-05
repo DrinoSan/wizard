@@ -17,6 +17,7 @@ Player_t::Player_t() : Graphic_t( OBJECT_TYPE::PLAYER )
    frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
                 static_cast<float>( playerTexture.height / 54 ) };
 
+   hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
    currentFrame  = 0;
    framesCounter = 0;
    framesSpeed   = 8;   // Number of spritesheet frames shown by second
@@ -37,6 +38,7 @@ Player_t::Player_t( Vector2 pos ) : Graphic_t( OBJECT_TYPE::PLAYER )
    frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
                 static_cast<float>( playerTexture.height / 54 ) };
 
+   hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
    currentFrame  = 0;
    framesCounter = 0;
    framesSpeed   = 8;   // Number of spritesheet frames shown by second
@@ -120,6 +122,7 @@ void Player_t::draw()
    //DrawTextureRec( playerTexture, frameRec, playerPosition,
                    //WHITE );   // Draw part of the texture
    DrawTexturePro( playerTexture, frameRec, { playerPosition.x, playerPosition.y, 40, 40 }, { 0, 0 }, 0, WHITE );
+   DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
 }
 
 //-----------------------------------------------------------------------------

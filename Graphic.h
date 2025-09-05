@@ -11,6 +11,7 @@ enum OBJECT_TYPE
 {
    PLAYER,
    STATIC,
+   NPC,
 };
 
 class Graphic_t

@@ -17,7 +17,6 @@ int main()
 
    // I like to leak memory
    // Creating Player
-   // @TODO: make unique
    auto player = std::make_unique<Player_t>();
 
    // Creating World
@@ -28,8 +27,7 @@ int main()
    // Adding all objects to senior manager
    // The sequence of adding objects to the world is important because if world
    // is added after player the player will be drawn behind the map.
-   GameWorldManager_t gameWorldManager;
-   gameWorldManager.addObject( std::move( world ) );
+   GameWorldManager_t gameWorldManager{ std::move( world ) };
    gameWorldManager.addObject( std::move( player ) );
 
    SetTargetFPS( 60 );   // Set our game to run at 60 frames-per-second
@@ -64,6 +62,9 @@ int main()
          KeyPressedEvent_t event( KEY_S );
          gameWorldManager.onEvent( event );
       }
+
+      // Collision Handling
+      gameWorldManager.handleCollisions();
 
       //----------------------------------------------------------------------------------
 

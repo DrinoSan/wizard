@@ -8,21 +8,11 @@
 #include "events/KeyEvent.h"
 
 //-----------------------------------------------------------------------------
-enum OBJECT_TYPE
-{
-   PLAYER,
-   STATIC,
-   NPC,
-};
-
-//-----------------------------------------------------------------------------
 class Graphic_t
 {
  public:
-   Graphic_t( OBJECT_TYPE type_ ) : type{ type_ } {}
+   Graphic_t() = default;
    virtual ~Graphic_t();
 
-   virtual void draw()                                 = 0;
-
-   OBJECT_TYPE type;
+   virtual void draw() = 0;
 };

@@ -3,7 +3,7 @@
 #include <iostream>
 
 //-----------------------------------------------------------------------------
-Player_t::Player_t() : Graphic_t( OBJECT_TYPE::PLAYER )
+Player_t::Player_t()
 {
    playerPosition = { ( float ) screenWidth / 2, ( float ) screenHeight / 2 };
 
@@ -24,7 +24,7 @@ Player_t::Player_t() : Graphic_t( OBJECT_TYPE::PLAYER )
 }
 
 //-----------------------------------------------------------------------------
-Player_t::Player_t( Vector2 pos ) : Graphic_t( OBJECT_TYPE::PLAYER )
+Player_t::Player_t( Vector2 pos )
 {
    playerPosition = { pos.x, pos.y };
 
@@ -47,7 +47,7 @@ Player_t::Player_t( Vector2 pos ) : Graphic_t( OBJECT_TYPE::PLAYER )
 //-----------------------------------------------------------------------------
 void Player_t::goRight( float movement )
 {
-   //playerPosition.x += movement;
+   // playerPosition.x += movement;
    velocity.x += movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
@@ -66,7 +66,7 @@ void Player_t::goRight( float movement )
 //-----------------------------------------------------------------------------
 void Player_t::goLeft( float movement )
 {
-   //playerPosition.x -= movement;
+   // playerPosition.x -= movement;
    velocity.x -= movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
@@ -85,7 +85,7 @@ void Player_t::goLeft( float movement )
 //-----------------------------------------------------------------------------
 void Player_t::goUp( float movement )
 {
-   //playerPosition.y -= movement;
+   // playerPosition.y -= movement;
    velocity.y -= movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
@@ -104,7 +104,7 @@ void Player_t::goUp( float movement )
 //-----------------------------------------------------------------------------
 void Player_t::goDown( float movement )
 {
-   //playerPosition.y += movement;
+   // playerPosition.y += movement;
    velocity.y += movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
@@ -123,9 +123,11 @@ void Player_t::goDown( float movement )
 //-----------------------------------------------------------------------------
 void Player_t::draw()
 {
-   //DrawTextureRec( playerTexture, frameRec, playerPosition,
-                   //WHITE );   // Draw part of the texture
-   DrawTexturePro( playerTexture, frameRec, { playerPosition.x, playerPosition.y, 40, 40 }, { 0, 0 }, 0, WHITE );
+   // DrawTextureRec( playerTexture, frameRec, playerPosition,
+   // WHITE );   // Draw part of the texture
+   DrawTexturePro( playerTexture, frameRec,
+                   { playerPosition.x, playerPosition.y, 40, 40 }, { 0, 0 }, 0,
+                   WHITE );
    DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
 }
 
@@ -157,7 +159,7 @@ bool Player_t::handleMovement( KeyPressedEvent_t& e )
       goDown();
    }
 
-	return true;
+   return true;
 }
 
 //-----------------------------------------------------------------------------

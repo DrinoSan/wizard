@@ -15,8 +15,7 @@ class Tile_t : public Graphic_t
  public:
    Tile_t( TileType_t type_, int32_t indexInSrc_, Rectangle tileSrc_,
            Rectangle tileDest_ )
-       : Graphic_t{ OBJECT_TYPE::STATIC }, tileType{ type_ },
-         tileSrc{ tileSrc_ }, tileDest{ tileDest_ }
+       : tileType{ type_ }, tileSrc{ tileSrc_ }, tileDest{ tileDest_ }
    {
    }
    ~Tile_t() = default;
@@ -24,7 +23,7 @@ class Tile_t : public Graphic_t
    void draw() override {}
 
    // @TODO: Check if this will be needed
-   //void onEvent( Event_t& e ) override {}
+   // void onEvent( Event_t& e ) override {}
 
    TileType_t tileType;
    Rectangle  tileSrc  = { 0.0f, 0.0f, 16.0f, 16.0f };

@@ -13,7 +13,7 @@
 class World_t : public Graphic_t
 {
  public:
-   World_t() : Graphic_t( OBJECT_TYPE::STATIC ) {}
+   World_t() = default;
    virtual ~World_t() = default;
 
    void draw() override;
@@ -25,6 +25,8 @@ class World_t : public Graphic_t
    /// Loading files for tiles and creating tile objects
    void preapreWorld();
 
+   // Public to get acces in GameWorldManager
+   std::vector<Tile_t> worldMap{};
  private:
    /// Function to load png files for files and tile map layout
    void loadTileLayoutAndTileMap();
@@ -48,6 +50,4 @@ class World_t : public Graphic_t
    // @TODO: remove hardcoded dimensions of world 800 and 450
    Rectangle tileDest = { 0.0f, 0.0f, static_cast<float>( 800 / 30.0f ),
                           static_cast<float>( 450 / 20.0f ) };
-
-   std::vector<Tile_t> worldMap{};
 };

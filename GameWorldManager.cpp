@@ -70,9 +70,9 @@ void GameWorldManager_t::resolveCollisionEntityStatic( Entity_t* entityPtr )
    // Check if entity velocity would overlap with tile
    // resolve / push entity back
 
-   for( const auto& tile : world )
+   for( const auto& tile : world->worldMap )
    {
-      if( tile.x < entityPtr->hitbox.x &&
+      //if( tile.x < entityPtr->hitbox.x &&
    }
 }
 

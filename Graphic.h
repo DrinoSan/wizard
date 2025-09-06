@@ -7,6 +7,7 @@
 #include "events/Event.h"
 #include "events/KeyEvent.h"
 
+//-----------------------------------------------------------------------------
 enum OBJECT_TYPE
 {
    PLAYER,
@@ -14,6 +15,7 @@ enum OBJECT_TYPE
    NPC,
 };
 
+//-----------------------------------------------------------------------------
 class Graphic_t
 {
  public:
@@ -21,8 +23,6 @@ class Graphic_t
    virtual ~Graphic_t();
 
    virtual void draw()                                 = 0;
-   virtual bool handleMovement( KeyPressedEvent_t& e ) = 0;
-   virtual void onEvent( Event_t& e )                  = 0;
 
    OBJECT_TYPE type;
 };

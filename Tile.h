@@ -4,26 +4,10 @@
 enum class TileType_t
 {
    COLLISION,
+   DAMAGE,
+   FREEZ,
    NO_COLLISION
 };
-
-//-----------------------------------------------------------------------------
-constexpr TileType_t collisionMap[ 11 ][ 12 ] = {
-    { TileType_t::COLLISION, TileType_t::COLLISION, TileType_t::COLLISION,
-      TileType_t::NO_COLLISION, TileType_t::NO_COLLISION,
-      TileType_t::NO_COLLISION, TileType_t::NO_COLLISION, TileType_t::COLLISION,
-      TileType_t::COLLISION, TileType_t::COLLISION, TileType_t::NO_COLLISION,
-      TileType_t::NO_COLLISION },
-    { TileType_t::COLLISION, TileType_t::NO_COLLISION, TileType_t::NO_COLLISION,
-      TileType_t::NO_COLLISION, TileType_t::COLLISION, TileType_t::COLLISION,
-      TileType_t::NO_COLLISION, TileType_t::NO_COLLISION,
-      TileType_t::NO_COLLISION, TileType_t::COLLISION, TileType_t::NO_COLLISION,
-      TileType_t::NO_COLLISION },
-    { TileType_t::NO_COLLISION, TileType_t::COLLISION, TileType_t::COLLISION,
-      TileType_t::NO_COLLISION, TileType_t::NO_COLLISION, TileType_t::COLLISION,
-      TileType_t::COLLISION, TileType_t::NO_COLLISION, TileType_t::NO_COLLISION,
-      TileType_t::NO_COLLISION, TileType_t::COLLISION,
-      TileType_t::COLLISION } };
 
 //-----------------------------------------------------------------------------
 class Tile_t : public Graphic_t
@@ -39,8 +23,8 @@ class Tile_t : public Graphic_t
 
    void draw() override {}
 
-   bool handleMovement( KeyPressedEvent_t& e ) override { return false; };
-   void onEvent( Event_t& e ) override {}
+   // @TODO: Check if this will be needed
+   //void onEvent( Event_t& e ) override {}
 
    TileType_t tileType;
    Rectangle  tileSrc  = { 0.0f, 0.0f, 16.0f, 16.0f };

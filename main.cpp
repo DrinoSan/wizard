@@ -3,6 +3,7 @@
 
 // Project Headers
 #include "GameWorldManager.h"
+#include "Entity.h"
 #include "Globals.h"
 #include "Player.h"
 #include "World.h"
@@ -28,7 +29,7 @@ int main()
    // The sequence of adding objects to the world is important because if world
    // is added after player the player will be drawn behind the map.
    GameWorldManager_t gameWorldManager{ std::move( world ) };
-   gameWorldManager.addObject( std::move( player ) );
+   gameWorldManager.addEntity( std::move( player ) );
 
    SetTargetFPS( 60 );   // Set our game to run at 60 frames-per-second
    //--------------------------------------------------------------------------------------

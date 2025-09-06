@@ -47,7 +47,8 @@ Player_t::Player_t( Vector2 pos ) : Graphic_t( OBJECT_TYPE::PLAYER )
 //-----------------------------------------------------------------------------
 void Player_t::goRight( float movement )
 {
-   playerPosition.x += movement;
+   //playerPosition.x += movement;
+   velocity.x += movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -65,7 +66,8 @@ void Player_t::goRight( float movement )
 //-----------------------------------------------------------------------------
 void Player_t::goLeft( float movement )
 {
-   playerPosition.x -= movement;
+   //playerPosition.x -= movement;
+   velocity.x -= movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -83,7 +85,8 @@ void Player_t::goLeft( float movement )
 //-----------------------------------------------------------------------------
 void Player_t::goUp( float movement )
 {
-   playerPosition.y -= movement;
+   //playerPosition.y -= movement;
+   velocity.y -= movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -101,7 +104,8 @@ void Player_t::goUp( float movement )
 //-----------------------------------------------------------------------------
 void Player_t::goDown( float movement )
 {
-   playerPosition.y += movement;
+   //playerPosition.y += movement;
+   velocity.y += movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -154,4 +158,16 @@ bool Player_t::handleMovement( KeyPressedEvent_t& e )
    }
 
 	return true;
+}
+
+//-----------------------------------------------------------------------------
+void Player_t::update()
+{
+   playerPosition.x += velocity.x;
+   playerPosition.y += velocity.y;
+   draw();
+
+   // Important to reset otherwise we become buz lightyear
+   velocity.x = 0;
+   velocity.y = 0;
 }

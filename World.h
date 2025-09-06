@@ -18,8 +18,6 @@ class World_t : public Graphic_t
 
    void draw() override;
 
-   void onEvent( Event_t& e ) override {}
-
    // Contains the layout which will define how our level looks like
    std::vector<std::pair<int32_t, TileType_t>> tileMapLayout{};
 
@@ -28,14 +26,6 @@ class World_t : public Graphic_t
    void preapreWorld();
 
  private:
-   bool handleMovement( KeyPressedEvent_t& e ) override
-   {
-      std::cout
-          << "[ WORLD_T ] I AM JUST A STATIC WORLD OBJECT AND CANT MOVE\n";
-
-      return false;
-   }
-
    /// Function to load png files for files and tile map layout
    void loadTileLayoutAndTileMap();
 

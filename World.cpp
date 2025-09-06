@@ -62,6 +62,8 @@ void World_t::updateTiles()
       // tileMapLayout second = tile type (COLLISION or Not)
       auto indexInSrc =
           tileMapLayout[ i ].first - 1;   // Convert 1-based to 0-based indexing
+      auto tileType = tileMapLayout[ i ].second;
+
       // Source rectangle (from tilemap PNG, 12 columns x 11 rows)
       tileSrc.x      = ( indexInSrc % 12 ) * 16;
       tileSrc.y      = ( indexInSrc / 12 ) * 16;
@@ -74,8 +76,7 @@ void World_t::updateTiles()
       tileDest.width  = tileWidth;
       tileDest.height = tileHeight;
 
-      worldMap.push_back(
-          { tileMapLayout[ i ].second, indexInSrc, tileSrc, tileDest } );
+      worldMap.push_back( { tileType, indexInSrc, tileSrc, tileDest } );
    }
 }
 

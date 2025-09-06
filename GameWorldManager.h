@@ -5,6 +5,7 @@
 #include <vector>
 
 // Project Headers
+#include "Entity.h"
 #include "Graphic.h"
 #include "Player.h"
 #include "World.h"
@@ -22,9 +23,9 @@ class GameWorldManager_t
       // @TODO: add layers which should be drawn to have a way to know whats in
       // the background and so on
       world->draw();
-      for ( auto& obj : worldObjects )
+      for ( auto& obj : enities )
       {
-         obj->draw();
+         obj->update();
          auto* p = static_cast<Player_t*>(
              obj.get() );   // obj is a World_t and Player_t inherits from
                             // World_t
@@ -38,16 +39,17 @@ class GameWorldManager_t
 
    /// Function to add objects to World
    /// @TODO: Use move semantic
-   inline void addObject( std::unique_ptr<Graphic_t> object )
+   inline void addEntity( std::unique_ptr<Entity_t> object )
    {
-      worldObjects.push_back( std::move( object ) );
+      enities.push_back( std::move( object ) );
    }
 
    void onEvent( Event_t& e );
 
    void handleCollisions();
+   void resolveCollisionEntityStatic( Entity_t* entityPtr );
 
  private:
-   std::vector<std::unique_ptr<Graphic_t>> worldObjects;
-   std::unique_ptr<World_t>                world;
+   std::vector<std::unique_ptr<Entity_t>> enities;
+   std::unique_ptr<World_t>               world;
 };

@@ -6,7 +6,7 @@ void World_t::loadTileLayoutAndTileMap()
 {
    // This part loads the tileMapLayout it contains 30x20 entries where the
    // value defines the index in the tileMapPNG
-   std::ifstream file( "resources/dungonmapAdjusted.tmx" );
+   std::ifstream file( "tilemapWithTypes.sand" );
    std::string   str;
    while ( std::getline( file, str ) )
    {
@@ -29,7 +29,7 @@ void World_t::loadTileLayoutAndTileMap()
          tile.first  = std::stoi( tileElement.substr( 0, delimiterIt ) );
          tile.second = TileType_t::NO_COLLISION;
 
-         if ( ( delimiterIt + 1 ) == 'C' )
+         if ( tileElement[ delimiterIt + 1 ] == 'C' )
          {
             tile.second = TileType_t::COLLISION;
          }
@@ -77,6 +77,11 @@ void World_t::updateTiles()
       tileDest.height = tileHeight;
 
       worldMap.push_back( { tileType, indexInSrc, tileSrc, tileDest } );
+
+      if( tileType == TileType_t::COLLISION )
+      {
+         worldMapTilesWithCollision.push_back( { tileType, indexInSrc, tileSrc, tileDest } );
+      }
    }
 }
 
@@ -87,6 +92,12 @@ void World_t::draw()
    {
       DrawTexturePro( tileMapPNG, tile.tileSrc, tile.tileDest, { 0, 0 }, 0,
                       WHITE );
+
+      if( tile.tileType == TileType_t::COLLISION )
+      {
+         // For debuging
+         DrawRectangleLines( tile.tileDest.x, tile.tileDest.y, tile.tileDest.width, tile.tileDest.height, RED );
+      }
    }
 }
 

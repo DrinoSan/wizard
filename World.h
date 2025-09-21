@@ -27,6 +27,7 @@ class World_t : public Graphic_t
 
    // Public to get acces in GameWorldManager
    std::vector<Tile_t> worldMap{};
+   std::vector<Tile_t> worldMapTilesWithCollision{};
  private:
    /// Function to load png files for files and tile map layout
    void loadTileLayoutAndTileMap();

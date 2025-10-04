@@ -1,17 +1,37 @@
 #pragma once
 
 // Project Header
-#include "raylib.h"
 #include "events/Event.h"
 #include "events/KeyEvent.h"
+#include "raylib.h"
 
 //-----------------------------------------------------------------------------
 enum class ENTITY_TYPE
 {
    PLAYER,
    STATIC,
+   ENEMY,
    NPC,
+   ITEM,
 };
+
+//-----------------------------------------------------------------------------
+inline std::string entityTypeToString( ENTITY_TYPE type )
+{
+   switch ( type )
+   {
+   case ENTITY_TYPE::PLAYER:
+      return "PLAYER";
+   case ENTITY_TYPE::ENEMY:
+      return "ENEMY";
+   case ENTITY_TYPE::ITEM:
+      return "item";
+   case ENTITY_TYPE::STATIC:
+      return "item";
+   default:
+      return "UNKNOWN";
+   }
+}
 
 //-----------------------------------------------------------------------------
 class Entity_t
@@ -20,14 +40,35 @@ class Entity_t
    Entity_t()          = default;
    virtual ~Entity_t() = default;
 
-   virtual void update()                               = 0;
-   virtual void onEvent( Event_t& e )                  = 0;
-   virtual bool handleMovement( KeyPressedEvent_t& e ) = 0;
-   ENTITY_TYPE  type;
+   virtual void        update()                               = 0;
+   virtual void        onEvent( Event_t& e )                  = 0;
+   virtual bool        handleMovement( KeyPressedEvent_t& e ) = 0;
+   virtual std::string str();
 
-   Rectangle frameRec;
-   Rectangle hitbox;
-   Texture2D playerTexture;
-   Vector2   playerPosition;
-   Vector2   velocity;
+   ENTITY_TYPE type;
+   Rectangle   frameRec;
+   Rectangle   hitbox;
+   Texture2D   playerTexture;
+   Vector2     playerPosition;
+   Vector2     velocity;
 };
+
+//-----------------------------------------------------------------------------
+inline std::string Entity_t::str()
+{
+   std::stringstream ss;
+   ss << "Entity Debug Info:\n";
+   ss << "  Type: " << entityTypeToString( type ) << "\n";
+   ss << "  Frame Rectangle: { x: " << frameRec.x << ", y: " << frameRec.y
+      << ", width: " << frameRec.width << ", height: " << frameRec.height
+      << " }\n";
+   ss << "  Hitbox: { x: " << hitbox.x << ", y: " << hitbox.y
+      << ", width: " << hitbox.width << ", height: " << hitbox.height << " }\n";
+   ss << "  Texture: { width: " << playerTexture.width
+      << ", height: " << playerTexture.height << ", id: " << playerTexture.id
+      << " }\n";
+   ss << "  Position: { x: " << playerPosition.x << ", y: " << playerPosition.y
+      << " }\n";
+   ss << "  Velocity: { x: " << velocity.x << ", y: " << velocity.y << " }\n";
+   return ss.str();
+}

@@ -93,11 +93,12 @@ void World_t::draw()
       DrawTexturePro( tileMapPNG, tile.tileSrc, tile.tileDest, { 0, 0 }, 0,
                       WHITE );
 
+#ifdef DEBUG
       if( tile.tileType == TileType_t::COLLISION )
       {
-         // For debuging
          DrawRectangleLines( tile.tileDest.x, tile.tileDest.y, tile.tileDest.width, tile.tileDest.height, RED );
       }
+#endif
    }
 }
 

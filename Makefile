@@ -9,6 +9,9 @@ OBJ_FILES := $(CPP_FILES:.cpp=.o)
 
 all: wizard
 
+debug: CXXFLAGS += -DDEBUG -g
+debug: wizard
+
 wizard: $(OBJ_FILES)
 	$(CXX) $(OBJ_FILES) $(LDFLAGS) -o $@
 

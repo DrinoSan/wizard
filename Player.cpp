@@ -128,7 +128,9 @@ void Player_t::draw()
    DrawTexturePro( playerTexture, frameRec,
                    { playerPosition.x, playerPosition.y, 40, 40 }, { 0, 0 }, 0,
                    WHITE );
+#ifdef DEBUG
    DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -167,6 +169,9 @@ void Player_t::update()
 {
    playerPosition.x += velocity.x;
    playerPosition.y += velocity.y;
+
+   // Need to update the hitbox on each update
+   hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
    draw();
 
    // Important to reset otherwise we become buz lightyear

@@ -26,14 +26,6 @@ class GameWorldManager_t
       for ( auto& obj : enities )
       {
          obj->update();
-         auto* p = static_cast<Player_t*>(
-             obj.get() );   // obj is a World_t and Player_t inherits from
-                            // World_t
-         std::cout << "Player pos: (" << p->playerPosition.x << ","
-                   << p->playerPosition.y << ") frameRec: pos: ("
-                   << p->frameRec.x << "," << p->frameRec.y
-                   << ") frameRec height: " << p->frameRec.height
-                   << " frameRec width: " << p->frameRec.width << "..\n";
       }
    }
 

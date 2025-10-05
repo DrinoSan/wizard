@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #include "GameWorldManager.h"
+#include "log.h"
 
 //-----------------------------------------------------------------------------
 GameWorldManager_t::GameWorldManager_t( std::unique_ptr<World_t> world_ )
@@ -65,21 +66,51 @@ void GameWorldManager_t::handleCollisions()
 //-----------------------------------------------------------------------------
 void GameWorldManager_t::resolveCollisionEntityStatic( Entity_t* entityPtr )
 {
-   // Get all tiles close to entity
-   // Check if tiles are static
-   // Check if entity velocity would overlap with tile
-   // resolve / push entity back
-
-   for( const auto& tile : world->worldMap )
+   for ( const auto& tile : world->worldMapTilesWithCollision )
    {
-      //if( tile.x < entityPtr->hitbox.x &&
+      auto hitboxNextFrame = entityPtr->hitbox;
+      hitboxNextFrame.x += entityPtr->velocity.x;
+      hitboxNextFrame.y += entityPtr->velocity.y;
+      if ( CheckCollisionRecs( hitboxNextFrame, tile.tileDest ) )
+      {
+         float overlapLeft = ( entityPtr->hitbox.x + entityPtr->hitbox.width ) -
+                             tile.tileDest.x;
+         float overlapRight =
+             ( tile.tileDest.x + tile.tileDest.width ) - entityPtr->hitbox.x;
+         float overlapTop = ( entityPtr->hitbox.y + entityPtr->hitbox.height ) -
+                            tile.tileDest.y;
+         float overlapBottom =
+             ( tile.tileDest.y + tile.tileDest.height ) - entityPtr->hitbox.y;
+
+#ifdef DEBUG
+         std::cout << entityPtr->str() << "\n";
+         std::cout << "OverlapLeft: " << overlapLeft << "\n";
+         std::cout << "OverlapRight: " << overlapRight << "\n";
+         std::cout << "OverlapTop: " << overlapTop << "\n";
+         std::cout << "OverlapBottom: " << overlapBottom << "\n";
+#endif
+         auto minOverlap = std::min(
+             { overlapLeft, overlapRight, overlapTop, overlapBottom } );
+
+         if ( minOverlap == overlapLeft )
+         {
+            entityPtr->velocity.x = 0;
+         }
+
+         if ( minOverlap == overlapRight )
+         {
+            entityPtr->velocity.x = 0;
+         }
+
+         if ( minOverlap == overlapTop )
+         {
+            entityPtr->velocity.y = 0;
+         }
+
+         if ( minOverlap == overlapBottom )
+         {
+            entityPtr->velocity.y = 0;
+         }
+      }
    }
 }
-
-
-
-
-
-
-
-

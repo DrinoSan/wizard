@@ -1,9 +1,11 @@
-#include "Player.h"
-#include "events/KeyEvent.h"
 #include <iostream>
+#include <random>
+
+#include "NpcEnemy.h"
+#include "events/KeyEvent.h"
 
 //-----------------------------------------------------------------------------
-Player_t::Player_t()
+NpcEnemy_t::NpcEnemy_t()
 {
    playerPosition = { ( float ) screenWidth / 2, ( float ) screenHeight / 2 };
 
@@ -17,6 +19,7 @@ Player_t::Player_t()
    frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
                 static_cast<float>( playerTexture.height / 54 ) };
 
+   type          = ENTITY_TYPE::ENEMY;
    hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
    currentFrame  = 0;
    framesCounter = 0;
@@ -24,7 +27,7 @@ Player_t::Player_t()
 }
 
 //-----------------------------------------------------------------------------
-Player_t::Player_t( Vector2 pos )
+NpcEnemy_t::NpcEnemy_t( Vector2 pos )
 {
    playerPosition = { pos.x, pos.y };
 
@@ -38,6 +41,7 @@ Player_t::Player_t( Vector2 pos )
    frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
                 static_cast<float>( playerTexture.height / 54 ) };
 
+   type          = ENTITY_TYPE::ENEMY;
    hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
    currentFrame  = 0;
    framesCounter = 0;
@@ -45,7 +49,7 @@ Player_t::Player_t( Vector2 pos )
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::goRight( float movement )
+void NpcEnemy_t::goRight( float movement )
 {
    // playerPosition.x += movement;
    velocity.x += movement;
@@ -64,7 +68,7 @@ void Player_t::goRight( float movement )
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::goLeft( float movement )
+void NpcEnemy_t::goLeft( float movement )
 {
    // playerPosition.x -= movement;
    velocity.x -= movement;
@@ -83,7 +87,7 @@ void Player_t::goLeft( float movement )
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::goUp( float movement )
+void NpcEnemy_t::goUp( float movement )
 {
    // playerPosition.y -= movement;
    velocity.y -= movement;
@@ -102,7 +106,7 @@ void Player_t::goUp( float movement )
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::goDown( float movement )
+void NpcEnemy_t::goDown( float movement )
 {
    // playerPosition.y += movement;
    velocity.y += movement;
@@ -121,7 +125,7 @@ void Player_t::goDown( float movement )
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::draw()
+void NpcEnemy_t::draw()
 {
    // DrawTextureRec( playerTexture, frameRec, playerPosition,
    // WHITE );   // Draw part of the texture
@@ -134,16 +138,16 @@ void Player_t::draw()
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::onEvent( Event_t& e )
+void NpcEnemy_t::onEvent( Event_t& e )
 {
    EventDispatcher_t dispatcher( e );
-   dispatcher.Dispatch<KeyPressedEvent_t>( BIND_EVENT_FN( Player_t::handleMovement ) );
+   dispatcher.Dispatch<KeyPressedEvent_t>(
+       BIND_EVENT_FN( NpcEnemy_t::handleMovement ) );
 }
 
 //-----------------------------------------------------------------------------
-bool Player_t::handleMovement( KeyPressedEvent_t& e )
+bool NpcEnemy_t::handleMovement( KeyPressedEvent_t& e )
 {
-   ++framesCounter;
    if ( e.getKeyCode() == KEY_D )
    {
       goRight();
@@ -165,7 +169,41 @@ bool Player_t::handleMovement( KeyPressedEvent_t& e )
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::update()
+bool NpcEnemy_t::handleNpcMovement()
+{
+   ++framesCounter;
+   static std::random_device       rd;
+   static std::mt19937             gen( rd() );
+   std::uniform_int_distribution<> distrib( 0, 3 );
+   switch ( distrib( gen ) )
+   {
+   case 0:
+   {
+      goRight();
+      break;
+   }
+   case 1:
+   {
+      goLeft();
+      break;
+   }
+   case 2:
+   {
+      goUp();
+      break;
+   }
+   case 3:
+   {
+      goDown();
+      break;
+   }
+   }
+
+   return true;
+}
+
+//-----------------------------------------------------------------------------
+void NpcEnemy_t::update()
 {
    playerPosition.x += velocity.x;
    playerPosition.y += velocity.y;
@@ -177,4 +215,11 @@ void Player_t::update()
    // Important to reset otherwise we become buz lightyear
    velocity.x = 0;
    velocity.y = 0;
+}
+
+//-----------------------------------------------------------------------------
+void NpcEnemy_t::registerOnEventCallback(
+    std::function<void( Event_t& )> callback )
+{
+   onEventCallback = std::move( callback );
 }

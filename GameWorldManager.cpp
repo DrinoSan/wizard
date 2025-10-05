@@ -5,8 +5,9 @@
 #include "log.h"
 
 //-----------------------------------------------------------------------------
-GameWorldManager_t::GameWorldManager_t( std::unique_ptr<World_t> world_ )
-    : world{ std::move( world_ ) }
+GameWorldManager_t::GameWorldManager_t( std::unique_ptr<World_t> world_,
+                                        int32_t                  numEnemies_ )
+    : world{ std::move( world_ ) }, numEnemies{ numEnemies_ }
 {
 }
 
@@ -111,6 +112,31 @@ void GameWorldManager_t::resolveCollisionEntityStatic( Entity_t* entityPtr )
          {
             entityPtr->velocity.y = 0;
          }
+      }
+   }
+}
+
+//-----------------------------------------------------------------------------
+void GameWorldManager_t::prepareManager()
+{
+   for ( int32_t i = 0; i < numEnemies; ++i )
+   {
+      // INIT ENEMIES
+      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>() );
+      static_cast<NpcEnemy_t*>( enemy.get() )
+          ->registerOnEventCallback( [ this ]( Event_t& e )
+                                     { this->onEvent( e ); } );
+   }
+}
+
+//-----------------------------------------------------------------------------
+void GameWorldManager_t::executeNpcMovements()
+{
+   for ( auto& obj : enities )
+   {
+      if ( obj->type == ENTITY_TYPE::ENEMY )
+      {
+         static_cast<NpcEnemy_t*>( obj.get() )->handleNpcMovement();
       }
    }
 }

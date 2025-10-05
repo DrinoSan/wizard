@@ -7,8 +7,6 @@
 #include "raylib.h"
 #include "events/KeyEvent.h"
 
-#define BIND_EVENT_FN( x )                                                     \
-   std::bind( &Player_t::x, this, std::placeholders::_1 )
 
 class Player_t : public Graphic_t, public Entity_t
 {

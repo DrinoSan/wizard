@@ -78,9 +78,10 @@ void World_t::updateTiles()
 
       worldMap.push_back( { tileType, indexInSrc, tileSrc, tileDest } );
 
-      if( tileType == TileType_t::COLLISION )
+      if ( tileType == TileType_t::COLLISION )
       {
-         worldMapTilesWithCollision.push_back( { tileType, indexInSrc, tileSrc, tileDest } );
+         worldMapTilesWithCollision.push_back(
+             { tileType, indexInSrc, tileSrc, tileDest } );
       }
    }
 }
@@ -94,9 +95,10 @@ void World_t::draw()
                       WHITE );
 
 #ifdef DEBUG
-      if( tile.tileType == TileType_t::COLLISION )
+      if ( tile.tileType == TileType_t::COLLISION )
       {
-         DrawRectangleLines( tile.tileDest.x, tile.tileDest.y, tile.tileDest.width, tile.tileDest.height, RED );
+         DrawRectangleLines( tile.tileDest.x, tile.tileDest.y,
+                             tile.tileDest.width, tile.tileDest.height, RED );
       }
 #endif
    }
@@ -105,6 +107,7 @@ void World_t::draw()
 // ----------------------------------------------------------------------------
 void World_t::preapreWorld()
 {
+   // Map related stuff
    loadTileLayoutAndTileMap();
    updateTiles();
 }

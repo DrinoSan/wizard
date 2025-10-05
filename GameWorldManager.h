@@ -8,13 +8,14 @@
 #include "Entity.h"
 #include "Graphic.h"
 #include "Player.h"
+#include "NpcEnemy.h"
 #include "World.h"
 #include "events/KeyEvent.h"
 
 class GameWorldManager_t
 {
  public:
-   GameWorldManager_t( std::unique_ptr<World_t> world_ );
+   GameWorldManager_t( std::unique_ptr<World_t> world_, int32_t numEnemies_ );
    ~GameWorldManager_t();
 
    /// Function to draw the whole world including tiles,player,enemies and so on
@@ -40,8 +41,12 @@ class GameWorldManager_t
 
    void handleCollisions();
    void resolveCollisionEntityStatic( Entity_t* entityPtr );
+   void prepareManager();
+   void executeNpcMovements();
 
  private:
    std::vector<std::unique_ptr<Entity_t>> enities;
    std::unique_ptr<World_t>               world;
+   int32_t numEnemies;
+   std::vector<NpcEnemy_t> npcEnemies;
 };

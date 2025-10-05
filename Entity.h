@@ -33,6 +33,11 @@ inline std::string entityTypeToString( ENTITY_TYPE type )
    }
 }
 
+//#define BIND_EVENT_FN( x )                                                     \
+//   std::bind( &this::x, this, std::placeholders::_1 )
+//-----------------------------------------------------------------------------
+#define BIND_EVENT_FN( fn ) std::bind( &fn, this, std::placeholders::_1 )
+
 //-----------------------------------------------------------------------------
 class Entity_t
 {
@@ -51,6 +56,11 @@ class Entity_t
    Texture2D   playerTexture;
    Vector2     playerPosition;
    Vector2     velocity;
+
+   // Player/NPC related stuff
+   int32_t attackRange;
+   int32_t attackSpeed;
+   int32_t attackPower;
 };
 
 //-----------------------------------------------------------------------------

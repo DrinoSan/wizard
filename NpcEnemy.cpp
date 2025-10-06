@@ -1,5 +1,4 @@
 #include <iostream>
-#include <random>
 
 #include "NpcEnemy.h"
 #include "events/KeyEvent.h"
@@ -52,7 +51,7 @@ NpcEnemy_t::NpcEnemy_t( Vector2 pos )
 void NpcEnemy_t::goRight( float movement )
 {
    // playerPosition.x += movement;
-   velocity.x += movement;
+   //velocity.x += movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -71,7 +70,7 @@ void NpcEnemy_t::goRight( float movement )
 void NpcEnemy_t::goLeft( float movement )
 {
    // playerPosition.x -= movement;
-   velocity.x -= movement;
+   //velocity.x -= movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -90,7 +89,7 @@ void NpcEnemy_t::goLeft( float movement )
 void NpcEnemy_t::goUp( float movement )
 {
    // playerPosition.y -= movement;
-   velocity.y -= movement;
+   //velocity.y -= movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -109,7 +108,7 @@ void NpcEnemy_t::goUp( float movement )
 void NpcEnemy_t::goDown( float movement )
 {
    // playerPosition.y += movement;
-   velocity.y += movement;
+   //velocity.y += movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -169,35 +168,58 @@ bool NpcEnemy_t::handleMovement( KeyPressedEvent_t& e )
 }
 
 //-----------------------------------------------------------------------------
-bool NpcEnemy_t::handleNpcMovement()
+bool NpcEnemy_t::handleNpcMovement( Player_t* player )
 {
    ++framesCounter;
-   static std::random_device       rd;
-   static std::mt19937             gen( rd() );
-   std::uniform_int_distribution<> distrib( 0, 3 );
-   switch ( distrib( gen ) )
-   {
-   case 0:
+
+   // Get Richtungsvektor
+   // Get normilized vektor
+   // scale it for velocity
+   auto directionVec = Vector2Subtract( player->playerPosition, playerPosition );
+   auto normalizedVec = Vector2Normalize( directionVec );
+
+   velocity.x += normalizedVec.x * 1.5;
+   velocity.y += normalizedVec.y * 1.5;
+
+   if ( velocity.x > 0 )
    {
       goRight();
-      break;
    }
-   case 1:
+   if ( velocity.x < 0 )
    {
       goLeft();
-      break;
    }
-   case 2:
+   if ( velocity.y < 0 )
    {
       goUp();
-      break;
    }
-   case 3:
+   if ( velocity.y > 0 )
    {
       goDown();
-      break;
    }
-   }
+   //switch ( distrib( gen ) )
+   //{
+   //case 0:
+   //{
+   //   goRight();
+   //   break;
+   //}
+   //case 1:
+   //{
+   //   goLeft();
+   //   break;
+   //}
+   //case 2:
+   //{
+   //   goUp();
+   //   break;
+   //}
+   //case 3:
+   //{
+   //   goDown();
+   //   break;
+   //}
+   //}
 
    return true;
 }

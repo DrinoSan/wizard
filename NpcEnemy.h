@@ -3,10 +3,12 @@
 #include <functional>
 
 #include "Entity.h"
+#include "Player.h"
 #include "Globals.h"
 #include "Graphic.h"
 #include "events/KeyEvent.h"
 #include "raylib.h"
+#include "raymath.h"
 
 class NpcEnemy_t : public Graphic_t, public Entity_t
 {
@@ -33,7 +35,7 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
 
    void draw() override;
    bool handleMovement( KeyPressedEvent_t& e ) override;
-   bool handleNpcMovement();
+   bool handleNpcMovement( Player_t* player );
    void onEvent( Event_t& e ) override;
    void registerOnEventCallback( std::function<void( Event_t& )> callback );
    std::function<void( Event_t& )> onEventCallback;

@@ -1,5 +1,6 @@
 // System Headers
 #include <algorithm>
+#include <cassert>
 
 #include "GameWorldManager.h"
 #include "log.h"
@@ -132,11 +133,23 @@ void GameWorldManager_t::prepareManager()
 //-----------------------------------------------------------------------------
 void GameWorldManager_t::executeNpcMovements()
 {
+   // @TODO seprate vectors for player and enemies
+   Player_t* player = nullptr;
+   for ( auto& obj : enities )
+   {
+      if( obj->type == ENTITY_TYPE::PLAYER )
+      {
+         player = static_cast<Player_t*>(obj.get());
+      }
+   }
+
+   assert( player != nullptr );
+
    for ( auto& obj : enities )
    {
       if ( obj->type == ENTITY_TYPE::ENEMY )
       {
-         static_cast<NpcEnemy_t*>( obj.get() )->handleNpcMovement();
+         static_cast<NpcEnemy_t*>( obj.get() )->handleNpcMovement( player );
       }
    }
 }

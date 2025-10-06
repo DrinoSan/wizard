@@ -17,6 +17,7 @@ Player_t::Player_t()
    frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
                 static_cast<float>( playerTexture.height / 54 ) };
 
+   type          = ENTITY_TYPE::PLAYER;
    hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
    currentFrame  = 0;
    framesCounter = 0;
@@ -38,6 +39,7 @@ Player_t::Player_t( Vector2 pos )
    frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
                 static_cast<float>( playerTexture.height / 54 ) };
 
+   type          = ENTITY_TYPE::PLAYER;
    hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
    currentFrame  = 0;
    framesCounter = 0;

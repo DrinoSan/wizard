@@ -197,29 +197,6 @@ bool NpcEnemy_t::handleNpcMovement( Player_t* player )
    {
       goDown();
    }
-   //switch ( distrib( gen ) )
-   //{
-   //case 0:
-   //{
-   //   goRight();
-   //   break;
-   //}
-   //case 1:
-   //{
-   //   goLeft();
-   //   break;
-   //}
-   //case 2:
-   //{
-   //   goUp();
-   //   break;
-   //}
-   //case 3:
-   //{
-   //   goDown();
-   //   break;
-   //}
-   //}
 
    return true;
 }

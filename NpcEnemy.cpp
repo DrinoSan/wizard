@@ -4,7 +4,7 @@
 #include "events/KeyEvent.h"
 
 //-----------------------------------------------------------------------------
-NpcEnemy_t::NpcEnemy_t()
+NpcEnemy_t::NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding ) : path{ std::move( pathFinding ) }
 {
    playerPosition = { ( float ) screenWidth / 2, ( float ) screenHeight / 2 };
 
@@ -197,6 +197,8 @@ bool NpcEnemy_t::handleNpcMovement( Player_t* player )
    {
       goDown();
    }
+
+   pathFindingStrategy();
 
    return true;
 }

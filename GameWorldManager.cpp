@@ -123,7 +123,7 @@ void GameWorldManager_t::prepareManager()
    for ( int32_t i = 0; i < numEnemies; ++i )
    {
       // INIT ENEMIES
-      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>() );
+      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>( std::make_unique<A_StarStrategy_t>() ) );
       static_cast<NpcEnemy_t*>( enemy.get() )
           ->registerOnEventCallback( [ this ]( Event_t& e )
                                      { this->onEvent( e ); } );

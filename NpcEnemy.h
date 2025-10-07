@@ -9,17 +9,17 @@
 
 // Project Headers
 #include "Entity.h"
-#include "Player.h"
 #include "Globals.h"
 #include "Graphic.h"
+#include "PathFindingStrategy.h"
+#include "Player.h"
 #include "events/KeyEvent.h"
-#include "PathFinding.h"
 
-class NpcEnemy_t : public Graphic_t, public Entity_t, public PathFinding_t
+class NpcEnemy_t : public Graphic_t, public Entity_t
 {
  public:
-   NpcEnemy_t();
-   NpcEnemy_t( Vector2 pos );
+   explicit NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding );
+   explicit NpcEnemy_t( Vector2 pos );
 
    virtual ~NpcEnemy_t() = default;
 
@@ -37,11 +37,14 @@ class NpcEnemy_t : public Graphic_t, public Entity_t, public PathFinding_t
    void registerOnEventCallback( std::function<void( Event_t& )> callback );
    std::function<void( Event_t& )> onEventCallback;
 
-   // PathFinding
-
-   void pathFindingStrategy( /*...*/ ) const override
-   {}
+   // PathFinding for npc
+   void pathFindingStrategy( /*...*/ ) const
+   {
+      path->findPath( *this /*...*/ );   // Delegating to strategy class
+   }
 
    // Entity specifics
    void update() override;
+
+   std::unique_ptr<PathFindingStrategy_t> path;
 };

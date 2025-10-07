@@ -1,16 +1,21 @@
 #pragma once
+// System Headers
 #include <cstdint>
 #include <functional>
 
+// Raylib Headers
+#include "raylib.h"
+#include "raymath.h"
+
+// Project Headers
 #include "Entity.h"
 #include "Player.h"
 #include "Globals.h"
 #include "Graphic.h"
 #include "events/KeyEvent.h"
-#include "raylib.h"
-#include "raymath.h"
+#include "PathFinding.h"
 
-class NpcEnemy_t : public Graphic_t, public Entity_t
+class NpcEnemy_t : public Graphic_t, public Entity_t, public PathFinding_t
 {
  public:
    NpcEnemy_t();
@@ -25,20 +30,17 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
    void goUp( float movement = PLAYER_MOVEMENT_SPEED );
    void goDown( float movement = PLAYER_MOVEMENT_SPEED );
 
-   int32_t ANIMATION_WALK_UP_Y;
-   int32_t ANIMATION_WALK_LEFT_Y;
-   int32_t ANIMATION_WALK_DOWN_Y;
-   int32_t ANIMATION_WALK_RIGHT_Y;
-   int     currentFrame  = 0;
-   int     framesCounter = 0;
-   int     framesSpeed   = 16;   // Number of spritesheet frames shown by second
-
    void draw() override;
    bool handleMovement( KeyPressedEvent_t& e ) override;
    bool handleNpcMovement( Player_t* player );
    void onEvent( Event_t& e ) override;
    void registerOnEventCallback( std::function<void( Event_t& )> callback );
    std::function<void( Event_t& )> onEventCallback;
+
+   // PathFinding
+
+   void pathFindingStrategy( /*...*/ ) const override
+   {}
 
    // Entity specifics
    void update() override;

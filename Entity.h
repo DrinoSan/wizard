@@ -57,6 +57,16 @@ class Entity_t
    Vector2     playerPosition;
    Vector2     velocity;
 
+   // Animation stuff
+   int32_t ANIMATION_WALK_UP_Y;
+   int32_t ANIMATION_WALK_LEFT_Y;
+   int32_t ANIMATION_WALK_DOWN_Y;
+   int32_t ANIMATION_WALK_RIGHT_Y;
+   int     currentFrame  = 0;
+   int     framesCounter = 0;
+   int     framesSpeed   = 16;   // Number of spritesheet frames shown by second
+
+
    // Player/NPC related stuff
    int32_t attackRange;
    int32_t attackSpeed;

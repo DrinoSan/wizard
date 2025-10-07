@@ -23,14 +23,6 @@ class Player_t : public Graphic_t, public Entity_t
    void goUp( float movement = PLAYER_MOVEMENT_SPEED );
    void goDown( float movement = PLAYER_MOVEMENT_SPEED );
 
-   int32_t   ANIMATION_WALK_UP_Y;
-   int32_t   ANIMATION_WALK_LEFT_Y;
-   int32_t   ANIMATION_WALK_DOWN_Y;
-   int32_t   ANIMATION_WALK_RIGHT_Y;
-   int       currentFrame  = 0;
-   int       framesCounter = 0;
-   int       framesSpeed = 8;   // Number of spritesheet frames shown by second
-
    void draw() override;
 	bool handleMovement( KeyPressedEvent_t& e ) override;
 	void onEvent( Event_t& e ) override;

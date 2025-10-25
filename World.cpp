@@ -1,5 +1,8 @@
-#include "World.h"
+#include <ranges>
+
 #include "Globals.h"
+#include "World.h"
+#include "log.h"
 
 // ----------------------------------------------------------------------------
 void World_t::loadTileLayoutAndTileMap()
@@ -53,6 +56,8 @@ void World_t::updateTiles()
 {
    float tileWidth =
        screenWidth / 30;   // @TODO: Take size (30) from metdata in xml file
+                           // @TODO: Also add dimensions to the world so i can
+                           // use that for creating the grid map
    float tileHeight =
        screenHeight / 20;   // @TODO: Take size (20) from metdata in xml file
 
@@ -76,7 +81,7 @@ void World_t::updateTiles()
       tileDest.width  = tileWidth;
       tileDest.height = tileHeight;
 
-      worldMap.push_back( { tileType, indexInSrc, tileSrc, tileDest } );
+      worldMap.push_back( { tileType, indexInSrc, tileSrc, tileDest, i } );
 
       if ( tileType == TileType_t::COLLISION )
       {
@@ -100,8 +105,15 @@ void World_t::draw()
          DrawRectangleLines( tile.tileDest.x, tile.tileDest.y,
                              tile.tileDest.width, tile.tileDest.height, RED );
       }
+
 #endif
    }
+}
+
+// ----------------------------------------------------------------------------
+void World_t::initGrid()
+{
+   grid = Grid_t( worldMap );
 }
 
 // ----------------------------------------------------------------------------
@@ -110,4 +122,79 @@ void World_t::preapreWorld()
    // Map related stuff
    loadTileLayoutAndTileMap();
    updateTiles();
+   initGrid();
+}
+
+// ----------------------------------------------------------------------------
+Grid_t::Grid_t( const std::vector<Tile_t>& tiles )
+{
+   printStringln( "Init game grid path finding algorithms" );
+   flatGrid = tiles;
+
+   for ( int32_t i = 0; i < 20; ++i )
+   {
+      gridMap.push_back( std::vector<GridElement_t>() );
+      for ( int32_t j = 0; j < 30; ++j )
+      {
+         // To get from a 1d vec to a 2d vec i = row, 30 == max columns, j =
+         // column
+         auto tile = tiles[ i * 30 + j ];
+         gridMap[ i ].push_back( GridElement_t(
+             { static_cast<float>( i ), static_cast<float>( j ) },
+             tile.tileType == TileType_t::COLLISION ? true : false, tile.i ) );
+      }
+   }
+
+   // clang-format off
+   std::vector<std::pair<int32_t, int32_t>> goToPossibleNeighbours{
+       { -1, -1 },  { -1, 0 },  { -1, 1 },
+       { 0, -1  },  { 0, 0  },  { 0, 1  },
+       { 1, -1  },  { 1, 0  },  { 1, 1  } };
+   // clang-format on
+
+   auto fillNeighbours = [ & ]( int32_t y, int32_t x )
+   {
+      std::pair<int32_t, int32_t> currentPosition{ y, x };
+      int32_t                     idx{ 0 };
+      for ( const auto& pair : goToPossibleNeighbours )
+      {
+         if ( currentPosition.first + pair.first < 0 )
+         {
+            ++idx;
+            continue;
+         }
+
+         if ( currentPosition.second + pair.second < 0 )
+         {
+            ++idx;
+            continue;
+         }
+
+         if ( currentPosition.first + pair.first >= gridMap.size() )
+         {
+            ++idx;
+            continue;
+         }
+
+         if ( currentPosition.second + pair.second >= gridMap[ y ].size() )
+         {
+            ++idx;
+            continue;
+         }
+
+         gridMap[ currentPosition.first ][ currentPosition.second ]
+             .neighbours[ idx ] =
+             &gridMap[ currentPosition.first + pair.first ]
+                     [ currentPosition.second + pair.second ];
+         ++idx;
+      }
+   };
+
+   for ( int32_t i = 0; i < gridMap.size(); ++i )
+   {
+      for ( int32_t j = 0; j < gridMap[ 0 ].size(); ++j )
+      {
+         fillNeighbours( i, j );
+      }
+   }
 }

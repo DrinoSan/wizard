@@ -32,15 +32,17 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
 
    void draw() override;
    bool handleMovement( KeyPressedEvent_t& e ) override;
-   bool handleNpcMovement( Player_t* player );
+   bool handleNpcMovement( Player_t* player, Grid_t& grid, const Vector2& playerGridPosition, const Vector2& npcGridPosition );
+
+   // Event System
    void onEvent( Event_t& e ) override;
    void registerOnEventCallback( std::function<void( Event_t& )> callback );
    std::function<void( Event_t& )> onEventCallback;
 
    // PathFinding for npc
-   void pathFindingStrategy( /*...*/ ) const
+   inline void pathFindingStrategy( Vector2 playerPosition, Grid_t& grid, Vector2 playerGridPosition, Vector2 npcGridPosition ) const
    {
-      path->findPath( *this /*...*/ );   // Delegating to strategy class
+      path->findPath( *this, playerPosition, grid, playerGridPosition, npcGridPosition );   // Delegating to strategy class
    }
 
    // Entity specifics

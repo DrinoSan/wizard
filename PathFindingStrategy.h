@@ -1,4 +1,7 @@
-#include "NpcEnemy.h"
+#pragma once
+
+#include "World.h"
+#include "raylib.h"
 
 //-----------------------------------------------------------------------------
 // Forward declaration
@@ -12,7 +15,7 @@ class PathFindingStrategy_t
    virtual ~PathFindingStrategy_t() = default;
 
    // PathFinding virtual to be used as strategy pattern
-   virtual void findPath( const NpcEnemy_t& npc /*...*/ ) const = 0;
+   virtual void findPath( const NpcEnemy_t& npc,  Vector2 playerPosition, const Grid_t& grid, Vector2 playerGridPosition, Vector2 npcGridPosition  ) const = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -21,8 +24,5 @@ class A_StarStrategy_t : public PathFindingStrategy_t
  public:
    virtual ~A_StarStrategy_t() {}
 
-   inline void findPath( const NpcEnemy_t& npc /*...*/ ) const override
-   {
-      std::cout << "Find path via A*" << std::endl;
-   }
+   void findPath( const NpcEnemy_t& npc, Vector2 playerPosition, const Grid_t& grid, Vector2 playerGridPosition, Vector2 npcGridPosition  ) const override;
 };

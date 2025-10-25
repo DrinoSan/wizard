@@ -168,7 +168,7 @@ bool NpcEnemy_t::handleMovement( KeyPressedEvent_t& e )
 }
 
 //-----------------------------------------------------------------------------
-bool NpcEnemy_t::handleNpcMovement( Player_t* player )
+bool NpcEnemy_t::handleNpcMovement( Player_t* player, Grid_t& grid, const Vector2& playerGridPosition, const Vector2& npcGridPosition )
 {
    ++framesCounter;
 
@@ -198,7 +198,12 @@ bool NpcEnemy_t::handleNpcMovement( Player_t* player )
       goDown();
    }
 
-   pathFindingStrategy();
+   // Not a fan of the name
+   // This whole method should beforehand calculate the closest human player and target him,
+   // Currently i pass player.
+   // @TODO
+
+   pathFindingStrategy( player->playerPosition, grid, playerGridPosition,  npcGridPosition );
 
    return true;
 }

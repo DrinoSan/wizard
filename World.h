@@ -4,16 +4,48 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 // Project Headers
 #include "Graphic.h"
 #include "Tile.h"
 #include "raylib.h"
 
+using worldMapContainer_t = std::vector<Tile_t>;
+
+// ----------------------------------------------------------------------------
+class GridElement_t
+{
+ public:
+   GridElement_t( const Vector2& position_, bool isWakable_, int32_t idx )
+       : position{ position_ }, isWakable{ isWakable_ }, idxInFlatMap{ idx } {};
+
+   Vector2 position;
+   bool    isWakable;
+   int32_t idxInFlatMap;
+
+   std::array<GridElement_t*, 8> neighbours;
+   GridElement_t* predecessor;
+};
+
+using gridMap2D_t         = std::vector<std::vector<GridElement_t>>;
+
+// ----------------------------------------------------------------------------
+class Grid_t
+{
+ public:
+   Grid_t() = default;
+   Grid_t( const std::vector<Tile_t>& tiles );
+
+   gridMap2D_t         gridMap;
+   std::vector<Tile_t> flatGrid;
+};
+
+// ----------------------------------------------------------------------------
 class World_t : public Graphic_t
 {
  public:
-   World_t() = default;
+   // World_t()          = default;
    virtual ~World_t() = default;
 
    void draw() override;
@@ -26,8 +58,13 @@ class World_t : public Graphic_t
    void preapreWorld();
 
    // Public to get acces in GameWorldManager
+   // Includes all possible tiles
    std::vector<Tile_t> worldMap{};
+   // Includes only tiles of type COLLISION
    std::vector<Tile_t> worldMapTilesWithCollision{};
+
+   Grid_t grid;
+
  private:
    /// Function to load png files for files and tile map layout
    void loadTileLayoutAndTileMap();
@@ -36,6 +73,8 @@ class World_t : public Graphic_t
    /// Currently this function is called only once to initialize everything but
    /// maybe later it can be used for dynamic map updates
    void updateTiles();
+
+   void initGrid();
 
    // tileMapPNG contains each single tile packed into one png
    // One tile has 16x16 dimensions

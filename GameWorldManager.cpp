@@ -123,7 +123,8 @@ void GameWorldManager_t::prepareManager()
    for ( int32_t i = 0; i < numEnemies; ++i )
    {
       // INIT ENEMIES
-      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>( std::make_unique<A_StarStrategy_t>() ) );
+      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>(
+          std::make_unique<A_StarStrategy_t>() ) );
       static_cast<NpcEnemy_t*>( enemy.get() )
           ->registerOnEventCallback( [ this ]( Event_t& e )
                                      { this->onEvent( e ); } );
@@ -137,9 +138,9 @@ void GameWorldManager_t::executeNpcMovements()
    Player_t* player = nullptr;
    for ( auto& obj : enities )
    {
-      if( obj->type == ENTITY_TYPE::PLAYER )
+      if ( obj->type == ENTITY_TYPE::PLAYER )
       {
-         player = static_cast<Player_t*>(obj.get());
+         player = static_cast<Player_t*>( obj.get() );
       }
    }
 
@@ -149,7 +150,37 @@ void GameWorldManager_t::executeNpcMovements()
    {
       if ( obj->type == ENTITY_TYPE::ENEMY )
       {
-         static_cast<NpcEnemy_t*>( obj.get() )->handleNpcMovement( player );
+         // @TODO: refactor this when A* algo works
+         Vector2 npcGridPosition;
+         {
+            float tileWidth  = world->worldMap[ 0 ].tileDest.width;
+            float tileHeight = world->worldMap[ 0 ].tileDest.height;
+
+            float adjustedX = obj->playerPosition.x;
+            float adjustedY = obj->playerPosition.y;
+
+            float row         = static_cast<float>( adjustedY / tileHeight );
+            float col         = static_cast<float>( adjustedX / tileWidth );
+            npcGridPosition.x = col;
+            npcGridPosition.y = row;
+         }
+
+         Vector2 playerGridPosition;
+         {
+            float tileWidth  = world->worldMap[ 0 ].tileDest.width;
+            float tileHeight = world->worldMap[ 0 ].tileDest.height;
+
+            float adjustedX = player->playerPosition.x;
+            float adjustedY = player->playerPosition.y;
+
+            // Calculate row and column
+            float row            = static_cast<float>( adjustedY / tileHeight );
+            float col            = static_cast<float>( adjustedX / tileWidth );
+            playerGridPosition.x = col;
+            playerGridPosition.y = row;
+         }
+         static_cast<NpcEnemy_t*>( obj.get() )
+             ->handleNpcMovement( player, world->grid, playerGridPosition, npcGridPosition );
       }
    }
 }

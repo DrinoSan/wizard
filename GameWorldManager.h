@@ -27,6 +27,7 @@ class GameWorldManager_t
       for ( auto& obj : enities )
       {
          obj->update();
+         obj->draw();
       }
    }
 

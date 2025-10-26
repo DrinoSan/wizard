@@ -1,182 +1,217 @@
 #include "Player.h"
 #include "events/KeyEvent.h"
-#include <iostream>
 
 //-----------------------------------------------------------------------------
-Player_t::Player_t()
+Player_t* player_create()
 {
-   playerPosition = { ( float ) screenWidth / 2, ( float ) screenHeight / 2 };
+   Player_t* player = malloc( sizeof( Player_t ) );
+   if ( player == NULL )
+   {
+      printf( "Could not allocate space for Player\n" );
+      return NULL;
+   }
 
-   playerTexture         = LoadTexture( "spritesheets/wizard01.png" );
-   ANIMATION_WALK_UP_Y   = static_cast<float>( playerTexture.height / 54 ) * 8;
-   ANIMATION_WALK_LEFT_Y = static_cast<float>( playerTexture.height / 54 ) * 9;
-   ANIMATION_WALK_DOWN_Y = static_cast<float>( playerTexture.height / 54 ) * 10;
-   ANIMATION_WALK_RIGHT_Y =
-       static_cast<float>( playerTexture.height / 54 ) * 11;
+   Vector2 pos = { ( float ) screenWidth / 2, ( float ) screenHeight / 2 };
+   Entity* entity = entity_create( ENTITY_TYPE_PLAYER, pos.x, pos.y, SPRITE_PATH,
+                                   player_update, player_draw, player_on_event, player_str );
 
-   frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
-                static_cast<float>( playerTexture.height / 54 ) };
+   if ( !entity )
+   {
+      free( player );
+      return NULL;
+   }
 
-   type          = ENTITY_TYPE::PLAYER;
-   hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
-   currentFrame  = 0;
-   framesCounter = 0;
-   framesSpeed   = 8;   // Number of spritesheet frames shown by second
+   player->base = *entity;
+
+   free( entity );
+   return player;
 }
 
 //-----------------------------------------------------------------------------
-Player_t::Player_t( Vector2 pos )
+void player_free( Player_t* player )
 {
-   playerPosition = { pos.x, pos.y };
-
-   playerTexture         = LoadTexture( "spritesheets/wizard01.png" );
-   ANIMATION_WALK_UP_Y   = static_cast<float>( playerTexture.height / 54 ) * 8;
-   ANIMATION_WALK_LEFT_Y = static_cast<float>( playerTexture.height / 54 ) * 9;
-   ANIMATION_WALK_DOWN_Y = static_cast<float>( playerTexture.height / 54 ) * 10;
-   ANIMATION_WALK_RIGHT_Y =
-       static_cast<float>( playerTexture.height / 54 ) * 11;
-
-   frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
-                static_cast<float>( playerTexture.height / 54 ) };
-
-   type          = ENTITY_TYPE::PLAYER;
-   hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
-   currentFrame  = 0;
-   framesCounter = 0;
-   framesSpeed   = 8;   // Number of spritesheet frames shown by second
+   if ( player )
+   {
+      entity_free( ( Entity* ) player );
+   }
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::goRight( float movement )
+void player_go_Right( Player_t* player, float movement )
 {
    // playerPosition.x += movement;
-   velocity.x += movement;
+   player->base.velocity.x += movement;
 
-   if ( framesCounter >= ( 60 / framesSpeed ) )
+   if ( player->base.frames_counter >= ( 60 / player->base.frames_speed ) )
    {
-      framesCounter = 0;
-      currentFrame++;
+      player->base.frames_counter = 0;
+      player->base.current_frame++;
 
-      if ( currentFrame > 8 )
-         currentFrame = 0;
+      if ( player->base.current_frame > 8 )
+         player->base.current_frame = 0;
 
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_RIGHT_Y;
+      player->base.frame_rec.x = ( float ) player->base.current_frame *
+                                 ( float ) player->base.texture.width / 13;
+      frame_rec.y = ANIMATION_WALK_RIGHT_Y;
    }
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::goLeft( float movement )
+void player_go_Left( Player_t* player, float movement )
 {
    // playerPosition.x -= movement;
-   velocity.x -= movement;
+   player->base.velocity.x -= movement;
 
-   if ( framesCounter >= ( 60 / framesSpeed ) )
+   if ( player->base.frames_counter >= ( 60 / player->base.frames_speed ) )
    {
-      framesCounter = 0;
-      currentFrame++;
+      player->base.frames_counter = 0;
+      player->base.current_frame++;
 
-      if ( currentFrame > 8 )
-         currentFrame = 0;
+      if ( player->base.current_frame > 8 )
+         player->base.current_frame = 0;
 
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_LEFT_Y;
+      player->base.frame_rec.x = ( float ) player->base.current_frame *
+                                 ( float ) player->base.texture.width / 13;
+      player->base.frame_rec.y = ANIMATION_WALK_LEFT_Y;
    }
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::goUp( float movement )
+void player_go_Up( Player_t* player, float movement )
 {
    // playerPosition.y -= movement;
-   velocity.y -= movement;
+   player->base.velocity.y -= movement;
 
-   if ( framesCounter >= ( 60 / framesSpeed ) )
+   if ( player->base.frames_counter >= ( 60 / player->base.frames_speed ) )
    {
-      framesCounter = 0;
-      currentFrame++;
+      player->base.frames_counter = 0;
+      player->base.current_frame++;
 
-      if ( currentFrame > 8 )
-         currentFrame = 0;
+      if ( player->base.current_frame > 8 )
+         player->base.current_frame = 0;
 
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_UP_Y;
+      player->base.frame_rec.x = ( float ) player->base.current_frame *
+                                 ( float ) player->base.texture.width / 13;
+      player->base.frame_rec.y = ANIMATION_WALK_UP_Y;
    }
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::goDown( float movement )
+void player_go_Down( Player_t* player, float movement )
 {
    // playerPosition.y += movement;
-   velocity.y += movement;
+   player->base.velocity.y += movement;
 
-   if ( framesCounter >= ( 60 / framesSpeed ) )
+   if ( player->base.frames_counter >= ( 60 / player->base.frames_speed ) )
    {
-      framesCounter = 0;
-      currentFrame++;
+      player->base.frames_counter = 0;
+      player->base.current_frame++;
 
-      if ( currentFrame > 8 )
-         currentFrame = 0;
+      if ( player->base.current_frame > 8 )
+         player->base.current_frame = 0;
 
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_DOWN_Y;
+      player->base.frame_rec.x = ( float ) player->base.current_frame *
+                                 ( float ) player->base.texture.width / 13;
+      player->base.frame_rec.y = ANIMATION_WALK_DOWN_Y;
    }
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::draw()
+static void player_draw( void* player )
 {
-   // DrawTextureRec( playerTexture, frameRec, playerPosition,
+   Player_t* p = ( Player_t* ) player;
+   // DrawTextureRec( texture, frame_rec, playerPosition,
    // WHITE );   // Draw part of the texture
-   DrawTexturePro( playerTexture, frameRec,
-                   { playerPosition.x, playerPosition.y, 40, 40 }, { 0, 0 }, 0,
+   DrawTexturePro( p->base.texture, p->base.frame_rec,
+                   { p->base.pos.x, p->base.pos.y, 40, 40 }, { 0, 0 }, 0,
                    WHITE );
 #ifdef DEBUG
-   DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
+   DrawRectangleLines( p->base.pos.x + 10, p->base.pos.y, 20, 40, RED );
 #endif
+
+   // Important to reset otherwise we become buz lightyear
+   p->base.velocity.x = 0;
+   p->base.velocity.y = 0;
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::onEvent( Event_t& e )
+static void player_on_event( Player_t* player, Event_t* e )
 {
-   EventDispatcher_t dispatcher( e );
-   dispatcher.Dispatch<KeyPressedEvent_t>( BIND_EVENT_FN( Player_t::handleMovement ) );
+   EventDispatcher_t dispatcher;
+   event_dispatcher_init( &dispatcher, e );
+
+   event_dispatcher_dispatch( &dispatcher, EVENT_KEY_PRESSED,
+                              player_handle_movement, player );
 }
 
 //-----------------------------------------------------------------------------
-bool Player_t::handleMovement( KeyPressedEvent_t& e )
+static bool player_handle_movement( void* event, void* player )
 {
-   ++framesCounter;
-   if ( e.getKeyCode() == KEY_D )
+   Player_t*        p = ( Player_t* ) player;
+   KeyPressedEvent* e = ( KeyPressedEvent* ) event;
+   printf( "Player handling KeyPressedEvent: key_code=%d\n", e->key_code );
+
+   p->base.frames_counter++;
+   if ( e->key_code == KEY_D )
    {
-      goRight();
+      player_go_right( p );
    }
-   if ( e.getKeyCode() == KEY_A )
+   if ( e->key_code == KEY_A )
    {
-      goLeft();
+      player_go_left( p );
    }
-   if ( e.getKeyCode() == KEY_W )
+   if ( e->key_code == KEY_W )
    {
-      goUp();
+      player_go_up( p );
    }
-   if ( e.getKeyCode() == KEY_S )
+   if ( e->key_code == KEY_S )
    {
-      goDown();
+      player_go_down( p );
    }
 
    return true;
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::update()
+static char* player_str( void* player )
 {
-   playerPosition.x += velocity.x;
-   playerPosition.y += velocity.y;
+   Player* p   = ( Player* ) player;
+   char*   str = malloc( 256 );
+   if ( !str )
+      return NULL;
+   snprintf(
+       str, 256,
+       "Player Debug Info:\n"
+       "  Type: %s\n"
+       "  Frame Rectangle: { x: %.1f, y: %.1f, width: %.1f, height: %.1f }\n"
+       "  Hitbox: { x: %.1f, y: %.1f, width: %.1f, height: %.1f }\n"
+       "  Texture: { width: %d, height: %d, id: %u }\n"
+       "  Position: { x: %.1f, y: %.1f }\n"
+       "  Velocity: { x: %.1f, y: %.1f }\n"
+       "  Current Frame: %d\n",
+       entity_type_to_string( p->base.type ), p->base.frame_rec.x,
+       p->base.frame_rec.y, p->base.frame_rec.width, p->base.frame_rec.height,
+       p->base.hitbox.x, p->base.hitbox.y, p->base.hitbox.width,
+       p->base.hitbox.height, p->base.texture.width, p->base.texture.height,
+       p->base.texture.id, p->base.pos.x, p->base.pos.y, p->base.velocity.x,
+       p->base.velocity.y, p->base.current_frame );
+   return str;
+}
+
+//-----------------------------------------------------------------------------
+static void player_update( void* p )
+{
+   Player_t* player = ( Player_t* ) p;
+   player->base.pos.x += player->base.velocity.x;
+   player->base.pos.y += player->base.velocity.y;
 
    // Need to update the hitbox on each update
-   hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
-   draw();
+   player->base.hitbox = { player->base.pos.x + 10, player->base.pos.y, 20,
+                           40 };
+   // player_draw( player );
 
    // Important to reset otherwise we become buz lightyear
-   velocity.x = 0;
-   velocity.y = 0;
+   // This should be done in the draw function
+   // player->base.velocity.x = 0;
+   // player->base.velocity.y = 0;
 }

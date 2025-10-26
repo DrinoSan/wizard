@@ -1,32 +1,30 @@
 #pragma once
 #include <cstdint>
 
-#include "Globals.h"
 #include "Entity.h"
+#include "Globals.h"
 #include "Graphic.h"
-#include "raylib.h"
 #include "events/KeyEvent.h"
+#include "raylib.h"
 
-
-class Player_t : public Graphic_t, public Entity_t
+typedef struct
 {
- public:
-   Player_t();
-   Player_t( Vector2 pos );
+   Entity_t entity;
+} Player_t;
 
-   virtual ~Player_t() = default;
+//-----------------------------------------------------------------------------
+Player_t* Player_t_create( EntityType type, float x, float y,
+                           const char* sprite_path, EntityUpdateFn update,
+                           EntityHandleEventFn    on_event,
+                           EntityHandleMovementFn handle_movement,
+                           EntityStrFn            str );
 
-   // Movements
-   // Moves Player and texture rectangle
-   void goRight( float movement = PLAYER_MOVEMENT_SPEED );
-   void goLeft( float movement = PLAYER_MOVEMENT_SPEED );
-   void goUp( float movement = PLAYER_MOVEMENT_SPEED );
-   void goDown( float movement = PLAYER_MOVEMENT_SPEED );
+//-----------------------------------------------------------------------------
+void player_free( Entity_t* entity );
 
-   void draw() override;
-	bool handleMovement( KeyPressedEvent_t& e ) override;
-	void onEvent( Event_t& e ) override;
+//-----------------------------------------------------------------------------
+void player_go_Right( Player_t* player, float movement = PLAYER_MOVEMENT_SPEED );
+void player_go_Left( Player_t* player, float movement = PLAYER_MOVEMENT_SPEED );
+void player_go_Up( Player_t* player, float movement = PLAYER_MOVEMENT_SPEED );
+void player_go_Down( Player_t* player, float movement = PLAYER_MOVEMENT_SPEED );
 
-   // Entity specifics
-   void update() override;
-};

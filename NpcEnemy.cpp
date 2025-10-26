@@ -4,223 +4,129 @@
 #include "events/KeyEvent.h"
 
 //-----------------------------------------------------------------------------
-NpcEnemy_t::NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding ) : path{ std::move( pathFinding ) }
+NpcEnemy_t* npc_enemy_create()
 {
-   playerPosition = { ( float ) screenWidth / 2, ( float ) screenHeight / 2 };
-
-   playerTexture         = LoadTexture( "spritesheets/wizard01.png" );
-   ANIMATION_WALK_UP_Y   = static_cast<float>( playerTexture.height / 54 ) * 8;
-   ANIMATION_WALK_LEFT_Y = static_cast<float>( playerTexture.height / 54 ) * 9;
-   ANIMATION_WALK_DOWN_Y = static_cast<float>( playerTexture.height / 54 ) * 10;
-   ANIMATION_WALK_RIGHT_Y =
-       static_cast<float>( playerTexture.height / 54 ) * 11;
-
-   frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
-                static_cast<float>( playerTexture.height / 54 ) };
-
-   type          = ENTITY_TYPE::ENEMY;
-   hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
-   currentFrame  = 0;
-   framesCounter = 0;
-   framesSpeed   = 8;   // Number of spritesheet frames shown by second
-}
-
-//-----------------------------------------------------------------------------
-NpcEnemy_t::NpcEnemy_t( Vector2 pos )
-{
-   playerPosition = { pos.x, pos.y };
-
-   playerTexture         = LoadTexture( "spritesheets/wizard01.png" );
-   ANIMATION_WALK_UP_Y   = static_cast<float>( playerTexture.height / 54 ) * 8;
-   ANIMATION_WALK_LEFT_Y = static_cast<float>( playerTexture.height / 54 ) * 9;
-   ANIMATION_WALK_DOWN_Y = static_cast<float>( playerTexture.height / 54 ) * 10;
-   ANIMATION_WALK_RIGHT_Y =
-       static_cast<float>( playerTexture.height / 54 ) * 11;
-
-   frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
-                static_cast<float>( playerTexture.height / 54 ) };
-
-   type          = ENTITY_TYPE::ENEMY;
-   hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
-   currentFrame  = 0;
-   framesCounter = 0;
-   framesSpeed   = 8;   // Number of spritesheet frames shown by second
-}
-
-//-----------------------------------------------------------------------------
-void NpcEnemy_t::goRight( float movement )
-{
-   // playerPosition.x += movement;
-   //velocity.x += movement;
-
-   if ( framesCounter >= ( 60 / framesSpeed ) )
+   NpcEnemy_t* npc = malloc( sizeof( NpcEnemy_t ) );
+   if ( npc == NULL )
    {
-      framesCounter = 0;
-      currentFrame++;
+      printf( "Could not allocate space for NPC\n" );
+   }
 
-      if ( currentFrame > 8 )
-         currentFrame = 0;
+   Vector2 pos = { ( float ) screenWidth / 2, ( float ) screenHeight / 2 };
+   Entity* entity =
+       entity_create( ENTITY_TYPE_ENEMY, pos.x + 20, pos.y + 20, SPRITE_PATH,
+                      npc_enemy_update, npc_enemy_draw, npc_enemy_on_event, npc_enemy_str );
 
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_RIGHT_Y;
+   if ( !entity )
+   {
+      free( npc );
+      return NULL;
+   }
+
+   npc->base = *entity;
+
+   free( entity );
+   return npc;
+}
+
+//-----------------------------------------------------------------------------
+void npc_enemy_free( NpcEnemy_t* npc )
+{
+   if ( npc )
+   {
+      entity_free( ( Entity* ) npc );
    }
 }
 
 //-----------------------------------------------------------------------------
-void NpcEnemy_t::goLeft( float movement )
+bool npc_enemy_handle_movement( NpcEnemy_t* npc, Player_t* player )
 {
-   // playerPosition.x -= movement;
-   //velocity.x -= movement;
-
-   if ( framesCounter >= ( 60 / framesSpeed ) )
+   if ( npc == NULL || player == NULL )
    {
-      framesCounter = 0;
-      currentFrame++;
-
-      if ( currentFrame > 8 )
-         currentFrame = 0;
-
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_LEFT_Y;
-   }
-}
-
-//-----------------------------------------------------------------------------
-void NpcEnemy_t::goUp( float movement )
-{
-   // playerPosition.y -= movement;
-   //velocity.y -= movement;
-
-   if ( framesCounter >= ( 60 / framesSpeed ) )
-   {
-      framesCounter = 0;
-      currentFrame++;
-
-      if ( currentFrame > 8 )
-         currentFrame = 0;
-
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_UP_Y;
-   }
-}
-
-//-----------------------------------------------------------------------------
-void NpcEnemy_t::goDown( float movement )
-{
-   // playerPosition.y += movement;
-   //velocity.y += movement;
-
-   if ( framesCounter >= ( 60 / framesSpeed ) )
-   {
-      framesCounter = 0;
-      currentFrame++;
-
-      if ( currentFrame > 8 )
-         currentFrame = 0;
-
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_DOWN_Y;
-   }
-}
-
-//-----------------------------------------------------------------------------
-void NpcEnemy_t::draw()
-{
-   // DrawTextureRec( playerTexture, frameRec, playerPosition,
-   // WHITE );   // Draw part of the texture
-   DrawTexturePro( playerTexture, frameRec,
-                   { playerPosition.x, playerPosition.y, 40, 40 }, { 0, 0 }, 0,
-                   WHITE );
-#ifdef DEBUG
-   DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
-#endif
-}
-
-//-----------------------------------------------------------------------------
-void NpcEnemy_t::onEvent( Event_t& e )
-{
-   EventDispatcher_t dispatcher( e );
-   dispatcher.Dispatch<KeyPressedEvent_t>(
-       BIND_EVENT_FN( NpcEnemy_t::handleMovement ) );
-}
-
-//-----------------------------------------------------------------------------
-bool NpcEnemy_t::handleMovement( KeyPressedEvent_t& e )
-{
-   if ( e.getKeyCode() == KEY_D )
-   {
-      goRight();
-   }
-   if ( e.getKeyCode() == KEY_A )
-   {
-      goLeft();
-   }
-   if ( e.getKeyCode() == KEY_W )
-   {
-      goUp();
-   }
-   if ( e.getKeyCode() == KEY_S )
-   {
-      goDown();
+      printf( "Npc or player or both are NULL\n" );
+      return false;
    }
 
-   return true;
-}
-
-//-----------------------------------------------------------------------------
-bool NpcEnemy_t::handleNpcMovement( Player_t* player )
-{
-   ++framesCounter;
+   npc->frames_counter++;
 
    // Get Richtungsvektor
    // Get normilized vektor
    // scale it for velocity
-   auto directionVec = Vector2Subtract( player->playerPosition, playerPosition );
-   auto normalizedVec = Vector2Normalize( directionVec );
+   Vector2 directionVec  = Vector2Subtract( player->pos, npc->pos );
+   Vector2 normalizedVec = Vector2Normalize( directionVec );
 
-   velocity.x += normalizedVec.x * 1.5;
-   velocity.y += normalizedVec.y * 1.5;
+   npc->velocity.x += normalizedVec.x * 1.5;
+   npc->velocity.y += normalizedVec.y * 1.5;
 
-   if ( velocity.x > 0 )
+   if ( npc->velocity.x > 0 )
    {
-      goRight();
+      npc->npc_enemy_go_right();
    }
-   if ( velocity.x < 0 )
+   if ( npc->velocity.x < 0 )
    {
-      goLeft();
+      npc->npc_enemy_go_left();
    }
-   if ( velocity.y < 0 )
+   if ( npc->velocity.y < 0 )
    {
-      goUp();
+      npc->npc_enemy_go_up();
    }
-   if ( velocity.y > 0 )
+   if ( npc->velocity.y > 0 )
    {
-      goDown();
+      npc->npc_enemy_go_down();
    }
 
-   pathFindingStrategy();
+   // pathFindingStrategy();
 
    return true;
 }
 
 //-----------------------------------------------------------------------------
-void NpcEnemy_t::update()
+static void npc_enemy_on_event( NpcEnemy_t* npc, Event_t* e )
 {
-   playerPosition.x += velocity.x;
-   playerPosition.y += velocity.y;
+   printf( "Called npc_enemy_on_event\n" );
+   // EventDispatcher_t dispatcher;
+   // event_dispatcher_init( &dispatcher, e );
 
-   // Need to update the hitbox on each update
-   hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
-   draw();
-
-   // Important to reset otherwise we become buz lightyear
-   velocity.x = 0;
-   velocity.y = 0;
+   // event_dispatcher_dispatch( &dispatcher, EVENT_KEY_PRESSED,
+   //                            player_handle_movement, npc );
 }
 
 //-----------------------------------------------------------------------------
-void NpcEnemy_t::registerOnEventCallback(
-    std::function<void( Event_t& )> callback )
+static void npc_enemy_draw( NpcEnemy_t* npc_enemy )
 {
-   onEventCallback = std::move( callback );
+   NpcEnemy_t* npc = (NpcEnemy_t*)npc_enemy;
+   // DrawTextureRec( playerTexture, frameRec, playerPosition,
+   // WHITE );   // Draw part of the texture
+   DrawTexturePro( npc->base.texture, npc->base.frame_rec,
+                   { npc->base.pos.x, npc->base.pos.y, 40, 40 }, { 0, 0 }, 0,
+                   WHITE );
+#ifdef DEBUG
+   DrawRectangleLines( npc->base.pos.x + 10, npc->base.pos.y, 20, 40, RED );
+#endif
+
+   npc->base.velocity.x = 0;
+   npc->base.velocity.y = 0;
 }
+
+//-----------------------------------------------------------------------------
+static void npc_enemy_update( void* npc_enemy )
+{
+   NpcEnemy_t* npc = (NpcEnemy_t*)npc_enemy;
+   npc->base.pos.x += npc->base.velocity.x;
+   npc->base.pos.y += npc->base.velocity.y;
+
+   // Need to update the hitbox on each update
+   npc->base.hitbox = { npc->base.pos.x + 10, npc->base.pos.y, 20, 40 };
+   //npc->npc_enemy_draw( npc );
+
+   // Important to reset otherwise we become buz lightyear
+   // velocity.x = 0;
+   // velocity.y = 0;
+}
+
+//-----------------------------------------------------------------------------
+void npc_enemy_register_on_event_callback( NpcEnemy_t* npc, onEventCallbackFn )
+{
+   npc->onEventCallbackFn = onEventCallbackFn;
+}
+

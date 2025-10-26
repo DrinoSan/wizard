@@ -5,6 +5,8 @@
 #include "events/KeyEvent.h"
 #include "raylib.h"
 
+#define SPRITE_PATH "spritesheets/wizard01.png"
+
 //-----------------------------------------------------------------------------
 enum class ENTITY_TYPE
 {
@@ -15,23 +17,20 @@ enum class ENTITY_TYPE
    ITEM,
 };
 
-//-----------------------------------------------------------------------------
-inline std::string entityTypeToString( ENTITY_TYPE type )
+typedef enum
 {
-   switch ( type )
-   {
-   case ENTITY_TYPE::PLAYER:
-      return "PLAYER";
-   case ENTITY_TYPE::ENEMY:
-      return "ENEMY";
-   case ENTITY_TYPE::ITEM:
-      return "item";
-   case ENTITY_TYPE::STATIC:
-      return "item";
-   default:
-      return "UNKNOWN";
-   }
-}
+   ENTITY_TYPE_PLAYER,
+   ENTITY_TYPE_NPC,
+   ENTITY_TYPE_STATIC,
+   ENTITY_TYPE_ITEM,
+   ENTITY_TYPE_ENEMY
+} ENTITY_TYPE;
+
+typedef void ( *EntityUpdateFn )( void* entity );
+typedef void ( *EntityDrawFn )( void* entity );
+typedef int ( *EntityHandleEventFn )( void* entity, Event* event );
+// typedef int ( *EntityHandleMovementFn )( void* entity, Event* event );
+typedef char* ( *EntityStrFn )( void* entity );
 
 //#define BIND_EVENT_FN( x )                                                     \
 //   std::bind( &this::x, this, std::placeholders::_1 )
@@ -39,56 +38,51 @@ inline std::string entityTypeToString( ENTITY_TYPE type )
 #define BIND_EVENT_FN( fn ) std::bind( &fn, this, std::placeholders::_1 )
 
 //-----------------------------------------------------------------------------
-class Entity_t
+typedef struct
 {
- public:
-   Entity_t()          = default;
-   virtual ~Entity_t() = default;
-
-   virtual void        update()                               = 0;
-   virtual void        onEvent( Event_t& e )                  = 0;
-   virtual bool        handleMovement( KeyPressedEvent_t& e ) = 0;
-   virtual std::string str();
-
-   ENTITY_TYPE type;
-   Rectangle   frameRec;
-   Rectangle   hitbox;
-   Texture2D   playerTexture;
-   Vector2     playerPosition;
-   Vector2     velocity;
+   EntityType type;
+   Vector2    pos;
+   Vector2    velocity;
+   Texture2D  texture;
+   Rectangle  frame_rec;
+   Rectangle  hitbox;
+   int32_t    attack_range;
+   int32_t    attack_speed;
+   int32_t    attack_power;
 
    // Animation stuff
-   int32_t ANIMATION_WALK_UP_Y;
-   int32_t ANIMATION_WALK_LEFT_Y;
-   int32_t ANIMATION_WALK_DOWN_Y;
-   int32_t ANIMATION_WALK_RIGHT_Y;
-   int     currentFrame  = 0;
-   int     framesCounter = 0;
-   int     framesSpeed   = 16;   // Number of spritesheet frames shown by second
+   float animation_walk_up_y;
+   float animation_walk_left_y;
+   float animation_walk_down_y;
+   float animation_walk_right_y;
+   int   current_frame;
+   int   frames_counter;
+   int   frames_speed;
 
-
-   // Player/NPC related stuff
-   int32_t attackRange;
-   int32_t attackSpeed;
-   int32_t attackPower;
-};
+   EntityUpdateFn      update;
+   EntityDrawFn        draw;
+   EntityHandleEventFn on_event;
+   // EntityHandleMovementFn handle_movement;
+   EntityStrFn str;
+} Entity_t;
 
 //-----------------------------------------------------------------------------
-inline std::string Entity_t::str()
-{
-   std::stringstream ss;
-   ss << "Entity Debug Info:\n";
-   ss << "  Type: " << entityTypeToString( type ) << "\n";
-   ss << "  Frame Rectangle: { x: " << frameRec.x << ", y: " << frameRec.y
-      << ", width: " << frameRec.width << ", height: " << frameRec.height
-      << " }\n";
-   ss << "  Hitbox: { x: " << hitbox.x << ", y: " << hitbox.y
-      << ", width: " << hitbox.width << ", height: " << hitbox.height << " }\n";
-   ss << "  Texture: { width: " << playerTexture.width
-      << ", height: " << playerTexture.height << ", id: " << playerTexture.id
-      << " }\n";
-   ss << "  Position: { x: " << playerPosition.x << ", y: " << playerPosition.y
-      << " }\n";
-   ss << "  Velocity: { x: " << velocity.x << ", y: " << velocity.y << " }\n";
-   return ss.str();
-}
+Entity_t* entity_create( EntityType type, float x, float y,
+                         const char* sprite_path, EntityUpdateFn update,
+                         EntityDrawFn draw, EntityHandleEventFn on_event,
+                         // EntityHandleMovementFn handle_movement,
+                         EntityStrFn str );
+
+//-----------------------------------------------------------------------------
+void entity_free( Entity_t* entity );
+
+//-----------------------------------------------------------------------------
+void entity_draw( Entity_t* entity );
+
+//-----------------------------------------------------------------------------
+/// void to be able to call it with player/npc and all others having entity as
+/// base
+char* entity_default_str( void* entity );
+
+//-----------------------------------------------------------------------------
+const char* entity_type_to_string( EntityType type );

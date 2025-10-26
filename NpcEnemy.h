@@ -15,36 +15,17 @@
 #include "Player.h"
 #include "events/KeyEvent.h"
 
-class NpcEnemy_t : public Graphic_t, public Entity_t
+typedef void ( *onEventCallbackFn )( Event_t* e );
+
+typedef struct
 {
- public:
-   explicit NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding );
-   explicit NpcEnemy_t( Vector2 pos );
+   Entity_t          base;
+   onEventCallbackFn npc_enemy_event_callback;
+} NpcEnemy_t;
 
-   virtual ~NpcEnemy_t() = default;
+NpcEnemy_t* npc_create();
+void        npc_free( NpcEnemy_t* npc );
 
-   // Movements
-   // Moves Player and texture rectangle
-   void goRight( float movement = PLAYER_MOVEMENT_SPEED );
-   void goLeft( float movement = PLAYER_MOVEMENT_SPEED );
-   void goUp( float movement = PLAYER_MOVEMENT_SPEED );
-   void goDown( float movement = PLAYER_MOVEMENT_SPEED );
+bool npc_enemy_handle_movement( NpcEnemy_t* npc, Player_t* player );
 
-   void draw() override;
-   bool handleMovement( KeyPressedEvent_t& e ) override;
-   bool handleNpcMovement( Player_t* player );
-   void onEvent( Event_t& e ) override;
-   void registerOnEventCallback( std::function<void( Event_t& )> callback );
-   std::function<void( Event_t& )> onEventCallback;
-
-   // PathFinding for npc
-   void pathFindingStrategy( /*...*/ ) const
-   {
-      path->findPath( *this /*...*/ );   // Delegating to strategy class
-   }
-
-   // Entity specifics
-   void update() override;
-
-   std::unique_ptr<PathFindingStrategy_t> path;
-};
+void npc_enemy_register_on_event_callback( NpcEnemy_t* npc, onEventCallbackFn );

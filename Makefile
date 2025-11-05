@@ -1,28 +1,40 @@
-.PHONY: all clean
+# ------------------------------------------------------------
+#  Makefile for a C + Raylib project
+# ------------------------------------------------------------
+.PHONY: all clean debug
 
-CXX = g++
-CXXFLAGS = -g `pkg-config --cflags raylib` -Wall -std=c++17
-LDFLAGS = `pkg-config --libs raylib` -lpthread -L/opt/homebrew/lib -lglfw
+# ----- Compiler & flags -------------------------------------------------
+CC      = clang                     # C compiler
+CFLAGS  = -g -Wall -Wextra -std=c11 \
+          $(shell pkg-config --cflags raylib)
 
-CPP_FILES := $(wildcard *.cpp)
-OBJ_FILES := $(CPP_FILES:.cpp=.o)
+# Linker flags – same libraries you used for C++ (Raylib pulls in glfw, etc.)
+LDFLAGS = $(shell pkg-config --libs raylib) \
+          -lpthread -L/opt/homebrew/lib -lglfw \
+          -framework CoreFoundation -framework Cocoa \
+          -framework IOKit -framework OpenGL
 
+# ----- Source / object files -------------------------------------------
+C_FILES   := $(wildcard *.c)                     # all .c files
+OBJ_FILES := $(C_FILES:.c=.o)                    # corresponding .o files
+
+# ----- Default target ---------------------------------------------------
 all: wizard
 
-debug: CXXFLAGS += -DDEBUG -g
+# ----- Debug build (adds -DDEBUG and -g) --------------------------------
+debug: CFLAGS += -DDEBUG -g
 debug: wizard
 
+# ----- Main executable --------------------------------------------------
 wizard: $(OBJ_FILES)
-	$(CXX) $(OBJ_FILES) $(LDFLAGS) -o $@
+	$(CC) $(OBJ_FILES) $(LDFLAGS) -o $@
 
-%.o : %.cpp
-	$(CXX) -c $(CXXFLAGS) $< -o $@
+# ----- Object file rule -------------------------------------------------
+%.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@
 
-collisionCreator: CollisionLayoutCreator.o
-	$(CXX) CollisionLayoutCreator.o -o bin/$@
+# ----- Optional helper: CollisionLayoutCreator (still C) ---------------
 
-CollisionLayoutCreator.o: utils/CollisionLayoutCreator.cpp
-	$(CXX) -c $< -o $@
-
+# ----- Clean ------------------------------------------------------------
 clean:
-	rm -f *.o wizard collisionCreator
+	rm -f *.o wizard collisionCreator bin/collisionCreator

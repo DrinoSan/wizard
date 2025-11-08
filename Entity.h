@@ -13,6 +13,10 @@ typedef enum
    ENTITY_TYPE_ITEM,
 } ENTITY_TYPE;
 
+
+//-----------------------------------------------------------------------------
+typedef void (*EntityUpdateFn)(void*);
+
 //-----------------------------------------------------------------------------
 typedef struct
 {
@@ -38,7 +42,7 @@ typedef struct
    int   frames_counter;
    int   frames_speed;
 
-   // EntityUpdateFn      update;
+   EntityUpdateFn      update;
    // EntityDrawFn        draw;
    // EntityHandleEventFn on_event;
    // EntityStrFn str;
@@ -51,7 +55,7 @@ typedef struct
 //                         // EntityHandleMovementFn handle_movement,
 //                         EntityStrFn str );
 Entity_t* entity_create( ENTITY_TYPE type, float x, float y,
-                         const char* sprite_path );
+                         const char* sprite_path, EntityUpdateFn updateFN );
 
 //-----------------------------------------------------------------------------
 void entity_free( Entity_t* entity );

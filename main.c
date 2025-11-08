@@ -42,11 +42,41 @@ int main()
    while ( !WindowShouldClose() )   // Detect window close button or ESC key
    {
       // Update
+      //----------------------------------------------------------------------------------
+      if ( IsKeyDown( KEY_Q ) )
+      {
+         break;
+      }
+      if ( IsKeyDown( KEY_D ) )
+      {
+         player_go_right( player );
+         //KeyPressedEvent_t event( KEY_D );
+         //gameWorldManager.onEvent( event );
+      }
+      if ( IsKeyDown( KEY_A ) )
+      {
+         player_go_left( player );
+         //KeyPressedEvent_t event( KEY_A );
+         //gameWorldManager.onEvent( event );
+      }
+      if ( IsKeyDown( KEY_W ) )
+      {
+         player_go_up( player );
+         //KeyPressedEvent_t event( KEY_W );
+         //gameWorldManager.onEvent( event );
+      }
+      if ( IsKeyDown( KEY_S ) )
+      {
+         player_go_down( player );
+         //KeyPressedEvent_t event( KEY_S );
+         //gameWorldManager.onEvent( event );
+      }
       // Draw
       //----------------------------------------------------------------------------------
       BeginDrawing();
 
-      entity_draw( player );
+      player->base.update(player);
+      //entity_draw( player );
 
       ClearBackground( RAYWHITE );
 

@@ -15,7 +15,7 @@ Player_t* player_create( ENTITY_TYPE type, float x, float y,
 void player_free( Entity_t* entity );
 
 //-----------------------------------------------------------------------------
-void player_go_Right( Player_t* player );
-void player_go_Left( Player_t* player );
-void player_go_Up( Player_t* player );
-void player_go_Down( Player_t* player );
+void player_go_right( Player_t* player );
+void player_go_left( Player_t* player );
+void player_go_up( Player_t* player );
+void player_go_down( Player_t* player );

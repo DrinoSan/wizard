@@ -1,3 +1,4 @@
+#include "assert.h"
 #include "stdio.h"
 #include "stdlib.h"
 
@@ -5,8 +6,10 @@
 
 //-----------------------------------------------------------------------------
 Entity_t* entity_create( ENTITY_TYPE type, float x, float y,
-                         const char* sprite_path )
+                         const char* sprite_path, EntityUpdateFn updateFN )
 {
+   assert( updateFN && "Entity update function must be provided" );
+
    Entity_t* entity = malloc( sizeof( Entity_t ) );
    if ( entity == NULL )
    {
@@ -38,7 +41,7 @@ Entity_t* entity_create( ENTITY_TYPE type, float x, float y,
    entity->frames_speed           = 8;
 
    // Callbacks
-   // entity->update          = update;
+   entity->update = updateFN;
    // entity->on_event        = on_event;
    ////entity->handle_movement = handle_movement;
    // entity->str             = str;
@@ -59,13 +62,14 @@ void entity_free( Entity_t* entity )
 //-----------------------------------------------------------------------------
 void entity_draw( void* entity_ )
 {
-   Entity_t* entity = (Entity_t*)entity_;
+   Entity_t* entity = ( Entity_t* ) entity_;
    // Maybe DrawTextureRec works maybe not, i dont know what pro parameters are
-   // DrawTexturePro( entity->texture, entity->frame_rec,
-   //                { entity->pos.x, entity->pos.y, 40, 40 }, { 0, 0 }, 0,
-   //                WHITE );
-   DrawTextureRec( entity->texture, entity->frame_rec,
-                   ( Vector2 ) { entity->hitbox.x, entity->hitbox.y }, WHITE );
+   DrawTexturePro( entity->texture, entity->frame_rec,
+                   ( Rectangle ) { entity->pos.x, entity->pos.y, 40, 40 },
+                   ( Vector2 ) { 0, 0 }, 0, WHITE );
+   // DrawTextureRec( entity->texture, entity->frame_rec,
+   //                 ( Vector2 ) { entity->hitbox.x, entity->hitbox.y }, WHITE
+   //                 );
 }
 
 //-----------------------------------------------------------------------------

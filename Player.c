@@ -1,3 +1,4 @@
+#include "assert.h"
 #include "stdio.h"
 #include "stdlib.h"
 
@@ -6,10 +7,10 @@
 //-----------------------------------------------------------------------------
 enum DIRECTION
 {
-   RIGHT,
-   LEFT,
-   UP,
-   DOWN
+   DIRECTION_RIGHT,
+   DIRECTION_LEFT,
+   DIRECTION_UP,
+   DIRECTION_DOWN
 };
 
 //-----------------------------------------------------------------------------
@@ -82,21 +83,22 @@ static void handle_frames( Entity_t* base, enum DIRECTION dir )
       float dirY;
       switch ( dir )
       {
-      case RIGHT:
+      case DIRECTION_RIGHT:
          dirY = base->animation_walk_right_y;
          break;
-      case LEFT:
+      case DIRECTION_LEFT:
          dirY = base->animation_walk_left_y;
          break;
-      case UP:
+      case DIRECTION_UP:
          dirY = base->animation_walk_up_y;
          break;
-      case DOWN:
+      case DIRECTION_DOWN:
          dirY = base->animation_walk_down_y;
          break;
+      default:
+         assert(false && "Asking you nicely where the fuck you go\n" );
       }
 
-      printf(" dirY -----> %f\n", dirY );
       base->frame_rec.y = dirY;
    }
 }
@@ -107,7 +109,7 @@ void player_go_right( Player_t* player )
    Entity_t* base = &player->base;
    base->velocity.x += 1.5f;
 
-   handle_frames( base, RIGHT );
+   handle_frames( base, DIRECTION_RIGHT );
 }
 
 //-----------------------------------------------------------------------------
@@ -116,7 +118,7 @@ void player_go_left( Player_t* player )
    Entity_t* base = &player->base;
    base->velocity.x -= 1.5f;
 
-   handle_frames( base, LEFT );
+   handle_frames( base, DIRECTION_LEFT );
 }
 
 //-----------------------------------------------------------------------------
@@ -125,7 +127,7 @@ void player_go_up( Player_t* player )
    Entity_t* base = &player->base;
    base->velocity.y -= 1.5f;
 
-   handle_frames( base, UP );
+   handle_frames( base, DIRECTION_UP );
 }
 
 //-----------------------------------------------------------------------------
@@ -134,5 +136,5 @@ void player_go_down( Player_t* player )
    Entity_t* base = &player->base;
    base->velocity.y += 1.5f;
 
-   handle_frames( base, DOWN );
+   handle_frames( base, DIRECTION_DOWN );
 }

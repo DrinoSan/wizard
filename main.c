@@ -1,5 +1,7 @@
 // System Headers
 
+// SandLib
+#include "sandlib.h"
 // Project Headers
 // #include "GameWorldManager.h"
 // #include "Entity.h"
@@ -22,6 +24,10 @@ int main()
    // Creating Player
    Player_t* player = player_create( ENTITY_TYPE_PLAYER, 400, 230,
                                      "spritesheets/wizard01.png" );
+
+   sand_list* entities = sand_list_create( sizeof( Entity_t* ) );
+   Entity_t* e = (Entity_t*)player;
+   sand_list_push_back( entities,  &e );
 
    // Creating World
    // auto world = std::make_unique<World_t>();
@@ -50,33 +56,42 @@ int main()
       if ( IsKeyDown( KEY_D ) )
       {
          player_go_right( player );
-         //KeyPressedEvent_t event( KEY_D );
-         //gameWorldManager.onEvent( event );
+         // KeyPressedEvent_t event( KEY_D );
+         // gameWorldManager.onEvent( event );
       }
       if ( IsKeyDown( KEY_A ) )
       {
          player_go_left( player );
-         //KeyPressedEvent_t event( KEY_A );
-         //gameWorldManager.onEvent( event );
+         // KeyPressedEvent_t event( KEY_A );
+         // gameWorldManager.onEvent( event );
       }
       if ( IsKeyDown( KEY_W ) )
       {
          player_go_up( player );
-         //KeyPressedEvent_t event( KEY_W );
-         //gameWorldManager.onEvent( event );
+         // KeyPressedEvent_t event( KEY_W );
+         // gameWorldManager.onEvent( event );
       }
       if ( IsKeyDown( KEY_S ) )
       {
          player_go_down( player );
-         //KeyPressedEvent_t event( KEY_S );
-         //gameWorldManager.onEvent( event );
+         // KeyPressedEvent_t event( KEY_S );
+         // gameWorldManager.onEvent( event );
       }
       // Draw
       //----------------------------------------------------------------------------------
       BeginDrawing();
 
-      player->base.update(player);
-      //entity_draw( player );
+      for ( size_t i = 0; i < entities->size; i++ )
+      {
+         Entity_t** pp     = sand_list_at( entities, i );
+         Entity_t*  entity = *pp;
+         Player_t*  p      = ( Player_t* ) entity;
+
+         printf( "Player Pos: %f\n", p->base.pos.x );
+         printf( "Original: %f\n", player->base.pos.x );
+      }
+      player->base.update( player );
+      // entity_draw( player );
 
       ClearBackground( RAYWHITE );
 

@@ -2,7 +2,7 @@
 
 #define BIT( x ) ( 1 << x )
 
-enum class EventType_t
+typedef enum
 {
    None = 0,
    // Window
@@ -24,9 +24,9 @@ enum class EventType_t
    MouseButtonReleased,
    MouseMoved,
    MouseScrolled
-};
+} EventType_t;
 
-enum EventCategory_t
+typedef enum
 {
    None                     = 0,
    EventCategoryApplication = BIT( 0 ),
@@ -34,44 +34,90 @@ enum EventCategory_t
    EventCategoryKeyboard    = BIT( 2 ),
    EventCategoryMouse       = BIT( 3 ),
    EventCategoryMouseButton = BIT( 4 ),
-};
+} EventCategory_t;
 
-#define EVENT_CLASS_TYPE( type )                                               \
-   static EventType_t GetStaticType()                                          \
-   {                                                                           \
-      return EventType_t::type;                                                \
-   }                                                                           \
-   virtual EventType_t GetEventType() const override                           \
-   {                                                                           \
-      return GetStaticType();                                                  \
-   }                                                                           \
-   virtual const char* GetName() const override                                \
-   {                                                                           \
-      return #type;                                                            \
-   }
+//#define EVENT_CLASS_TYPE( type )                                               \
+//   static EventType_t GetStaticType()                                          \
+//   {                                                                           \
+//      return EventType_t::type;                                                \
+//   }                                                                           \
+//   virtual EventType_t GetEventType() const override                           \
+//   {                                                                           \
+//      return GetStaticType();                                                  \
+//   }                                                                           \
+//   virtual const char* GetName() const override                                \
+//   {                                                                           \
+//      return #type;                                                            \
+//   }
+//
+//#define EVENT_CLASS_CATEGORY( category )                                       \
+//   virtual int GetCategoryFlags() const override                               \
+//   {                                                                           \
+//      return category;                                                         \
+//   }
 
-#define EVENT_CLASS_CATEGORY( category )                                       \
-   virtual int GetCategoryFlags() const override                               \
-   {                                                                           \
-      return category;                                                         \
-   }
+//class Event_t
+//{
+// public:
+//   bool Handled = false;
+//
+//   virtual EventType_t GetEventType() const     = 0;
+//   virtual const char* GetName() const          = 0;
+//   virtual int         GetCategoryFlags() const = 0;
+//   virtual std::string ToString() const { return GetName(); }
+//
+//   inline bool IsInCategory( EventCategory_t category )
+//   {
+//      return GetCategoryFlags() & category;
+//   }
+//};
 
-class Event_t
+//-----------------------------------------------------------------------------
+typedef struct
 {
- public:
-   bool Handled = false;
+   EventType_t event_type;
+} Event_t;
 
-   virtual EventType_t GetEventType() const     = 0;
-   virtual const char* GetName() const          = 0;
-   virtual int         GetCategoryFlags() const = 0;
-   virtual std::string ToString() const { return GetName(); }
+//-----------------------------------------------------------------------------
+typedef struct
+{
+   Event_t header;
+   int key_code;
+} KeyPressedEvent_t;
 
-   inline bool IsInCategory( EventCategory_t category )
-   {
-      return GetCategoryFlags() & category;
-   }
-};
+KeyPressedEvent_t key_pressed_event_stack_create( int key_code );
+int key_pressed_event_get_key_code( KeyPressedEvent_t* e );
+const char* key_pressed_event_to_string( KeyPressedEvent_t* e );
 
+//-----------------------------------------------------------------------------
+typedef struct
+{
+   Event_t event;
+} EventDispatcher_t;
+
+//class KeyPressedEvent_t : public KeyEvent_t
+//{
+// public:
+//   KeyPressedEvent_t( int keycode, int repeatCount = 0 )
+//       : KeyEvent_t( keycode ), m_RepeatCount( repeatCount )
+//   {
+//   }
+//
+//   inline int getRepeatCount() const { return m_RepeatCount; }
+//
+//   std::string ToString() const override
+//   {
+//      std::stringstream ss;
+//      ss << "KeyPressedEvent_t: " << keyCode << " (" << m_RepeatCount
+//         << " repeats)";
+//      return ss.str();
+//   }
+//
+//   EVENT_CLASS_TYPE( KeyPressed )
+//
+// private:
+//   int m_RepeatCount;
+//};
 class EventDispatcher_t
 {
  public:

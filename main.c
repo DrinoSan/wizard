@@ -8,7 +8,7 @@
 // #include "Globals.h"
 #include "Player.h"
 // #include "World.h"
-// #include "events/KeyEvent.h"
+#include "events/Event.h"
 #include "raylib.h"
 
 int32_t screenWidth  = 800;
@@ -59,7 +59,7 @@ int main()
       if ( IsKeyDown( KEY_D ) )
       {
          //player_go_right( player );
-         // KeyPressedEvent_t event( KEY_D );
+         KeyPressedEvent_t event = key_pressed_event_stack_create( KEY_D );
          // gameWorldManager.onEvent( event );
       }
       if ( IsKeyDown( KEY_A ) )

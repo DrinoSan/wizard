@@ -1,6 +1,3 @@
-# ------------------------------------------------------------
-#  Makefile for a C + Raylib project
-# ------------------------------------------------------------
 .PHONY: all clean debug
 
 # ----- Compiler & flags -------------------------------------------------
@@ -16,6 +13,7 @@ LDFLAGS = $(shell pkg-config --libs raylib) \
 
 # ----- Source / object files -------------------------------------------
 C_FILES   := $(wildcard *.c)                     # all .c files
+C_FILES   += $(wildcard events/*.c)
 OBJ_FILES := $(C_FILES:.c=.o)                    # corresponding .o files
 
 # ----- Default target ---------------------------------------------------

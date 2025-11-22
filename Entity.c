@@ -3,12 +3,15 @@
 #include "stdlib.h"
 
 #include "Entity.h"
+#include "events/Event.h"
 
 //-----------------------------------------------------------------------------
 Entity_t* entity_create( ENTITY_TYPE type, float x, float y,
-                         const char* sprite_path, EntityUpdateFn updateFN )
+                         const char* sprite_path, EntityUpdateFn updateFN,
+                         EntityHandleEventFn on_eventFN )
 {
    assert( updateFN && "Entity update function must be provided" );
+   assert( on_eventFN && "Entity on_event function must be provided" );
 
    Entity_t* entity = malloc( sizeof( Entity_t ) );
    if ( entity == NULL )
@@ -41,8 +44,8 @@ Entity_t* entity_create( ENTITY_TYPE type, float x, float y,
    entity->frames_speed           = 8;
 
    // Callbacks
-   entity->update = updateFN;
-   // entity->on_event        = on_event;
+   entity->update   = updateFN;
+   entity->on_event = on_eventFN;
    ////entity->handle_movement = handle_movement;
    // entity->str             = str;
 

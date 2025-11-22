@@ -3,6 +3,7 @@
 #include "stdlib.h"
 
 #include "Player.h"
+#include "events/Event.h"
 
 //-----------------------------------------------------------------------------
 enum DIRECTION
@@ -12,6 +13,38 @@ enum DIRECTION
    DIRECTION_UP,
    DIRECTION_DOWN
 };
+
+//-----------------------------------------------------------------------------
+static bool player_handle_movement( Entity_t* entity, Event_t* event )
+{
+   KeyPressedEvent_t* key_pressed_event = (KeyPressedEvent_t*)event;
+   int key_code = key_pressed_event_get_key_code( key_pressed_event );
+   Player_t* player = (Player_t*)entity;
+
+   if ( key_code == KEY_D )
+   {
+      player_go_right( player );
+   }
+   else if ( key_code == KEY_A )
+   {
+      player_go_left( player );
+   }
+   else if ( key_code == KEY_W )
+   {
+      player_go_up( player );
+   }
+   else if ( key_code == KEY_S )
+   {
+      player_go_down( player );
+   }
+   else
+   {
+      printf("[Player.c] [player_handle_movement] unknown key_code %d\n", key_code );
+      return false;
+   }
+
+   return true;
+}
 
 //-----------------------------------------------------------------------------
 static void player_update( void* base_ )
@@ -30,6 +63,15 @@ static void player_update( void* base_ )
 }
 
 //-----------------------------------------------------------------------------
+static void player_on_event( void* entity_, Event_t* event )
+{
+   Entity_t* entity = (Entity_t*) entity_;
+   EventDispatcher_t dispatcher = event_dispatcher_stack_create( event );
+   event_dispatcher_dispatch( &dispatcher, entity, player_handle_movement,
+                              EventType_t_KeyPressed );
+}
+
+//-----------------------------------------------------------------------------
 Player_t* player_create( ENTITY_TYPE type, float x, float y,
                          const char* sprite_path )
 {
@@ -43,8 +85,8 @@ Player_t* player_create( ENTITY_TYPE type, float x, float y,
    Vector2 pos = { x, y };
    // Entity_t* entity = entity_create( ENTITY_TYPE_PLAYER, pos.x, pos.y,
    // sprite_path );
-   Entity_t* entity =
-       entity_create( type, pos.x, pos.y, sprite_path, player_update );
+   Entity_t* entity = entity_create( type, pos.x, pos.y, sprite_path,
+                                     player_update, player_on_event );
    if ( entity == NULL )
    {
       free( player );
@@ -96,7 +138,7 @@ static void handle_frames( Entity_t* base, enum DIRECTION dir )
          dirY = base->animation_walk_down_y;
          break;
       default:
-         assert(false && "Asking you nicely where the fuck you go\n" );
+         assert( false && "Asking you nicely where the fuck you go\n" );
       }
 
       base->frame_rec.y = dirY;

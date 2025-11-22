@@ -2,6 +2,7 @@
 
 #include "sandlib.h"
 #include "Entity.h"
+#include "events/Event.h"
 
 typedef struct
 {
@@ -37,5 +38,5 @@ void game_world_manager_execute_npc_movements( GameWorldManager_t* manager );
 
 
 //-----------------------------------------------------------------------------
-//void game_world_manager_on_event( GameWorldManager_t* manager, Event_t* e );
+void game_world_manager_on_event( GameWorldManager_t* manager, Event_t* e );
 

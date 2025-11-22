@@ -8,8 +8,8 @@
 // #include "Globals.h"
 #include "Player.h"
 // #include "World.h"
-#include "events/Event.h"
 #include "raylib.h"
+#include "events/Event.h"
 
 int32_t screenWidth  = 800;
 int32_t screenHeight = 450;
@@ -58,27 +58,23 @@ int main()
       }
       if ( IsKeyDown( KEY_D ) )
       {
-         //player_go_right( player );
-         KeyPressedEvent_t event = key_pressed_event_stack_create( KEY_D );
-         // gameWorldManager.onEvent( event );
+         KeyPressedEvent_t event = key_pressed_event_stack_create( KEY_D, 0 );
+         game_world_manager_on_event( manager, (Event_t*)&event );
       }
       if ( IsKeyDown( KEY_A ) )
       {
-         //player_go_left( player );
-         // KeyPressedEvent_t event( KEY_A );
-         // gameWorldManager.onEvent( event );
+         KeyPressedEvent_t event = key_pressed_event_stack_create( KEY_A, 0 );
+         game_world_manager_on_event( manager, (Event_t*)&event );
       }
       if ( IsKeyDown( KEY_W ) )
       {
-         //player_go_up( player );
-         // KeyPressedEvent_t event( KEY_W );
-         // gameWorldManager.onEvent( event );
+         KeyPressedEvent_t event = key_pressed_event_stack_create( KEY_W, 0 );
+         game_world_manager_on_event( manager, (Event_t*)&event );
       }
       if ( IsKeyDown( KEY_S ) )
       {
-         //player_go_down( player );
-         // KeyPressedEvent_t event( KEY_S );
-         // gameWorldManager.onEvent( event );
+         KeyPressedEvent_t event = key_pressed_event_stack_create( KEY_S, 0 );
+         game_world_manager_on_event( manager, (Event_t*)&event );
       }
       // Draw
       //----------------------------------------------------------------------------------

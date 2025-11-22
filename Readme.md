@@ -5,7 +5,8 @@
 
 
 # Roadmap
-1. Make game somehow playable with animations, skill tree, enemies, map generator(Dynamically change map on events)
+1. Making it work in C, enough with C++
+1.1. Make game somehow playable with animations, skill tree, enemies, map generator(Dynamically change map on events)
 2. Support multiplayer on single machine
 3. Support multiplayer via network
 
@@ -18,6 +19,11 @@ Current Image of game
 
 # Open TODO's
 - Getting rid of magic numbers
+
+# C Port
+- Player Rendering works
+- EventSystem works
+- Need to do work on map generation...
 
 
 

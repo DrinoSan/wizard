@@ -123,7 +123,8 @@ void GameWorldManager_t::prepareManager()
    for ( int32_t i = 0; i < numEnemies; ++i )
    {
       // INIT ENEMIES
-      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>( std::make_unique<A_StarStrategy_t>() ) );
+      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>(
+          std::make_unique<A_StarStrategy_t>() ) );
       static_cast<NpcEnemy_t*>( enemy.get() )
           ->registerOnEventCallback( [ this ]( Event_t& e )
                                      { this->onEvent( e ); } );
@@ -137,9 +138,9 @@ void GameWorldManager_t::executeNpcMovements()
    Player_t* player = nullptr;
    for ( auto& obj : enities )
    {
-      if( obj->type == ENTITY_TYPE::PLAYER )
+      if ( obj->type == ENTITY_TYPE::PLAYER )
       {
-         player = static_cast<Player_t*>(obj.get());
+         player = static_cast<Player_t*>( obj.get() );
       }
    }
 
@@ -150,6 +151,63 @@ void GameWorldManager_t::executeNpcMovements()
       if ( obj->type == ENTITY_TYPE::ENEMY )
       {
          static_cast<NpcEnemy_t*>( obj.get() )->handleNpcMovement( player );
+      }
+   }
+}
+
+//-----------------------------------------------------------------------------
+// I think this is way more complicated than needed
+void GameWorldManager_t::handleInputs()
+{
+   int  keyCode;
+   bool keyHandeld{ false };
+
+   for ( auto& key : keysDown )
+   {
+      if( key == 0 ) continue;
+      if ( IsKeyDown( key ) )
+      {
+         KeyPressedEvent_t event( key );
+         onEvent( event );
+      }
+      else
+      {
+         key = 0;
+      }
+   }
+
+   // Working the key off
+   while ( ( keyCode = GetKeyPressed() ) != 0 )
+   {
+      KeyPressedEvent_t event( keyCode );
+      onEvent( event );
+      if ( IsKeyDown( keyCode ) )
+      {
+         for ( auto& key : keysDown )
+         {
+            if ( key == keyCode )
+            {
+               // Key is already in pressedKeys we can skip
+               keyHandeld = true;
+               break;
+            }
+         }
+
+         bool keyAdded{ false };
+         if ( !keyHandeld )
+         {
+            for ( auto& key : keysDown )
+            {
+               if ( key == 0 )
+               {
+                  key = keyCode;
+                  keyAdded = true;
+                  break;
+               }
+            }
+
+            if( keyAdded ) continue;
+         }
       }
    }
 }

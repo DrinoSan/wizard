@@ -40,30 +40,13 @@ int main()
    {
       // Update
       //----------------------------------------------------------------------------------
+      // Input Handling
       if ( IsKeyDown( KEY_Q ) )
       {
          break;
       }
-      if ( IsKeyDown( KEY_D ) )
-      {
-         KeyPressedEvent_t event( KEY_D );
-         gameWorldManager.onEvent( event );
-      }
-      if ( IsKeyDown( KEY_A ) )
-      {
-         KeyPressedEvent_t event( KEY_A );
-         gameWorldManager.onEvent( event );
-      }
-      if ( IsKeyDown( KEY_W ) )
-      {
-         KeyPressedEvent_t event( KEY_W );
-         gameWorldManager.onEvent( event );
-      }
-      if ( IsKeyDown( KEY_S ) )
-      {
-         KeyPressedEvent_t event( KEY_S );
-         gameWorldManager.onEvent( event );
-      }
+
+      gameWorldManager.handleInputs();
 
       gameWorldManager.executeNpcMovements();
 

@@ -39,6 +39,7 @@ class GameWorldManager_t
 
    void onEvent( Event_t& e );
 
+   void handleInputs();
    void handleCollisions();
    void resolveCollisionEntityStatic( Entity_t* entityPtr );
    void prepareManager();
@@ -49,4 +50,5 @@ class GameWorldManager_t
    std::unique_ptr<World_t>               world;
    int32_t numEnemies;
    std::vector<NpcEnemy_t> npcEnemies;
+   std::array<int, 15> keysDown{ 0 };
 };

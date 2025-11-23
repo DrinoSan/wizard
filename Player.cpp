@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 Player_t::Player_t()
 {
-   playerPosition = { ( float ) screenWidth / 2, ( float ) screenHeight / 2 };
+   playerPosition = { ( float ) screenWidth / 2 + 30, ( float ) screenHeight / 2 + 30 };
 
    playerTexture         = LoadTexture( "spritesheets/wizard01.png" );
    ANIMATION_WALK_UP_Y   = static_cast<float>( playerTexture.height / 54 ) * 8;

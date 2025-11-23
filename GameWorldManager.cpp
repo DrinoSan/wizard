@@ -150,7 +150,8 @@ void GameWorldManager_t::executeNpcMovements()
    {
       if ( obj->type == ENTITY_TYPE::ENEMY )
       {
-         static_cast<NpcEnemy_t*>( obj.get() )->handleNpcMovement( player );
+         auto enemy = static_cast<NpcEnemy_t*>( obj.get() );
+         enemy->handleNpcMovement( *world, player );
       }
    }
 }
@@ -164,7 +165,8 @@ void GameWorldManager_t::handleInputs()
 
    for ( auto& key : keysDown )
    {
-      if( key == 0 ) continue;
+      if ( key == 0 )
+         continue;
       if ( IsKeyDown( key ) )
       {
          KeyPressedEvent_t event( key );
@@ -200,13 +202,14 @@ void GameWorldManager_t::handleInputs()
             {
                if ( key == 0 )
                {
-                  key = keyCode;
+                  key      = keyCode;
                   keyAdded = true;
                   break;
                }
             }
 
-            if( keyAdded ) continue;
+            if ( keyAdded )
+               continue;
          }
       }
    }

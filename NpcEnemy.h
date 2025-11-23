@@ -2,6 +2,7 @@
 // System Headers
 #include <cstdint>
 #include <functional>
+#include <vector>
 
 // Raylib Headers
 #include "raylib.h"
@@ -32,16 +33,22 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
 
    void draw() override;
    bool handleMovement( KeyPressedEvent_t& e ) override;
-   bool handleNpcMovement( Player_t* player );
+   bool handleNpcMovement( World_t& world, Player_t* player );
    void onEvent( Event_t& e ) override;
    void registerOnEventCallback( std::function<void( Event_t& )> callback );
    std::function<void( Event_t& )> onEventCallback;
 
    // PathFinding for npc
-   void pathFindingStrategy( /*...*/ ) const
+   void pathFindingStrategy( const class World_t& world,
+                             const Player_t&      player ) const
    {
-      path->findPath( *this /*...*/ );   // Delegating to strategy class
+      path->findPath( const_cast<NpcEnemy_t&>( *this ), world, player );
    }
+
+   // Cached path produced by the strategy as tile indices (world.worldMap
+   // indexes)
+   std::vector<int> pathIndices;
+   int              pathCursor{ 0 };
 
    // Entity specifics
    void update() override;

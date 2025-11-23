@@ -1,12 +1,15 @@
 #include <iostream>
 
 #include "NpcEnemy.h"
+#include "World.h"
 #include "events/KeyEvent.h"
 
 //-----------------------------------------------------------------------------
-NpcEnemy_t::NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding ) : path{ std::move( pathFinding ) }
+NpcEnemy_t::NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding )
+    : path{ std::move( pathFinding ) }
 {
-   playerPosition = { ( float ) screenWidth / 2, ( float ) screenHeight / 2 };
+   playerPosition = { ( float ) screenWidth / 2 + 20,
+                      ( float ) screenHeight / 2 + 20 };
 
    playerTexture         = LoadTexture( "spritesheets/wizard01.png" );
    ANIMATION_WALK_UP_Y   = static_cast<float>( playerTexture.height / 54 ) * 8;
@@ -51,7 +54,7 @@ NpcEnemy_t::NpcEnemy_t( Vector2 pos )
 void NpcEnemy_t::goRight( float movement )
 {
    // playerPosition.x += movement;
-   //velocity.x += movement;
+   // velocity.x += movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -70,7 +73,7 @@ void NpcEnemy_t::goRight( float movement )
 void NpcEnemy_t::goLeft( float movement )
 {
    // playerPosition.x -= movement;
-   //velocity.x -= movement;
+   // velocity.x -= movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -89,7 +92,7 @@ void NpcEnemy_t::goLeft( float movement )
 void NpcEnemy_t::goUp( float movement )
 {
    // playerPosition.y -= movement;
-   //velocity.y -= movement;
+   // velocity.y -= movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -108,7 +111,7 @@ void NpcEnemy_t::goUp( float movement )
 void NpcEnemy_t::goDown( float movement )
 {
    // playerPosition.y += movement;
-   //velocity.y += movement;
+   // velocity.y += movement;
 
    if ( framesCounter >= ( 60 / framesSpeed ) )
    {
@@ -168,19 +171,15 @@ bool NpcEnemy_t::handleMovement( KeyPressedEvent_t& e )
 }
 
 //-----------------------------------------------------------------------------
-bool NpcEnemy_t::handleNpcMovement( Player_t* player )
+bool NpcEnemy_t::handleNpcMovement( World_t& world, Player_t* player )
 {
    ++framesCounter;
+   // Ensure we have a path (recomputed each call for now). Strategy writes
+   // the path into `pathIndices` and resets `pathCursor`.
+   pathFindingStrategy( world, *player );
 
-   // Get Richtungsvektor
-   // Get normilized vektor
-   // scale it for velocity
-   auto directionVec = Vector2Subtract( player->playerPosition, playerPosition );
-   auto normalizedVec = Vector2Normalize( directionVec );
 
-   velocity.x += normalizedVec.x * 1.5;
-   velocity.y += normalizedVec.y * 1.5;
-
+   // Update sprite animation based on velocity
    if ( velocity.x > 0 )
    {
       goRight();
@@ -197,8 +196,6 @@ bool NpcEnemy_t::handleNpcMovement( Player_t* player )
    {
       goDown();
    }
-
-   pathFindingStrategy();
 
    return true;
 }

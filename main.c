@@ -8,8 +8,8 @@
 // #include "Globals.h"
 #include "Player.h"
 // #include "World.h"
-#include "raylib.h"
 #include "events/Event.h"
+#include "raylib.h"
 
 int32_t screenWidth  = 800;
 int32_t screenHeight = 450;
@@ -25,12 +25,12 @@ int main()
    Player_t* player = player_create( ENTITY_TYPE_PLAYER, 400, 230,
                                      "spritesheets/wizard01.png" );
 
-   GameWorldManager_t* manager = game_world_manager_create(10);
-   game_world_manager_add_entity( manager, (Entity_t*)player );
+   GameWorldManager_t* manager = game_world_manager_create( 10 );
+   game_world_manager_add_entity( manager, ( Entity_t* ) player );
 
-   //sand_list* entities = sand_list_create( sizeof( Entity_t* ) );
-   //Entity_t* e = (Entity_t*)player;
-   //sand_list_push_back( entities,  &e );
+   // sand_list* entities = sand_list_create( sizeof( Entity_t* ) );
+   // Entity_t* e = (Entity_t*)player;
+   // sand_list_push_back( entities,  &e );
 
    // Creating World
    // auto world = std::make_unique<World_t>();
@@ -59,22 +59,22 @@ int main()
       if ( IsKeyDown( KEY_D ) )
       {
          KeyPressedEvent_t event = key_pressed_event_stack_create( KEY_D, 0 );
-         game_world_manager_on_event( manager, (Event_t*)&event );
+         game_world_manager_on_event( manager, ( Event_t* ) &event );
       }
       if ( IsKeyDown( KEY_A ) )
       {
          KeyPressedEvent_t event = key_pressed_event_stack_create( KEY_A, 0 );
-         game_world_manager_on_event( manager, (Event_t*)&event );
+         game_world_manager_on_event( manager, ( Event_t* ) &event );
       }
       if ( IsKeyDown( KEY_W ) )
       {
          KeyPressedEvent_t event = key_pressed_event_stack_create( KEY_W, 0 );
-         game_world_manager_on_event( manager, (Event_t*)&event );
+         game_world_manager_on_event( manager, ( Event_t* ) &event );
       }
       if ( IsKeyDown( KEY_S ) )
       {
          KeyPressedEvent_t event = key_pressed_event_stack_create( KEY_S, 0 );
-         game_world_manager_on_event( manager, (Event_t*)&event );
+         game_world_manager_on_event( manager, ( Event_t* ) &event );
       }
       // Draw
       //----------------------------------------------------------------------------------
@@ -82,16 +82,16 @@ int main()
 
       game_world_manager_update_and_draw( manager );
 
-      //for ( size_t i = 0; i < entities->size; i++ )
+      // for ( size_t i = 0; i < entities->size; i++ )
       //{
-      //   Entity_t** pp     = sand_list_at( entities, i );
-      //   Entity_t*  entity = *pp;
-      //   Player_t*  p      = ( Player_t* ) entity;
+      //    Entity_t** pp     = sand_list_at( entities, i );
+      //    Entity_t*  entity = *pp;
+      //    Player_t*  p      = ( Player_t* ) entity;
 
       //   printf( "Player Pos: %f\n", p->base.pos.x );
       //   printf( "Original: %f\n", player->base.pos.x );
       //}
-      //player->base.update( player );
+      // player->base.update( player );
       // entity_draw( player );
 
       ClearBackground( RAYWHITE );

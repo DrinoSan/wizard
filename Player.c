@@ -102,6 +102,7 @@ Player_t* player_create( ENTITY_TYPE type, float x, float y,
 //-----------------------------------------------------------------------------
 void player_free( Entity_t* entity )
 {
+   printf( "[Player.c] - Killing Player and calling free, adios world\n" );
    UnloadTexture( entity->texture );
 
    free( entity );

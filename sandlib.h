@@ -192,5 +192,6 @@ static sand_list* sand_list_create( size_t type_size )
 //-----------------------------------------------------------------------------
 static void sand_list_free( sand_list* l )
 {
+   printf( "Killed List \n" );
    free( l );
 }

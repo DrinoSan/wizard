@@ -82,13 +82,13 @@ class EventDispatcher_t
    EventDispatcher_t( Event_t& event_ ) : event( event_ ) {}
 
    // F will be deduced by the compiler
-   template <typename T, typename F>
+   template <std::derived_from<Event_t> T, typename F>
    bool Dispatch( const F& func )
    {
 		std::cout << "Inside Event Dispatcher Event: " << event.ToString() << "\n";
       if ( event.GetEventType() == T::GetStaticType() )
       {
-         event.Handled = func( static_cast<T&>( event ) );
+         event.Handled = func( *(T*)&event  );
 
          return true;
       }

@@ -3,6 +3,7 @@
 // System Headers
 #include <cstdint>
 #include <vector>
+#include <array>
 
 // Project Headers
 #include "Entity.h"

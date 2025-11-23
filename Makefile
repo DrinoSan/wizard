@@ -1,7 +1,7 @@
 .PHONY: all clean
 
 CXX = clang++
-CXXFLAGS = -g `pkg-config --cflags raylib` -Wall -std=c++17
+CXXFLAGS = -g `pkg-config --cflags raylib` -Wall -std=c++20
 LDFLAGS = `pkg-config --libs raylib` -lpthread -L/opt/homebrew/lib -lglfw -framework CoreFoundation -framework Cocoa -framework IOKit -framework OpenGL
 
 CPP_FILES := $(wildcard *.cpp)

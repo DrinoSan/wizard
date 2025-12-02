@@ -1,22 +1,22 @@
 #pragma once
 
 // System Headers
+#include <array>
 #include <cstdint>
 #include <vector>
-#include <array>
 
 // Project Headers
 #include "Entity.h"
 #include "Graphic.h"
-#include "Player.h"
 #include "NpcEnemy.h"
+#include "Player.h"
 #include "World.h"
 #include "events/KeyEvent.h"
 
 class GameWorldManager_t
 {
  public:
-   GameWorldManager_t( std::unique_ptr<World_t> world_, int32_t numEnemies_ );
+   explicit GameWorldManager_t( std::unique_ptr<World_t> world_ );
    ~GameWorldManager_t();
 
    /// Function to draw the whole world including tiles,player,enemies and so on
@@ -45,11 +45,12 @@ class GameWorldManager_t
    void resolveCollisionEntityStatic( Entity_t* entityPtr );
    void prepareManager();
    void executeNpcMovements();
+   void spawnEnemies( int32_t numEnemies_ );
 
  private:
    std::vector<std::unique_ptr<Entity_t>> enities;
    std::unique_ptr<World_t>               world;
-   int32_t numEnemies;
-   std::vector<NpcEnemy_t> npcEnemies;
-   std::array<int, 15> keysDown{ 0 };
+   int32_t                                numEnemies;
+   std::vector<NpcEnemy_t>                npcEnemies;
+   std::array<int, 15>                    keysDown{ 0 };
 };

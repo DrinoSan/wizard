@@ -28,7 +28,8 @@ int main()
    // Adding all objects to senior manager
    // The sequence of adding objects to the world is important because if world
    // is added after player the player will be drawn behind the map.
-   GameWorldManager_t gameWorldManager{ std::move( world ), NUM_ENEMIES };
+   GameWorldManager_t gameWorldManager{ std::move( world ) };
+   gameWorldManager.spawnEnemies( NUM_ENEMIES );
    gameWorldManager.addEntity( std::move( player ) );
    gameWorldManager.prepareManager();
 

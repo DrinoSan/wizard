@@ -6,9 +6,8 @@
 #include "log.h"
 
 //-----------------------------------------------------------------------------
-GameWorldManager_t::GameWorldManager_t( std::unique_ptr<World_t> world_,
-                                        int32_t                  numEnemies_ )
-    : world{ std::move( world_ ) }, numEnemies{ numEnemies_ }
+GameWorldManager_t::GameWorldManager_t( std::unique_ptr<World_t> world_ )
+    : world{ std::move( world_ ) }
 {
 }
 
@@ -120,14 +119,9 @@ void GameWorldManager_t::resolveCollisionEntityStatic( Entity_t* entityPtr )
 //-----------------------------------------------------------------------------
 void GameWorldManager_t::prepareManager()
 {
-   for ( int32_t i = 0; i < numEnemies; ++i )
+   for( auto& obj : enities )
    {
-      // INIT ENEMIES
-      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>(
-          std::make_unique<A_StarStrategy_t>() ) );
-      static_cast<NpcEnemy_t*>( enemy.get() )
-          ->registerOnEventCallback( [ this ]( Event_t& e )
-                                     { this->onEvent( e ); } );
+      std::cout << "PrepareManager Entity type: " << entityTypeToString( obj->type ) << "\n";
    }
 }
 
@@ -212,5 +206,20 @@ void GameWorldManager_t::handleInputs()
                continue;
          }
       }
+   }
+}
+
+//-----------------------------------------------------------------------------
+void GameWorldManager_t::spawnEnemies( int32_t numEnemies_ )
+{
+   numEnemies = numEnemies_;
+   for ( int32_t i = 0; i < numEnemies; ++i )
+   {
+      // INIT ENEMIES
+      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>(
+          std::make_unique<A_StarStrategy_t>() ) );
+      static_cast<NpcEnemy_t*>( enemy.get() )
+          ->registerOnEventCallback( [ this ]( Event_t& e )
+                                     { this->onEvent( e ); } );
    }
 }

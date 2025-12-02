@@ -154,24 +154,7 @@ void NpcEnemy_t::onEvent( Event_t& e )
 //-----------------------------------------------------------------------------
 bool NpcEnemy_t::handleMovement( KeyPressedEvent_t& e )
 {
-   if ( e.getKeyCode() == KEY_D )
-   {
-      goRight();
-   }
-   if ( e.getKeyCode() == KEY_A )
-   {
-      goLeft();
-   }
-   if ( e.getKeyCode() == KEY_W )
-   {
-      goUp();
-   }
-   if ( e.getKeyCode() == KEY_S )
-   {
-      goDown();
-   }
-
-   return true;
+   return false;
 }
 
 //-----------------------------------------------------------------------------

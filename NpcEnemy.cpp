@@ -136,6 +136,10 @@ void NpcEnemy_t::draw()
                    WHITE );
 #ifdef DEBUG
    DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
+
+   // Draw direction
+   DrawLine( playerPosition.x, playerPosition.y, playerPosition.x + velocity.x * 50, playerPosition.y + velocity.y * 50, RED );
+
 #endif
 }
 

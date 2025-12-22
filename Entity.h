@@ -73,7 +73,7 @@ class Entity_t
 
    int     currentFrame  = 0;
    int     framesCounter = 0;
-   int     framesSpeed   = 16;   // Number of spritesheet frames shown by second
+   int     framesSpeed   = 10;   // Number of spritesheet frames shown by second
 
    // Player/NPC related stuff
    int32_t attackRange;

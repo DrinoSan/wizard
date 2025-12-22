@@ -164,8 +164,6 @@ bool Player_t::handleKeyEvent( KeyPressedEvent_t& e )
 //-----------------------------------------------------------------------------
 bool Player_t::handleMovement( float dt )
 {
-   const float SPEED = 180.0f;   // pixels per second
-
    Vector2 input = { 0 };
    if ( IsKeyDown( KEY_D ) )
       input.x += 1;
@@ -200,10 +198,18 @@ bool Player_t::handleMovement( float dt )
    }
    else
    {
+      // Animation (frame-independent!)
+      animTimer += dt;
+      if ( animTimer >= 1.0f / framesSpeed )
+      {
+         animTimer    = 0;
+         currentFrame = ( currentFrame + 1 ) % 7;
+         frameRec.x   = currentFrame * frameWidth;
+      }
       // Idle
-      currentFrame = 0;
-      frameRec.x   = 0;
-      frameRec.y   = ANIMATION_IDLE_DOWN_Y;
+      // currentFrame = 0;
+      // frameRec.x   = 0;
+      frameRec.y = ANIMATION_IDLE_DOWN_Y;
    }
 
    // Update hitbox
@@ -249,16 +255,17 @@ void Player_t::updateAnimation( float dt )
    else
    {
       animTimer += dt;
-
       // How long each frame should be shown
       float frameDuration = 1.0f / framesSpeed;
-      currentFrame        = ( currentFrame + 1 ) % 7;
-      frameRec.x          = ( float ) currentFrame * frameWidth;
-      animTimer -= frameDuration;
 
-      // Optional: keep facing the last direction
-      // (or set a default like down if you have idle rows)
-      // frameRec.y stays whatever it was → character faces last direction
+      if ( animTimer >= frameDuration )
+      {
+         // 7 Is the amount of sprites i have for the current animation
+         currentFrame = ( currentFrame + 1 ) % 7;
+         frameRec.x   = ( float ) currentFrame * frameWidth;
+         frameRec.y   = ANIMATION_IDLE_DOWN_Y;
+         animTimer    -= frameDuration;
+      }
    }
 }
 

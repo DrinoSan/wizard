@@ -65,6 +65,12 @@ class Entity_t
    int32_t ANIMATION_WALK_LEFT_Y;
    int32_t ANIMATION_WALK_DOWN_Y;
    int32_t ANIMATION_WALK_RIGHT_Y;
+
+   int32_t ANIMATION_IDLE_UP_Y;
+   int32_t ANIMATION_IDLE_LEFT_Y;
+   int32_t ANIMATION_IDLE_DOWN_Y;
+   int32_t ANIMATION_IDLE_RIGHT_Y;
+
    int     currentFrame  = 0;
    int     framesCounter = 0;
    int     framesSpeed   = 16;   // Number of spritesheet frames shown by second

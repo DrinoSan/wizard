@@ -60,7 +60,7 @@ int main()
 
       gameWorldManager.draw();
 
-      DrawText( "move the player with WASD keys", 10, 10, 20, DARKGRAY );
+      DrawText( "move the player with WASD keys", 10, 10, 20, RED );
 
       EndDrawing();
       //----------------------------------------------------------------------------------

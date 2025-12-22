@@ -16,6 +16,11 @@ Player_t::Player_t()
    ANIMATION_WALK_RIGHT_Y =
        static_cast<float>( playerTexture.height / 54 ) * 11;
 
+   ANIMATION_IDLE_UP_Y    = static_cast<float>( playerTexture.height / 54 ) * 0;
+   ANIMATION_IDLE_LEFT_Y  = static_cast<float>( playerTexture.height / 54 ) * 1;
+   ANIMATION_IDLE_DOWN_Y  = static_cast<float>( playerTexture.height / 54 ) * 2;
+   ANIMATION_IDLE_RIGHT_Y = static_cast<float>( playerTexture.height / 54 ) * 3;
+
    frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
                 static_cast<float>( playerTexture.height / 54 ) };
 
@@ -36,6 +41,11 @@ Player_t::Player_t( Vector2 pos )
    ANIMATION_WALK_DOWN_Y = static_cast<float>( playerTexture.height / 54 ) * 10;
    ANIMATION_WALK_RIGHT_Y =
        static_cast<float>( playerTexture.height / 54 ) * 11;
+
+   ANIMATION_IDLE_UP_Y    = static_cast<float>( playerTexture.height / 54 ) * 0;
+   ANIMATION_IDLE_LEFT_Y  = static_cast<float>( playerTexture.height / 54 ) * 1;
+   ANIMATION_IDLE_DOWN_Y  = static_cast<float>( playerTexture.height / 54 ) * 2;
+   ANIMATION_IDLE_RIGHT_Y = static_cast<float>( playerTexture.height / 54 ) * 3;
 
    frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
                 static_cast<float>( playerTexture.height / 54 ) };
@@ -191,9 +201,9 @@ bool Player_t::handleMovement( float dt )
    else
    {
       // Idle
-      // currentFrame = 0;
-      // frameRec.x   = 0;
-      // frameRec.y   = ANIM_IDLE;
+      currentFrame = 0;
+      frameRec.x   = 0;
+      frameRec.y   = ANIMATION_IDLE_DOWN_Y;
    }
 
    // Update hitbox
@@ -238,9 +248,13 @@ void Player_t::updateAnimation( float dt )
    }
    else
    {
-      currentFrame = 0;
-      frameRec.x   = 0.0f;
-      animTimer    = 0.0f;
+      animTimer += dt;
+
+      // How long each frame should be shown
+      float frameDuration = 1.0f / framesSpeed;
+      currentFrame        = ( currentFrame + 1 ) % 7;
+      frameRec.x          = ( float ) currentFrame * frameWidth;
+      animTimer -= frameDuration;
 
       // Optional: keep facing the last direction
       // (or set a default like down if you have idle rows)

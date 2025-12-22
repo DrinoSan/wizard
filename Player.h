@@ -1,12 +1,11 @@
 #pragma once
 #include <cstdint>
 
-#include "Globals.h"
 #include "Entity.h"
+#include "Globals.h"
 #include "Graphic.h"
-#include "raylib.h"
 #include "events/KeyEvent.h"
-
+#include "raylib.h"
 
 class Player_t : public Graphic_t, public Entity_t
 {
@@ -24,9 +23,15 @@ class Player_t : public Graphic_t, public Entity_t
    void goDown( float movement = PLAYER_MOVEMENT_SPEED );
 
    void draw() override;
-	bool handleMovement( KeyPressedEvent_t& e ) override;
-	void onEvent( Event_t& e ) override;
+   bool handleMovement( float dt );
+   void onEvent( Event_t& e ) override;
+   bool handleKeyEvent( KeyPressedEvent_t& e );
 
    // Entity specifics
-   void update() override;
+   void update( float dt ) override;
+   void updateAnimation( float dt );
+
+   private:
+   float animTimer = 0.0f;
+   Vector2 lastDirection = { 0.0f, 1.0f };
 };

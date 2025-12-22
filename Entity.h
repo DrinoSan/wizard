@@ -45,9 +45,9 @@ class Entity_t
    Entity_t()          = default;
    virtual ~Entity_t() = default;
 
-   virtual void        update()                               = 0;
-   virtual void        onEvent( Event_t& e )                  = 0;
-   virtual bool        handleMovement( KeyPressedEvent_t& e ) = 0;
+   virtual void        update( float dt )    = 0;
+   virtual void        draw()                = 0;
+   virtual void        onEvent( Event_t& e ) = 0;
    virtual std::string str();
 
    ENTITY_TYPE type;
@@ -56,6 +56,9 @@ class Entity_t
    Texture2D   playerTexture;
    Vector2     playerPosition;
    Vector2     velocity;
+   Vector2     hitboxOffset{ 10, 0 };
+   float       frameWidth = 0.0f;
+   const float SPEED = 100.0f;
 
    // Animation stuff
    int32_t ANIMATION_WALK_UP_Y;
@@ -65,7 +68,6 @@ class Entity_t
    int     currentFrame  = 0;
    int     framesCounter = 0;
    int     framesSpeed   = 16;   // Number of spritesheet frames shown by second
-
 
    // Player/NPC related stuff
    int32_t attackRange;

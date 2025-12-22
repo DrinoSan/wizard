@@ -188,7 +188,7 @@ bool NpcEnemy_t::handleNpcMovement( World_t& world, Player_t* player )
 }
 
 //-----------------------------------------------------------------------------
-void NpcEnemy_t::update()
+void NpcEnemy_t::update( float dt )
 {
    playerPosition.x += velocity.x;
    playerPosition.y += velocity.y;

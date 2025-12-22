@@ -20,16 +20,10 @@ class GameWorldManager_t
    ~GameWorldManager_t();
 
    /// Function to draw the whole world including tiles,player,enemies and so on
-   inline void draw()
-   {
-      // @TODO: add layers which should be drawn to have a way to know whats in
-      // the background and so on
-      world->draw();
-      for ( auto& obj : enities )
-      {
-         obj->update();
-      }
-   }
+   void draw() const;
+   void update( float dt );
+   void applyMovement( float dt );
+   void updateEntities( float dt );
 
    /// Function to add objects to World
    /// @TODO: Use move semantic
@@ -41,8 +35,8 @@ class GameWorldManager_t
    void onEvent( Event_t& e );
 
    void handleInputs();
-   void handleCollisions();
-   void resolveCollisionEntityStatic( Entity_t* entityPtr );
+   void handleCollisions( float dt );
+   void resolveCollisionEntityStatic( Entity_t* e, float dt );
    void prepareManager();
    void executeNpcMovements();
    void spawnEnemies( int32_t numEnemies_ );

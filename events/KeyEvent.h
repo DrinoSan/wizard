@@ -28,7 +28,7 @@ class KeyPressedEvent_t : public KeyEvent_t
    {
       std::stringstream ss;
       ss << "KeyPressedEvent_t: " << keyCode << " (" << m_RepeatCount
-         << " repeats)";
+         << " repeats)\n";
       return ss.str();
    }
 

@@ -32,7 +32,7 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
    void goDown( float movement = PLAYER_MOVEMENT_SPEED );
 
    void draw() override;
-   bool handleMovement( KeyPressedEvent_t& e ) override;
+   bool handleMovement( KeyPressedEvent_t& e );
    bool handleNpcMovement( World_t& world, Player_t* player );
    void onEvent( Event_t& e ) override;
    void registerOnEventCallback( std::function<void( Event_t& )> callback );
@@ -51,7 +51,7 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
    int              pathCursor{ 0 };
 
    // Entity specifics
-   void update() override;
+   void update( float dt ) override;
 
    std::unique_ptr<PathFindingStrategy_t> path;
 };

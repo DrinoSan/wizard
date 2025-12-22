@@ -47,12 +47,8 @@ int main()
          break;
       }
 
-      gameWorldManager.handleInputs();
-
-      gameWorldManager.executeNpcMovements();
-
-      // Collision Handling
-      gameWorldManager.handleCollisions();
+      float dt = GetFrameTime();
+      gameWorldManager.update( dt );
 
       //----------------------------------------------------------------------------------
 
@@ -63,6 +59,7 @@ int main()
       ClearBackground( RAYWHITE );
 
       gameWorldManager.draw();
+
 
       DrawText( "move the player with WASD keys", 10, 10, 20, DARKGRAY );
 

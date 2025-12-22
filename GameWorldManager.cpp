@@ -293,3 +293,18 @@ void GameWorldManager_t::spawnEnemies( int32_t numEnemies_ )
                                      { this->onEvent( e ); } );
    }
 }
+
+//-----------------------------------------------------------------------------
+Player_t* GameWorldManager_t::getPlayer() const
+{
+   for ( auto& obj : enities )
+   {
+      if ( obj->type == ENTITY_TYPE::PLAYER )
+      {
+         return static_cast<Player_t*>( obj.get() );
+      }
+   }
+
+   assert( false );
+   return nullptr;
+}

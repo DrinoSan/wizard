@@ -41,6 +41,10 @@ class GameWorldManager_t
    void executeNpcMovements();
    void spawnEnemies( int32_t numEnemies_ );
 
+
+   // Methods for imgui output
+   Player_t* getPlayer() const;
+
  private:
    std::vector<std::unique_ptr<Entity_t>> enities;
    std::unique_ptr<World_t>               world;

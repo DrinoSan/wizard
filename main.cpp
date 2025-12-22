@@ -9,12 +9,16 @@
 #include "World.h"
 #include "events/KeyEvent.h"
 #include "raylib.h"
+#include "imgui.h"
+#include "rlImGui.h"
 
 int main()
 {
    // Initialization
    //--------------------------------------------------------------------------------------
    InitWindow( screenWidth, screenHeight, "Wizard" );
+
+   rlImGuiSetup( true );
 
    // I like to leak memory
    // Creating Player
@@ -62,12 +66,22 @@ int main()
 
       DrawText( "move the player with WASD keys", 10, 10, 20, RED );
 
+      auto* player = gameWorldManager.getPlayer();
+      rlImGuiBegin();
+      ImGui::Begin("Debug Stuff");
+      ImGui::Text("Player position: %.2f, %.2f", player->playerPosition.x, player->playerPosition.y);
+      ImGui::Text("FPS: %d", GetFPS() );
+      ImGui::End();
+
+      rlImGuiEnd();
+
       EndDrawing();
       //----------------------------------------------------------------------------------
    }
 
    // De-Initialization
    //--------------------------------------------------------------------------------------
+   rlImGuiShutdown();
    CloseWindow();   // Close window and OpenGL context
    //--------------------------------------------------------------------------------------
 

@@ -2,8 +2,8 @@
 #include <memory>
 
 // Project Headers
-#include "GameWorldManager.h"
 #include "Entity.h"
+#include "GameWorldManager.h"
 #include "Globals.h"
 #include "Player.h"
 #include "World.h"
@@ -59,7 +59,6 @@ int main()
       ClearBackground( RAYWHITE );
 
       gameWorldManager.draw();
-
 
       DrawText( "move the player with WASD keys", 10, 10, 20, DARKGRAY );
 

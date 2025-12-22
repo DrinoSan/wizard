@@ -55,10 +55,8 @@ void GameWorldManager_t::applyMovement( float dt )
          entity->playerPosition = Vector2Add( entity->playerPosition, motion );
 
          // Sync hitbox
-         entity->hitbox.x =
-             entity->playerPosition.x + entity->hitboxOffset.x;
-         entity->hitbox.y =
-             entity->playerPosition.y + entity->hitboxOffset.y;
+         entity->hitbox.x = entity->playerPosition.x + entity->hitboxOffset.x;
+         entity->hitbox.y = entity->playerPosition.y + entity->hitboxOffset.y;
       }
 
       // IMPORTANT Without this, entities keep sliding forever

@@ -58,7 +58,7 @@ class Entity_t
    Vector2     velocity;
    Vector2     hitboxOffset{ 10, 0 };
    float       frameWidth = 0.0f;
-   const float SPEED = 100.0f;
+   const float SPEED      = 100.0f;
 
    // Animation stuff
    int32_t ANIMATION_WALK_UP_Y;

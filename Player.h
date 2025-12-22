@@ -31,7 +31,7 @@ class Player_t : public Graphic_t, public Entity_t
    void update( float dt ) override;
    void updateAnimation( float dt );
 
-   private:
-   float animTimer = 0.0f;
+ private:
+   float   animTimer     = 0.0f;
    Vector2 lastDirection = { 0.0f, 1.0f };
 };

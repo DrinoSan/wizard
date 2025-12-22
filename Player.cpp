@@ -21,8 +21,8 @@ Player_t::Player_t()
 
    frameWidth = playerTexture.width / 13;
 
-   type          = ENTITY_TYPE::PLAYER;
-   hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
+   type   = ENTITY_TYPE::PLAYER;
+   hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
 }
 
 //-----------------------------------------------------------------------------
@@ -42,8 +42,8 @@ Player_t::Player_t( Vector2 pos )
 
    frameWidth = playerTexture.width / 13;
 
-   type          = ENTITY_TYPE::PLAYER;
-   hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
+   type   = ENTITY_TYPE::PLAYER;
+   hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
 }
 
 //-----------------------------------------------------------------------------
@@ -146,7 +146,8 @@ void Player_t::onEvent( Event_t& e )
 //-----------------------------------------------------------------------------
 bool Player_t::handleKeyEvent( KeyPressedEvent_t& e )
 {
-   std::cout << "[PLAYER] : Currently just logging [KeyPressedEvent] : " << e.ToString();
+   std::cout << "[PLAYER] : Currently just logging [KeyPressedEvent] : "
+             << e.ToString();
    return false;
 }
 

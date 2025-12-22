@@ -54,7 +54,7 @@ inline void drawGrid( const std::vector<Tile_t>& tiles )
    ClearBackground( RAYWHITE );
    for ( const auto& tile : tiles )
    {
-      //drawTileWithNumber( tile.tileDest, tile.n );
+      // drawTileWithNumber( tile.tileDest, tile.n );
       drawTileWithNumber( tile.tileDest, 1 );
    }
    EndDrawing();

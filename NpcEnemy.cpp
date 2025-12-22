@@ -138,7 +138,9 @@ void NpcEnemy_t::draw()
    DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
 
    // Draw direction
-   DrawLine( playerPosition.x, playerPosition.y, playerPosition.x + velocity.x * 50, playerPosition.y + velocity.y * 50, RED );
+   DrawLine( playerPosition.x, playerPosition.y,
+             playerPosition.x + velocity.x * 50,
+             playerPosition.y + velocity.y * 50, RED );
 
 #endif
 }
@@ -164,7 +166,6 @@ bool NpcEnemy_t::handleNpcMovement( World_t& world, Player_t* player )
    // Ensure we have a path (recomputed each call for now). Strategy writes
    // the path into `pathIndices` and resets `pathCursor`.
    pathFindingStrategy( world, *player );
-
 
    // Update sprite animation based on velocity
    if ( velocity.x > 0 )

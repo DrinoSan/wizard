@@ -4,31 +4,9 @@
 #include <iostream>
 
 //-----------------------------------------------------------------------------
-Player_t::Player_t()
-{
-   playerPosition = { ( float ) screenWidth / 2 + 30,
-                      ( float ) screenHeight / 2 + 30 };
-
-   playerTexture         = LoadTexture( "spritesheets/wizard01.png" );
-   ANIMATION_WALK_UP_Y   = static_cast<float>( playerTexture.height / 54 ) * 8;
-   ANIMATION_WALK_LEFT_Y = static_cast<float>( playerTexture.height / 54 ) * 9;
-   ANIMATION_WALK_DOWN_Y = static_cast<float>( playerTexture.height / 54 ) * 10;
-   ANIMATION_WALK_RIGHT_Y =
-       static_cast<float>( playerTexture.height / 54 ) * 11;
-
-   ANIMATION_IDLE_UP_Y    = static_cast<float>( playerTexture.height / 54 ) * 0;
-   ANIMATION_IDLE_LEFT_Y  = static_cast<float>( playerTexture.height / 54 ) * 1;
-   ANIMATION_IDLE_DOWN_Y  = static_cast<float>( playerTexture.height / 54 ) * 2;
-   ANIMATION_IDLE_RIGHT_Y = static_cast<float>( playerTexture.height / 54 ) * 3;
-
-   frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
-                static_cast<float>( playerTexture.height / 54 ) };
-
-   frameWidth = playerTexture.width / 13;
-
-   type   = ENTITY_TYPE::PLAYER;
-   hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
-}
+Player_t::Player_t() : Player_t( {  ( float ) screenWidth / 2 + 30,
+                      ( float ) screenHeight / 2 + 30  } )
+{}
 
 //-----------------------------------------------------------------------------
 Player_t::Player_t( Vector2 pos )

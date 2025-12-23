@@ -35,82 +35,6 @@ Player_t::Player_t( Vector2 pos )
 }
 
 //-----------------------------------------------------------------------------
-void Player_t::goRight( float movement )
-{
-   // playerPosition.x += movement;
-   velocity.x += movement;
-
-   if ( framesCounter >= ( 60 / framesSpeed ) )
-   {
-      framesCounter = 0;
-      currentFrame++;
-
-      if ( currentFrame > 8 )
-         currentFrame = 0;
-
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_RIGHT_Y;
-   }
-}
-
-//-----------------------------------------------------------------------------
-void Player_t::goLeft( float movement )
-{
-   // playerPosition.x -= movement;
-   velocity.x -= movement;
-
-   if ( framesCounter >= ( 60 / framesSpeed ) )
-   {
-      framesCounter = 0;
-      currentFrame++;
-
-      if ( currentFrame > 8 )
-         currentFrame = 0;
-
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_LEFT_Y;
-   }
-}
-
-//-----------------------------------------------------------------------------
-void Player_t::goUp( float movement )
-{
-   // playerPosition.y -= movement;
-   velocity.y -= movement;
-
-   if ( framesCounter >= ( 60 / framesSpeed ) )
-   {
-      framesCounter = 0;
-      currentFrame++;
-
-      if ( currentFrame > 8 )
-         currentFrame = 0;
-
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_UP_Y;
-   }
-}
-
-//-----------------------------------------------------------------------------
-void Player_t::goDown( float movement )
-{
-   // playerPosition.y += movement;
-   velocity.y += movement;
-
-   if ( framesCounter >= ( 60 / framesSpeed ) )
-   {
-      framesCounter = 0;
-      currentFrame++;
-
-      if ( currentFrame > 8 )
-         currentFrame = 0;
-
-      frameRec.x = ( float ) currentFrame * ( float ) playerTexture.width / 13;
-      frameRec.y = ANIMATION_WALK_DOWN_Y;
-   }
-}
-
-//-----------------------------------------------------------------------------
 void Player_t::draw()
 {
    // DrawTextureRec( playerTexture, frameRec, playerPosition,
@@ -140,69 +64,12 @@ bool Player_t::handleKeyEvent( KeyPressedEvent_t& e )
 }
 
 //-----------------------------------------------------------------------------
-bool Player_t::handleMovement( float dt )
-{
-   Vector2 input = { 0 };
-   if ( IsKeyDown( KEY_D ) )
-      input.x += 1;
-   if ( IsKeyDown( KEY_A ) )
-      input.x -= 1;
-   if ( IsKeyDown( KEY_S ) )
-      input.y += 1;
-   if ( IsKeyDown( KEY_W ) )
-      input.y -= 1;
-
-   if ( Vector2Length( input ) > 0.1f )
-   {
-      input = Vector2Normalize( input );
-      playerPosition.x += input.x * SPEED * dt;
-      playerPosition.y += input.y * SPEED * dt;
-
-      // Animation (frame-independent!)
-      animTimer += dt;
-      if ( animTimer >= 1.0f / framesSpeed )
-      {
-         animTimer    = 0;
-         currentFrame = ( currentFrame + 1 ) % 9;
-         frameRec.x   = currentFrame * frameWidth;
-      }
-
-      // Set correct row
-      if ( fabsf( input.x ) > fabsf( input.y ) )
-         frameRec.y =
-             input.x > 0 ? ANIMATION_WALK_RIGHT_Y : ANIMATION_WALK_LEFT_Y;
-      else
-         frameRec.y = input.y > 0 ? ANIMATION_WALK_DOWN_Y : ANIMATION_WALK_UP_Y;
-   }
-   else
-   {
-      // Animation (frame-independent!)
-      animTimer += dt;
-      if ( animTimer >= 1.0f / framesSpeed )
-      {
-         animTimer    = 0;
-         currentFrame = ( currentFrame + 1 ) % 7;
-         frameRec.x   = currentFrame * frameWidth;
-      }
-      // Idle
-      // currentFrame = 0;
-      // frameRec.x   = 0;
-      frameRec.y = ANIMATION_IDLE_DOWN_Y;
-   }
-
-   // Update hitbox
-   hitbox.x = playerPosition.x + 10;
-   hitbox.y = playerPosition.y;
-
-   return true;
-}
-
-//-----------------------------------------------------------------------------
 void Player_t::updateAnimation( float dt )
 {
    // Only animate if moving
    if ( velocity.x != 0.0f || velocity.y != 0.0f )
    {
+      state = ENTITY_STATE::ACTIVE;
       animTimer += dt;
 
       // How long each frame should be shown
@@ -232,6 +99,7 @@ void Player_t::updateAnimation( float dt )
    }
    else
    {
+      state = ENTITY_STATE::IDLE;
       animTimer += dt;
       // How long each frame should be shown
       float frameDuration = 1.0f / framesSpeed;

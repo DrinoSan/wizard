@@ -80,7 +80,8 @@ int main()
          if ( ImGui::CollapsingHeader( "Player Info" ) )
          {
             ImGui::SeparatorText( "General:" );
-            ImGui::BulletText( "Player position: %.2f, %.2f",
+            ImGui::BulletText( "State: %s", entityStateToString( player->state ).c_str() );
+            ImGui::BulletText( "Position: %.2f, %.2f",
                                player->playerPosition.x,
                                player->playerPosition.y );
          }

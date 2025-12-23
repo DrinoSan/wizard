@@ -15,15 +15,7 @@ class Player_t : public Graphic_t, public Entity_t
 
    virtual ~Player_t() = default;
 
-   // Movements
-   // Moves Player and texture rectangle
-   void goRight( float movement = PLAYER_MOVEMENT_SPEED );
-   void goLeft( float movement = PLAYER_MOVEMENT_SPEED );
-   void goUp( float movement = PLAYER_MOVEMENT_SPEED );
-   void goDown( float movement = PLAYER_MOVEMENT_SPEED );
-
    void draw() override;
-   bool handleMovement( float dt );
    void onEvent( Event_t& e ) override;
    bool handleKeyEvent( KeyPressedEvent_t& e );
 

@@ -16,6 +16,33 @@ enum class ENTITY_TYPE
 };
 
 //-----------------------------------------------------------------------------
+enum class ENTITY_STATE
+{
+   ACTIVE,
+   IDLE,
+   BURNING,
+   FROZEN
+};
+
+//-----------------------------------------------------------------------------
+inline std::string entityStateToString( ENTITY_STATE state )
+{
+   switch ( state )
+   {
+   case ENTITY_STATE::ACTIVE:
+      return "ACTIVE";
+   case ENTITY_STATE::IDLE:
+      return "IDLE";
+   case ENTITY_STATE::BURNING:
+      return "BURNING";
+   case ENTITY_STATE::FROZEN:
+      return "FROZEN";
+   default:
+      return "UNKNOWN";
+   }
+}
+
+//-----------------------------------------------------------------------------
 inline std::string entityTypeToString( ENTITY_TYPE type )
 {
    switch ( type )
@@ -50,15 +77,16 @@ class Entity_t
    virtual void        onEvent( Event_t& e ) = 0;
    virtual std::string str();
 
-   ENTITY_TYPE type;
-   Rectangle   frameRec;
-   Rectangle   hitbox;
-   Texture2D   playerTexture;
-   Vector2     playerPosition;
-   Vector2     velocity;
-   Vector2     hitboxOffset{ 10, 0 };
-   float       frameWidth = 0.0f;
-   const float SPEED      = 100.0f;
+   ENTITY_TYPE  type;
+   ENTITY_STATE state;
+   Rectangle    frameRec;
+   Rectangle    hitbox;
+   Texture2D    playerTexture;
+   Vector2      playerPosition;
+   Vector2      velocity;
+   Vector2      hitboxOffset{ 10, 0 };
+   float        frameWidth = 0.0f;
+   const float  SPEED      = 100.0f;
 
    // Animation stuff
    int32_t ANIMATION_WALK_UP_Y;
@@ -71,9 +99,9 @@ class Entity_t
    int32_t ANIMATION_IDLE_DOWN_Y;
    int32_t ANIMATION_IDLE_RIGHT_Y;
 
-   int     currentFrame  = 0;
-   int     framesCounter = 0;
-   int     framesSpeed   = 10;   // Number of spritesheet frames shown by second
+   int currentFrame  = 0;
+   int framesCounter = 0;
+   int framesSpeed   = 10;   // Number of spritesheet frames shown by second
 
    // Player/NPC related stuff
    int32_t attackRange;

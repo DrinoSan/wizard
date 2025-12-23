@@ -110,7 +110,13 @@ bool Player_t::handleKeyEvent( KeyPressedEvent_t& e )
 {
    if ( e.getKeyCode() == KEY_SPACE )
    {
-      castAttack();
+      fireCooldown -= GetFrameTime();
+
+      if( fireCooldown <= 0.0f )
+      {
+         castAttack();
+         fireCooldown = FIRE_RATE;
+      }
    }
 
    return false;

@@ -61,4 +61,6 @@ class Player_t : public Graphic_t, public Entity_t
 
    std::array<Texture2D, 4> attackTextures{};
    std::vector<Attack>      activeAttacks;   // Max 20-50 for perf
+   float                    FIRE_RATE{ 0.5f };
+   float                    fireCooldown{ 0.0f };
 };

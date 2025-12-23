@@ -8,8 +8,8 @@
 #include "Player.h"
 #include "World.h"
 #include "events/KeyEvent.h"
-#include "raylib.h"
 #include "imgui.h"
+#include "raylib.h"
 #include "rlImGui.h"
 
 int main()
@@ -50,6 +50,11 @@ int main()
       {
          break;
       }
+      if ( IsKeyPressed( KEY_F ) )
+      {
+         ToggleFullscreen();
+         gameWorldManager.updateWorld();
+      }
 
       float dt = GetFrameTime();
       gameWorldManager.update( dt );
@@ -67,13 +72,32 @@ int main()
       DrawText( "move the player with WASD keys", 10, 10, 20, RED );
 
       auto* player = gameWorldManager.getPlayer();
-      rlImGuiBegin();
-      ImGui::Begin("Debug Stuff");
-      ImGui::Text("Player position: %.2f, %.2f", player->playerPosition.x, player->playerPosition.y);
-      ImGui::Text("FPS: %d", GetFPS() );
-      ImGui::End();
+      {
+         rlImGuiBegin();
+         ImGui::Begin( "Debug Stuff" );
 
-      rlImGuiEnd();
+         ImGui::Text( "FPS: %d", GetFPS() );
+         if ( ImGui::CollapsingHeader( "Player Info" ) )
+         {
+            ImGui::SeparatorText( "General:" );
+            ImGui::BulletText( "Player position: %.2f, %.2f",
+                               player->playerPosition.x,
+                               player->playerPosition.y );
+         }
+         if ( ImGui::CollapsingHeader( "World Info" ) )
+         {
+            ImGui::SeparatorText( "General:" );
+            ImGui::BulletText( "RenderWidth: %d - RenderHeight: %d",
+                               GetRenderWidth(), GetRenderHeight() );
+            ImGui::BulletText( "ScreenWidth: %d - ScreenHeight: %d",
+                               GetScreenWidth(), GetScreenHeight() );
+         }
+
+         ImGui::TextLinkOpenURL( "https://github.com/DrinoSan/wizard" );
+
+         ImGui::End();
+         rlImGuiEnd();
+      }
 
       EndDrawing();
       //----------------------------------------------------------------------------------

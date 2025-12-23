@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
+// ----------------------------------------------------------------------------
 struct Node
 {
    int   x;
@@ -19,11 +20,13 @@ struct Node
    int   parentIdx;   // index in nodes vector
 };
 
+// ----------------------------------------------------------------------------
 static inline int toIndex( int x, int y, int cols )
 {
    return y * cols + x;
 }
 
+// ----------------------------------------------------------------------------
 // Octile heuristic for 8-direction movement (diagonals allowed)
 static inline float heuristic( int x1, int y1, int x2, int y2 )
 {
@@ -36,6 +39,7 @@ static inline float heuristic( int x1, int y1, int x2, int y2 )
    return D * ( mx ) + ( D2 - D ) * mn;
 }
 
+// ----------------------------------------------------------------------------
 void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
                                  const Player_t& player ) const
 {

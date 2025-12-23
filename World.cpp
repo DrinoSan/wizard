@@ -4,6 +4,7 @@
 // ----------------------------------------------------------------------------
 void World_t::loadTileLayoutAndTileMap()
 {
+   tileMapLayout.clear();
    // This part loads the tileMapLayout it contains 30x20 entries where the
    // value defines the index in the tileMapPNG
    std::ifstream file( "tilemapWithTypes.sand" );
@@ -22,7 +23,7 @@ void World_t::loadTileLayoutAndTileMap()
 
          std::string tileElement{ tail, head };
          // Delimiter == '-'
-         // Here i have the form 3-C
+         // Here i have the form 3-C (C for Collision)
          auto delimiterIt = tileElement.find( '-' );
 
          std::pair<int32_t, TileType_t> tile;
@@ -49,12 +50,17 @@ void World_t::loadTileLayoutAndTileMap()
 }
 
 // ----------------------------------------------------------------------------
-void World_t::updateTiles()
+void World_t::updateTiles( int32_t width, int32_t height )
 {
-   float tileWidth =
-       screenWidth / 30;   // @TODO: Take size (30) from metdata in xml file
-   float tileHeight =
-       screenHeight / 20;   // @TODO: Take size (20) from metdata in xml file
+   worldMap.clear();
+   worldMapTilesWithCollision.clear();
+   int screenW = width;
+   int screenH = height;
+
+   float tileWidth = static_cast<float>( screenW ) /
+                     30.0f;   // @TODO: Take size (30) from metdata in xml file
+   float tileHeight = static_cast<float>( screenH ) /
+                      20.0f;   // @TODO: Take size (20) from metdata in xml file
 
    for ( int32_t i = 0; i < tileMapLayout.size(); ++i )
    {
@@ -109,5 +115,12 @@ void World_t::preapreWorld()
 {
    // Map related stuff
    loadTileLayoutAndTileMap();
-   updateTiles();
+   if( IsWindowFullscreen() )
+   {
+     updateTiles( GetRenderWidth(), GetRenderHeight() );
+   }
+   else
+   {
+     updateTiles( screenWidth, screenHeight );
+   }
 }

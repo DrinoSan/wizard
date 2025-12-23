@@ -295,6 +295,12 @@ void GameWorldManager_t::spawnEnemies( int32_t numEnemies_ )
 }
 
 //-----------------------------------------------------------------------------
+void GameWorldManager_t::updateWorld()
+{
+   world->preapreWorld();
+}
+
+//-----------------------------------------------------------------------------
 Player_t* GameWorldManager_t::getPlayer() const
 {
    for ( auto& obj : enities )

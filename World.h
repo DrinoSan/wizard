@@ -36,7 +36,7 @@ class World_t : public Graphic_t
    /// Function to update the tiles which will be drawn by draw function
    /// Currently this function is called only once to initialize everything but
    /// maybe later it can be used for dynamic map updates
-   void updateTiles();
+   void updateTiles( int32_t width, int32_t height );
 
    // tileMapPNG contains each single tile packed into one png
    // One tile has 16x16 dimensions

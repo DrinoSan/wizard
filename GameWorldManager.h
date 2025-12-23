@@ -42,6 +42,9 @@ class GameWorldManager_t
    void spawnEnemies( int32_t numEnemies_ );
 
 
+   // Method on Map resolution updates
+   void updateWorld();
+
    // Methods for imgui output
    Player_t* getPlayer() const;
 

@@ -59,8 +59,10 @@ void GameWorldManager_t::applyMovement( float dt )
          entity->hitbox.y = entity->playerPosition.y + entity->hitboxOffset.y;
       }
 
+      // Needed for loggin
+      entity->lastVelocity = entity->velocity;
       // IMPORTANT Without this, entities keep sliding forever
-      entity->velocity = { 0.0f, 0.0f };
+      entity->velocity     = { 0.0f, 0.0f };
    }
 }
 

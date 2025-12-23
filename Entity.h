@@ -84,6 +84,7 @@ class Entity_t
    Texture2D    playerTexture;
    Vector2      playerPosition;
    Vector2      velocity;
+   Vector2      lastVelocity; // Used for logging
    Vector2      hitboxOffset{ 10, 0 };
    float        frameWidth = 0.0f;
    const float  SPEED      = 100.0f;

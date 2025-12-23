@@ -2,6 +2,7 @@
 
 #include "Event.h"
 
+// ----------------------------------------------------------------------------
 class KeyEvent_t : public Event_t
 {
  public:
@@ -14,6 +15,7 @@ class KeyEvent_t : public Event_t
    int keyCode;
 };
 
+// ----------------------------------------------------------------------------
 class KeyPressedEvent_t : public KeyEvent_t
 {
  public:
@@ -38,6 +40,7 @@ class KeyPressedEvent_t : public KeyEvent_t
    int m_RepeatCount;
 };
 
+// ----------------------------------------------------------------------------
 class KeyReleasedEvent_t : public KeyEvent_t
 {
  public:
@@ -53,6 +56,7 @@ class KeyReleasedEvent_t : public KeyEvent_t
    EVENT_CLASS_TYPE( KeyReleased )
 };
 
+// ----------------------------------------------------------------------------
 class KeyTypedEvent_t : public KeyEvent_t
 {
  public:

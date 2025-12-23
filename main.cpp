@@ -71,8 +71,9 @@ int main()
 
       DrawText( "move the player with WASD keys", 10, 10, 20, RED );
 
-      auto* player = gameWorldManager.getPlayer();
+      // IMGUI stuff
       {
+         auto* player = gameWorldManager.getPlayer();
          rlImGuiBegin();
          ImGui::Begin( "Debug Stuff" );
 
@@ -84,6 +85,9 @@ int main()
             ImGui::BulletText( "Position: %.2f, %.2f",
                                player->playerPosition.x,
                                player->playerPosition.y );
+            ImGui::BulletText( "Velocity: %.2f, %.2f",
+                               player->lastVelocity.x,
+                               player->lastVelocity.y );
          }
          if ( ImGui::CollapsingHeader( "World Info" ) )
          {
@@ -93,6 +97,7 @@ int main()
             ImGui::BulletText( "ScreenWidth: %d - ScreenHeight: %d",
                                GetScreenWidth(), GetScreenHeight() );
          }
+         player->drawAttackDebugInfo();
 
          ImGui::TextLinkOpenURL( "https://github.com/DrinoSan/wizard" );
 

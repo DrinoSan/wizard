@@ -13,29 +13,29 @@
 // ----------------------------------------------------------------------------
 struct Node
 {
-   int   x;
-   int   y;
-   float g;
-   float h;
-   int   parentIdx;   // index in nodes vector
+   int32_t x;
+   int32_t y;
+   float   g;
+   float   h;
+   int32_t parentIdx;   // index in nodes vector
 };
 
 // ----------------------------------------------------------------------------
-static inline int toIndex( int x, int y, int cols )
+static inline int32_t toIndex( int32_t x, int32_t y, int32_t cols )
 {
    return y * cols + x;
 }
 
 // ----------------------------------------------------------------------------
 // Octile heuristic for 8-direction movement (diagonals allowed)
-static inline float heuristic( int x1, int y1, int x2, int y2 )
+static inline float heuristic( int32_t x1, int32_t y1, int32_t x2, int32_t y2 )
 {
-   int         dx = std::abs( x1 - x2 );
-   int         dy = std::abs( y1 - y2 );
+   int32_t     dx = std::abs( x1 - x2 );
+   int32_t     dy = std::abs( y1 - y2 );
    const float D  = 1.0f;
    const float D2 = std::sqrt( 2.0f );
-   int         mn = std::min( dx, dy );
-   int         mx = std::max( dx, dy );
+   int32_t     mn = std::min( dx, dy );
+   int32_t     mx = std::max( dx, dy );
    return D * ( mx ) + ( D2 - D ) * mn;
 }
 
@@ -47,8 +47,8 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
       return;
 
    // Determine grid dimensions by counting tiles on the first row
-   int   cols      = 0;
-   float firstRowY = world.worldMap[ 0 ].tileDest.y;
+   int32_t cols      = 0;
+   float   firstRowY = world.worldMap[ 0 ].tileDest.y;
    for ( const auto& t : world.worldMap )
    {
       if ( t.tileDest.y == firstRowY )
@@ -58,7 +58,8 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
    }
    if ( cols <= 0 )
       return;
-   int rows = static_cast<int>( world.worldMap.size() / cols );
+
+   int32_t rows = static_cast<int32_t>( world.worldMap.size() / cols );
 
    float tileW = world.worldMap[ 0 ].tileDest.width;
    float tileH = world.worldMap[ 0 ].tileDest.height;
@@ -66,8 +67,8 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
    // Convert world positions to tile coordinates (clamp to grid)
    auto posToTile = [ & ]( const Vector2& pos )
    {
-      int tx = static_cast<int>( pos.x / tileW );
-      int ty = static_cast<int>( pos.y / tileH );
+      int32_t tx = static_cast<int32_t>( pos.x / tileW );
+      int32_t ty = static_cast<int32_t>( pos.y / tileH );
       if ( tx < 0 )
          tx = 0;
       if ( tx >= cols )
@@ -76,7 +77,7 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
          ty = 0;
       if ( ty >= rows )
          ty = rows - 1;
-      return std::pair<int, int>( tx, ty );
+      return std::pair<int32_t, int32_t>( tx, ty );
    };
 
    auto [ startX, startY ] = posToTile( npc.playerPosition );
@@ -85,18 +86,18 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
    if ( startX == goalX && startY == goalY )
       return;
 
-   int gridSize = cols * rows;
+   int32_t gridSize = cols * rows;
 
-   std::vector<float> gScore( gridSize,
-                              std::numeric_limits<float>::infinity() );
-   std::vector<int>   parent( gridSize, -1 );
-   std::vector<char>  closed( gridSize, 0 );
+   std::vector<float>   gScore( gridSize,
+                                std::numeric_limits<float>::infinity() );
+   std::vector<int32_t> parent( gridSize, -1 );
+   std::vector<char>    closed( gridSize, 0 );
 
    // Min-heap by f = g + h
    struct PQItem
    {
-      int   idx;
-      float f;
+      int32_t idx;
+      float   f;
    };
    struct Cmp
    {
@@ -107,35 +108,35 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
    };
    std::priority_queue<PQItem, std::vector<PQItem>, Cmp> open;
 
-   int startIdx       = toIndex( startX, startY, cols );
+   int32_t startIdx   = toIndex( startX, startY, cols );
    gScore[ startIdx ] = 0.0f;
    open.push( { startIdx, heuristic( startX, startY, goalX, goalY ) } );
 
    // 8-directional neighbors (including diagonals)
-   const int dir[ 8 ][ 2 ] = { { 1, 0 }, { -1, 0 }, { 0, 1 },  { 0, -1 },
-                               { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
+   const int32_t dir[ 8 ][ 2 ] = { { 1, 0 }, { -1, 0 }, { 0, 1 },  { 0, -1 },
+                                   { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
 
-   bool found   = false;
-   int  goalIdx = toIndex( goalX, goalY, cols );
+   bool    found   = false;
+   int32_t goalIdx = toIndex( goalX, goalY, cols );
 
    // Obstacle dilation disabled for now (padding = 0). If NPC is not
    // passing narrow corridors correctly, consider enabling padding based
    // on NPC hitbox size. Using padding=0 avoids over-blocking in current
    // setup.
-   int padding = 0;
+   int32_t padding = 0;
 
-   auto isBlocked = [ & ]( int tx, int ty )
+   auto isBlocked = [ & ]( int32_t tx, int32_t ty )
    {
       // return true if any tile within padding square is COLLISION
-      int x0 = std::max( 0, tx - padding );
-      int x1 = std::min( cols - 1, tx + padding );
-      int y0 = std::max( 0, ty - padding );
-      int y1 = std::min( rows - 1, ty + padding );
-      for ( int yy = y0; yy <= y1; ++yy )
+      int32_t x0 = std::max( 0, tx - padding );
+      int32_t x1 = std::min( cols - 1, tx + padding );
+      int32_t y0 = std::max( 0, ty - padding );
+      int32_t y1 = std::min( rows - 1, ty + padding );
+      for ( int32_t yy = y0; yy <= y1; ++yy )
       {
-         for ( int xx = x0; xx <= x1; ++xx )
+         for ( int32_t xx = x0; xx <= x1; ++xx )
          {
-            int i = toIndex( xx, yy, cols );
+            int32_t i = toIndex( xx, yy, cols );
             if ( world.worldMap[ i ].tileType == TileType_t::COLLISION )
                return true;
          }
@@ -147,7 +148,7 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
    {
       auto cur = open.top();
       open.pop();
-      int curIdx = cur.idx;
+      int32_t curIdx = cur.idx;
       if ( closed[ curIdx ] )
          continue;
       closed[ curIdx ] = 1;
@@ -158,16 +159,16 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
          break;
       }
 
-      int cx = curIdx % cols;
-      int cy = curIdx / cols;
+      int32_t cx = curIdx % cols;
+      int32_t cy = curIdx / cols;
 
       for ( auto& d : dir )
       {
-         int nx = cx + d[ 0 ];
-         int ny = cy + d[ 1 ];
+         int32_t nx = cx + d[ 0 ];
+         int32_t ny = cy + d[ 1 ];
          if ( nx < 0 || nx >= cols || ny < 0 || ny >= rows )
             continue;
-         int nIdx = toIndex( nx, ny, cols );
+         int32_t nIdx = toIndex( nx, ny, cols );
 
          // Skip blocked tiles (dilated by NPC size)
          if ( isBlocked( nx, ny ) )
@@ -177,8 +178,8 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
          // movement if either adjacent cardinal tiles are blocked.
          if ( std::abs( d[ 0 ] ) + std::abs( d[ 1 ] ) == 2 )   // diagonal
          {
-            int idx1 = toIndex( cx + d[ 0 ], cy, cols );
-            int idx2 = toIndex( cx, cy + d[ 1 ], cols );
+            int32_t idx1 = toIndex( cx + d[ 0 ], cy, cols );
+            int32_t idx2 = toIndex( cx, cy + d[ 1 ], cols );
             if ( world.worldMap[ idx1 ].tileType == TileType_t::COLLISION ||
                  world.worldMap[ idx2 ].tileType == TileType_t::COLLISION )
                continue;
@@ -203,8 +204,8 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
       return;
 
    // Reconstruct path (as tile indices) from goal to start
-   std::vector<int> pathIdx;
-   int              cur = goalIdx;
+   std::vector<int32_t> pathIdx;
+   int32_t              cur = goalIdx;
    while ( cur != -1 )
    {
       pathIdx.push_back( cur );
@@ -221,8 +222,8 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
    // paths.
    if ( npc.pathIndices.size() >= 2 )
    {
-      int   nextIdx = npc.pathIndices[ 1 ];
-      float targetX = world.worldMap[ nextIdx ].tileDest.x +
+      int32_t nextIdx = npc.pathIndices[ 1 ];
+      float   targetX = world.worldMap[ nextIdx ].tileDest.x +
                       world.worldMap[ nextIdx ].tileDest.width * 0.5f;
       float targetY = world.worldMap[ nextIdx ].tileDest.y +
                       world.worldMap[ nextIdx ].tileDest.height * 0.5f;

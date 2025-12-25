@@ -138,8 +138,8 @@ void Player_t::castAttack()
    atk.type     = AttackType::FIRE;
    atk.position = Vector2Add( playerCenter, spawnOffset );
    atk.velocity = Vector2Scale( lastDirection, 200.0f );
-   atk.maxFrames =
-       getAttackTexture( atk.type ).width / 8;   // 8 Number of sprites
+   atk.maxFrames = 8;
+       //getAttackTexture( atk.type ).width / 8;   // 8 Number of sprites
    atk.sourceRec = { 0, 0, 72, 72 };
    atk.rotation  = Vector2Angle( lastDirection, { 1, 0 } ) * RAD2DEG *
                   -1.0f;   // -1 noetig, da initial das sprite nach rechts zeigt

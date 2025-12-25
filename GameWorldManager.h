@@ -46,6 +46,7 @@ class GameWorldManager_t
    void updateWorld();
 
    // Methods for imgui output
+   void imgui_debug() const;
    Player_t* getPlayer() const;
 
  private:

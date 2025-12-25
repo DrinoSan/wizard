@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cassert>
 
+#include "imgui.h"
 #include "GameWorldManager.h"
 #include "log.h"
 
@@ -62,7 +63,7 @@ void GameWorldManager_t::applyMovement( float dt )
       // Needed for loggin
       entity->lastVelocity = entity->velocity;
       // IMPORTANT Without this, entities keep sliding forever
-      entity->velocity     = { 0.0f, 0.0f };
+      entity->velocity = { 0.0f, 0.0f };
    }
 }
 
@@ -229,10 +230,20 @@ void GameWorldManager_t::handleInputs()
    int  keyCode;
    bool keyHandeld{ false };
 
+   // Need to poll for space for attacks
+   // if ( IsKeyDown( KEY_SPACE ) )
+   //{
+   //   KeyPressedEvent_t event( KEY_SPACE );
+   //   onEvent( event );
+   //}
+
    for ( auto& key : keysDown )
    {
       if ( key == 0 )
+      {
          continue;
+      }
+
       if ( IsKeyDown( key ) )
       {
          KeyPressedEvent_t event( key );
@@ -315,4 +326,37 @@ Player_t* GameWorldManager_t::getPlayer() const
 
    assert( false );
    return nullptr;
+}
+
+//-----------------------------------------------------------------------------
+void GameWorldManager_t::imgui_debug() const
+{
+   auto* player = getPlayer();
+   if ( ImGui::CollapsingHeader( "Player Info" ) )
+   {
+      ImGui::SeparatorText( "General:" );
+      ImGui::BulletText( "State: %s",
+                         entityStateToString( player->state ).c_str() );
+      ImGui::BulletText( "Position: %.2f, %.2f", player->playerPosition.x,
+                         player->playerPosition.y );
+      ImGui::BulletText( "Velocity: %.2f, %.2f", player->lastVelocity.x,
+                         player->lastVelocity.y );
+
+      ImGui::BulletText( "LifePoints: %d", player->lifePoints );
+      ImGui::BulletText( "ManaPoints: %d", player->manaPoints );
+      ImGui::BulletText( "Stamina: %d", player->stamina );
+      ImGui::BulletText( "Armor: %d", player->armor );
+      ImGui::BulletText( "AttackRange: %d", player->attackRange );
+      ImGui::BulletText( "AttackSpeed: %.2f", player->attackSpeed );
+      ImGui::BulletText( "AttackPower: %d", player->attackPower );
+   }
+   if ( ImGui::CollapsingHeader( "World Info" ) )
+   {
+      ImGui::SeparatorText( "General:" );
+      ImGui::BulletText( "RenderWidth: %d - RenderHeight: %d", GetRenderWidth(),
+                         GetRenderHeight() );
+      ImGui::BulletText( "ScreenWidth: %d - ScreenHeight: %d", GetScreenWidth(),
+                         GetScreenHeight() );
+   }
+   player->drawAttackDebugInfo();
 }

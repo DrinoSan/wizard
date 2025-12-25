@@ -9,30 +9,6 @@
 #include "raylib.h"
 
 // ----------------------------------------------------------------------------
-// For now i only add 4
-enum class AttackType : std::uint8_t
-{
-   LIGHTNING = 0,
-   FIRE      = 1,
-   WATER     = 2,
-   EARTH     = 3
-};
-
-// ----------------------------------------------------------------------------
-struct Attack
-{
-   AttackType type;
-   Vector2    position;
-   Vector2    velocity;
-   Rectangle  sourceRec;   // For animation frames
-   float      timer;       // For anim speed
-   int        currentFrame;
-   int        maxFrames;
-   float      rotation;
-   bool       active = false;
-};
-
-// ----------------------------------------------------------------------------
 class Player_t : public Graphic_t, public Entity_t
 {
  public:
@@ -59,8 +35,4 @@ class Player_t : public Graphic_t, public Entity_t
    float   animTimer     = 0.0f;
    Vector2 lastDirection = { 0.0f, 1.0f };
 
-   std::array<Texture2D, 4> attackTextures{};
-   std::vector<Attack>      activeAttacks;   // Max 20-50 for perf
-   float                    FIRE_RATE{ 0.5f };
-   float                    fireCooldown{ 0.0f };
 };

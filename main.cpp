@@ -73,32 +73,11 @@ int main()
 
       // IMGUI stuff
       {
-         auto* player = gameWorldManager.getPlayer();
          rlImGuiBegin();
          ImGui::Begin( "Debug Stuff" );
 
          ImGui::Text( "FPS: %d", GetFPS() );
-         if ( ImGui::CollapsingHeader( "Player Info" ) )
-         {
-            ImGui::SeparatorText( "General:" );
-            ImGui::BulletText( "State: %s", entityStateToString( player->state ).c_str() );
-            ImGui::BulletText( "Position: %.2f, %.2f",
-                               player->playerPosition.x,
-                               player->playerPosition.y );
-            ImGui::BulletText( "Velocity: %.2f, %.2f",
-                               player->lastVelocity.x,
-                               player->lastVelocity.y );
-         }
-         if ( ImGui::CollapsingHeader( "World Info" ) )
-         {
-            ImGui::SeparatorText( "General:" );
-            ImGui::BulletText( "RenderWidth: %d - RenderHeight: %d",
-                               GetRenderWidth(), GetRenderHeight() );
-            ImGui::BulletText( "ScreenWidth: %d - ScreenHeight: %d",
-                               GetScreenWidth(), GetScreenHeight() );
-         }
-         player->drawAttackDebugInfo();
-
+         gameWorldManager.imgui_debug();
          ImGui::TextLinkOpenURL( "https://github.com/DrinoSan/wizard" );
 
          ImGui::End();

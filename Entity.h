@@ -5,6 +5,30 @@
 #include "events/KeyEvent.h"
 #include "raylib.h"
 
+// ----------------------------------------------------------------------------
+// For now i only add 4
+enum class AttackType : std::uint8_t
+{
+   LIGHTNING = 0,
+   FIRE      = 1,
+   WATER     = 2,
+   EARTH     = 3
+};
+
+// ----------------------------------------------------------------------------
+struct Attack
+{
+   AttackType type;
+   Vector2    position;
+   Vector2    velocity;
+   Rectangle  sourceRec;   // For animation frames
+   float      timer;       // For anim speed
+   int        currentFrame;
+   int        maxFrames;
+   float      rotation;
+   bool       active = false;
+};
+
 //-----------------------------------------------------------------------------
 enum class ENTITY_TYPE
 {
@@ -84,7 +108,7 @@ class Entity_t
    Texture2D    playerTexture;
    Vector2      playerPosition;
    Vector2      velocity;
-   Vector2      lastVelocity; // Used for logging
+   Vector2      lastVelocity;   // Used for logging
    Vector2      hitboxOffset{ 10, 0 };
    float        frameWidth = 0.0f;
    const float  SPEED      = 100.0f;
@@ -105,9 +129,20 @@ class Entity_t
    int framesSpeed   = 10;   // Number of spritesheet frames shown by second
 
    // Player/NPC related stuff
-   int32_t attackRange;
-   int32_t attackSpeed;
-   int32_t attackPower;
+   std::array<Texture2D, 4> attackTextures{};
+   std::vector<Attack>      activeAttacks;   // Max 20-50 for perf
+   float                    FIRE_RATE{ 0.5f };
+   float                    fireCooldown{ 0.0f };
+   AttackType               attackType;
+
+   int32_t lifePoints{ 100 };
+   int32_t manaPoints{ 100 };
+   int32_t stamina{ 100 };
+   int32_t armor{ 0 };
+
+   int32_t attackRange{ 10 };
+   float attackSpeed{ FIRE_RATE };
+   int32_t attackPower{ 1 };
 };
 
 //-----------------------------------------------------------------------------

@@ -52,7 +52,19 @@ int main()
       }
       if ( IsKeyPressed( KEY_F ) )
       {
-         ToggleFullscreen();
+         if ( IsWindowFullscreen() )
+         {
+            SetWindowSize( screenWidth, screenHeight );
+            ToggleFullscreen();
+         }
+         else
+         {
+            int32_t monitor = GetCurrentMonitor();
+            SetWindowSize( GetMonitorWidth( monitor ),
+                           GetMonitorHeight( monitor ) );
+            ToggleFullscreen();
+         }
+
          gameWorldManager.updateWorld();
       }
 

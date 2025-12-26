@@ -4,6 +4,7 @@
 #include "events/Event.h"
 #include "events/KeyEvent.h"
 #include "raylib.h"
+#include "raymath.h"
 
 // ----------------------------------------------------------------------------
 // For now i only add 4
@@ -101,6 +102,10 @@ class Entity_t
    virtual void        onEvent( Event_t& e ) = 0;
    virtual std::string str();
 
+ protected:
+   void drawLifeBar() const;
+
+ public:
    ENTITY_TYPE  type;
    ENTITY_STATE state;
    Rectangle    frameRec;
@@ -141,7 +146,7 @@ class Entity_t
    int32_t armor{ 0 };
 
    int32_t attackRange{ 10 };
-   float attackSpeed{ FIRE_RATE };
+   float   attackSpeed{ FIRE_RATE };
    int32_t attackPower{ 1 };
 };
 

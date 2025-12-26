@@ -109,6 +109,8 @@ void Player_t::draw()
       }
    }
 
+   drawLifeBar();
+
    activeAttacks.erase(
        std::remove_if( activeAttacks.begin(), activeAttacks.end(),
                        []( const Attack& a ) { return !a.active; } ),

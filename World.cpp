@@ -56,11 +56,13 @@ void World_t::updateTiles( int32_t width, int32_t height )
    worldMapTilesWithCollision.clear();
    int screenW = width;
    int screenH = height;
+   const float tileWidth = FIXED_TILE_SIZE;
+   const float tileHeight = FIXED_TILE_SIZE;
 
-   float tileWidth = static_cast<float>( screenW ) /
-                     30.0f;   // @TODO: Take size (30) from metdata in xml file
-   float tileHeight = static_cast<float>( screenH ) /
-                      20.0f;   // @TODO: Take size (20) from metdata in xml file
+  // float tileWidth = static_cast<float>( screenW ) /
+  //                   30.0f;   // @TODO: Take size (30) from metdata in xml file
+  // float tileHeight = static_cast<float>( screenH ) /
+  //                    20.0f;   // @TODO: Take size (20) from metdata in xml file
 
    for ( int32_t i = 0; i < tileMapLayout.size(); ++i )
    {
@@ -115,12 +117,5 @@ void World_t::preapreWorld()
 {
    // Map related stuff
    loadTileLayoutAndTileMap();
-   if( IsWindowFullscreen() )
-   {
-     updateTiles( GetRenderWidth(), GetRenderHeight() );
-   }
-   else
-   {
-     updateTiles( screenWidth, screenHeight );
-   }
+   updateTiles( GetRenderWidth(), GetRenderHeight() );
 }

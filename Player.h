@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include "Globals.h"
 #include "Graphic.h"
+#include "World.h"
 #include "events/KeyEvent.h"
 #include "raylib.h"
 
@@ -12,8 +13,8 @@
 class Player_t : public Graphic_t, public Entity_t
 {
  public:
-   Player_t();
-   Player_t( Vector2 pos );
+   Player_t() = delete;
+   Player_t( World_t& world );
 
    virtual ~Player_t();
 

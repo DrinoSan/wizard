@@ -20,10 +20,6 @@ int main()
 
    rlImGuiSetup( true );
 
-   // I like to leak memory
-   // Creating Player
-   auto player = std::make_unique<Player_t>();
-
    // Creating World
    auto world = std::make_unique<World_t>();
    // Prepare world (tilemap,layout and so on)
@@ -33,8 +29,8 @@ int main()
    // The sequence of adding objects to the world is important because if world
    // is added after player the player will be drawn behind the map.
    GameWorldManager_t gameWorldManager{ std::move( world ) };
+   gameWorldManager.spawnPlayer();
    gameWorldManager.spawnEnemies( NUM_ENEMIES );
-   gameWorldManager.addEntity( std::move( player ) );
    gameWorldManager.prepareManager();
 
    SetTargetFPS( 60 );   // Set our game to run at 60 frames-per-second
@@ -65,7 +61,7 @@ int main()
             ToggleFullscreen();
          }
 
-         gameWorldManager.updateWorld();
+         //gameWorldManager.updateWorld();
       }
 
       float dt = GetFrameTime();

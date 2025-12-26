@@ -2,22 +2,37 @@
 #include <algorithm>
 #include <cassert>
 
-#include "imgui.h"
 #include "GameWorldManager.h"
+#include "imgui.h"
 #include "log.h"
 
 //-----------------------------------------------------------------------------
 GameWorldManager_t::GameWorldManager_t( std::unique_ptr<World_t> world_ )
     : world{ std::move( world_ ) }
 {
+   // Camera setup
+   camera.offset   = ( Vector2 ){ ( float ) screenWidth / 2.0f,
+                                  ( float ) screenHeight / 2.0f };
+   camera.rotation = 0.0f;
+   camera.zoom     = 1.0f;
 }
 
 //-----------------------------------------------------------------------------
 GameWorldManager_t::~GameWorldManager_t() = default;
 
 //-----------------------------------------------------------------------------
+void GameWorldManager_t::spawnPlayer()
+{
+   auto player  = std::make_unique<Player_t>( *world );
+   player->type = ENTITY_TYPE::PLAYER;
+   // playerEntity = player.get();
+   enities.push_back( std::move( player ) );
+}
+
+//-----------------------------------------------------------------------------
 void GameWorldManager_t::draw() const
 {
+   BeginMode2D( camera );
    // @TODO: add layers which should be drawn to have a way to know whats in
    // the background and so on
    world->draw();
@@ -25,6 +40,7 @@ void GameWorldManager_t::draw() const
    {
       e->draw();
    }
+   EndMode2D();
 }
 
 //-----------------------------------------------------------------------------
@@ -68,6 +84,61 @@ void GameWorldManager_t::applyMovement( float dt )
 }
 
 //-----------------------------------------------------------------------------
+void GameWorldManager_t::updateCamera()
+{
+   // @TODO: cache player pointer so i dont have to iterate always...
+   // Could lead to issues if i add multiplayer on single machine
+   /*
+   if ( playerEntity != nullptr )
+   {
+      camera.target =
+          playerEntity->playerPosition;
+   }
+   */
+
+   for ( auto& entity : enities )
+   {
+      if ( entity->type == ENTITY_TYPE::PLAYER )
+      {
+         camera.target = entity->playerPosition;
+         break;
+      }
+   }
+
+   camera.offset = ( Vector2 ){ ( float ) GetScreenWidth() / 2.0f,
+                                ( float ) GetScreenHeight() / 2.0f };
+
+   float baseZoom = ( float ) GetScreenHeight() /
+                    WORLD_HEIGHT;   // WORLD_HEIGTH is number of tiles * size of
+                                    // tiles check globals.h
+
+   static float zoomModifier = 1.0f;
+
+   if ( IsKeyDown( KEY_UP ) )
+   {
+      zoomModifier += 0.5f * GetFrameTime();   // zoom in gradually
+   }
+   if ( IsKeyDown( KEY_DOWN ) )
+   {
+      zoomModifier -= 0.5f * GetFrameTime();   // zoom out gradually
+   }
+
+   // Lightning zoom
+   if ( IsKeyDown( KEY_LEFT_SHIFT ) || IsKeyDown( KEY_RIGHT_SHIFT ) )
+   {
+      zoomModifier += IsKeyDown( KEY_UP ) ? 1.0f * GetFrameTime() : 0;
+      zoomModifier -= IsKeyDown( KEY_DOWN ) ? 1.0f * GetFrameTime() : 0;
+   }
+
+   zoomModifier = Clamp( zoomModifier, 0.4f, 3.5f );   // min/max allowed zoom
+
+   camera.zoom = baseZoom * zoomModifier;
+
+   camera.zoom = fmax( camera.zoom, 0.5f );
+   camera.zoom = fmin( camera.zoom, 4.0f );
+}
+
+//-----------------------------------------------------------------------------
 void GameWorldManager_t::update( float dt )
 {
    handleInputs();
@@ -75,6 +146,7 @@ void GameWorldManager_t::update( float dt )
    updateEntities( dt );
    handleCollisions( dt );
    applyMovement( dt );
+   updateCamera();
    // lateUpdate( dt );
 }
 
@@ -324,7 +396,7 @@ Player_t* GameWorldManager_t::getPlayer() const
       }
    }
 
-   assert( false );
+   assert( false && "Player not initialized" );
    return nullptr;
 }
 
@@ -342,6 +414,7 @@ void GameWorldManager_t::imgui_debug() const
       ImGui::BulletText( "Velocity: %.2f, %.2f", player->lastVelocity.x,
                          player->lastVelocity.y );
 
+      ImGui::SeparatorText( "Character:" );
       ImGui::BulletText( "LifePoints: %d", player->lifePoints );
       ImGui::BulletText( "ManaPoints: %d", player->manaPoints );
       ImGui::BulletText( "Stamina: %d", player->stamina );
@@ -355,8 +428,10 @@ void GameWorldManager_t::imgui_debug() const
       ImGui::SeparatorText( "General:" );
       ImGui::BulletText( "RenderWidth: %d - RenderHeight: %d", GetRenderWidth(),
                          GetRenderHeight() );
-      ImGui::BulletText( "ScreenWidth: %d - ScreenHeight: %d", GetScreenWidth(),
-                         GetScreenHeight() );
+      ImGui::BulletText( "GetScreenWidth: %d - GetScreenHeight: %d",
+                         GetScreenWidth(), GetScreenHeight() );
+      ImGui::SeparatorText( "Enemies:" );
+      ImGui::BulletText( "Number of Enemies: %d", NUM_ENEMIES );
    }
    player->drawAttackDebugInfo();
 }

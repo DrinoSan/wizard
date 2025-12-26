@@ -24,6 +24,8 @@ class GameWorldManager_t
    void update( float dt );
    void applyMovement( float dt );
    void updateEntities( float dt );
+   void updateCamera();
+   void spawnPlayer();
 
    /// Function to add objects to World
    /// @TODO: Use move semantic
@@ -41,12 +43,11 @@ class GameWorldManager_t
    void executeNpcMovements();
    void spawnEnemies( int32_t numEnemies_ );
 
-
    // Method on Map resolution updates
    void updateWorld();
 
    // Methods for imgui output
-   void imgui_debug() const;
+   void      imgui_debug() const;
    Player_t* getPlayer() const;
 
  private:
@@ -55,4 +56,5 @@ class GameWorldManager_t
    int32_t                                numEnemies;
    std::vector<NpcEnemy_t>                npcEnemies;
    std::array<int, 15>                    keysDown{ 0 };
+   Camera2D                               camera{};
 };

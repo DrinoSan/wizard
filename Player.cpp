@@ -1,5 +1,6 @@
 // System Headers
 #include <iostream>
+#include <random>
 
 // Project Headers
 #include "Globals.h"
@@ -9,17 +10,8 @@
 #include "raymath.h"
 
 //-----------------------------------------------------------------------------
-Player_t::Player_t()
-    : Player_t(
-          { ( float ) screenWidth / 2 + 30, ( float ) screenHeight / 2 + 30 } )
+Player_t::Player_t( World_t& world )
 {
-}
-
-//-----------------------------------------------------------------------------
-Player_t::Player_t( Vector2 pos )
-{
-   playerPosition = { pos.x, pos.y };
-
    playerTexture = LoadTexture( "spritesheets/wizard01.png" );
 
    attackTextures[ static_cast<std::size_t>( AttackType::LIGHTNING ) ] =
@@ -54,6 +46,36 @@ Player_t::Player_t( Vector2 pos )
 
    type   = ENTITY_TYPE::PLAYER;
    hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
+
+   std::vector<Vector2> freeTiles;
+   for ( int i = 0; i < world.tileMapLayout.size(); ++i )
+   {
+      if ( world.tileMapLayout[ i ].second == TileType_t::NO_COLLISION )
+      {
+         // Center of the tile in world coordinates
+         float x = ( i % MAP_TILES_X ) * FIXED_TILE_SIZE + FIXED_TILE_SIZE / 2.0f;
+         float y = ( i / MAP_TILES_X ) * FIXED_TILE_SIZE + FIXED_TILE_SIZE / 2.0f;
+         freeTiles.push_back( { x, y } );
+      }
+   }
+
+   // Pick a random
+   if ( freeTiles.empty() )
+   {
+      // Fallback: center of map
+      playerPosition = { WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f };
+      TraceLog( LOG_WARNING, "No non-collision tiles found for player spawn!" );
+   }
+   else
+   {
+      std::random_device              rd;
+      std::mt19937                    gen( rd() );
+      std::uniform_int_distribution<> dist( 0, freeTiles.size() - 1 );
+      playerPosition = freeTiles[ dist( gen ) ];
+   }
+
+   // Set hitbox centered on playerPosition
+   hitbox = { playerPosition.x - 10, playerPosition.y - 20, 20, 40 };
 }
 
 //-----------------------------------------------------------------------------
@@ -112,7 +134,7 @@ bool Player_t::handleKeyEvent( KeyPressedEvent_t& e )
    {
       fireCooldown -= GetFrameTime();
 
-      if( fireCooldown <= 0.0f )
+      if ( fireCooldown <= 0.0f )
       {
          castAttack();
          fireCooldown = FIRE_RATE;
@@ -134,12 +156,12 @@ void Player_t::castAttack()
                             playerPosition.y + 20.0f };
    Vector2 spawnOffset  = Vector2Scale( lastDirection, 10.0f );
 
-   auto& atk    = activeAttacks.emplace_back();
-   atk.type     = AttackType::FIRE;
-   atk.position = Vector2Add( playerCenter, spawnOffset );
-   atk.velocity = Vector2Scale( lastDirection, 200.0f );
+   auto& atk     = activeAttacks.emplace_back();
+   atk.type      = AttackType::FIRE;
+   atk.position  = Vector2Add( playerCenter, spawnOffset );
+   atk.velocity  = Vector2Scale( lastDirection, 200.0f );
    atk.maxFrames = 8;
-       //getAttackTexture( atk.type ).width / 8;   // 8 Number of sprites
+   // getAttackTexture( atk.type ).width / 8;   // 8 Number of sprites
    atk.sourceRec = { 0, 0, 72, 72 };
    atk.rotation  = Vector2Angle( lastDirection, { 1, 0 } ) * RAD2DEG *
                   -1.0f;   // -1 noetig, da initial das sprite nach rechts zeigt

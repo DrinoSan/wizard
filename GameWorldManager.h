@@ -8,6 +8,7 @@
 // Project Headers
 #include "Entity.h"
 #include "Graphic.h"
+#include "Grid.h"
 #include "NpcEnemy.h"
 #include "Player.h"
 #include "World.h"
@@ -39,12 +40,16 @@ class GameWorldManager_t
    void handleInputs();
    void handleCollisions( float dt );
    void resolveCollisionEntityStatic( Entity_t* e, float dt );
+   void resolveAttackCollisionsWithEntities();
    void prepareManager();
    void executeNpcMovements();
    void spawnEnemies( int32_t numEnemies_ );
 
    // Method on Map resolution updates
    void updateWorld();
+
+   // GridCell
+   void updateCollisionGrid();
 
    // Methods for imgui output
    void      imgui_debug() const;
@@ -57,4 +62,7 @@ class GameWorldManager_t
    std::vector<NpcEnemy_t>                npcEnemies;
    std::array<int, 15>                    keysDown{ 0 };
    Camera2D                               camera{};
+
+   // GridCell -> for better collision checking between player attacks
+   Grid_t grid;
 };

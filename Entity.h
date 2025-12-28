@@ -16,12 +16,21 @@ enum class AttackType : std::uint8_t
    EARTH     = 3
 };
 
+enum class AttackAttribute : std::uint8_t
+{
+   SINGLE = 0,
+   MULTI = 1
+};
+
 // ----------------------------------------------------------------------------
-struct Attack
+struct Attack_t
 {
    AttackType type;
+   AttackAttribute attribute{ AttackAttribute::SINGLE };
    Vector2    position;
    Vector2    velocity;
+   Rectangle  hitbox;
+   int32_t    damageMultiplier{ 1 };
    Rectangle  sourceRec;   // For animation frames
    float      timer;       // For anim speed
    int        currentFrame;
@@ -46,7 +55,8 @@ enum class ENTITY_STATE
    ACTIVE,
    IDLE,
    BURNING,
-   FROZEN
+   FROZEN,
+   DEAD
 };
 
 //-----------------------------------------------------------------------------
@@ -135,7 +145,7 @@ class Entity_t
 
    // Player/NPC related stuff
    std::array<Texture2D, 4> attackTextures{};
-   std::vector<Attack>      activeAttacks;   // Max 20-50 for perf
+   std::vector<Attack_t>    activeAttacks;   // Max 20-50 for perf
    float                    FIRE_RATE{ 0.5f };
    float                    fireCooldown{ 0.0f };
    AttackType               attackType;

@@ -172,6 +172,8 @@ void GameWorldManager_t::onEvent( Event_t& e )
 //-----------------------------------------------------------------------------
 void GameWorldManager_t::handleCollisions( float dt )
 {
+   updateCollisionGrid();
+
    for ( auto& obj : enities )
    {
       if ( obj->type == ENTITY_TYPE::STATIC )
@@ -181,6 +183,7 @@ void GameWorldManager_t::handleCollisions( float dt )
 
       // First i want to do the static checks -> object against world map
       resolveCollisionEntityStatic( obj.get(), dt );
+      resolveAttackCollisionsWithEntities();
 
       // Second i want to check all dynamic objects
 
@@ -197,6 +200,70 @@ void GameWorldManager_t::handleCollisions( float dt )
       {
          // @TODO: Implement  me
       }
+   }
+}
+
+//-----------------------------------------------------------------------------
+void GameWorldManager_t::resolveAttackCollisionsWithEntities()
+{
+   for ( auto& [ cellIndex, cell ] : grid.collisionGrid )
+   {
+      if ( cell.attacks.empty() || cell.entities.empty() )
+      {
+         continue;
+      }
+
+      for ( auto& [ sourceEntity, attack ] : cell.attacks )
+      {
+         if ( !attack->active )
+         {
+            continue;
+         }
+
+         for ( auto& targetEntity : cell.entities )
+         {
+            if ( targetEntity == sourceEntity ||
+                 ( targetEntity->type != ENTITY_TYPE::NPC &&
+                   targetEntity->type != ENTITY_TYPE::PLAYER ) )
+            {
+               continue;
+            }
+
+            if ( CheckCollisionRecs( attack->hitbox, targetEntity->hitbox ) )
+            {
+               targetEntity->lifePoints -=
+                   sourceEntity->attackPower * attack->damageMultiplier;
+               targetEntity->lifePoints = fmax( 0, targetEntity->lifePoints );
+
+               // Checking if attack ends after first hit or if it can hit
+               // multiple entites
+               if ( attack->attribute == AttackAttribute::SINGLE )
+               {
+                  attack->active = false;
+               }
+
+#ifdef DEBUG
+               std::cout << "Fireball hit "
+                         << entityTypeToString( targetEntity->type )
+                         << " HP: " << targetEntity->lifePoints << "\n";
+#endif
+
+               if ( targetEntity->lifePoints <= 0 )
+               {
+                  targetEntity->state = ENTITY_STATE::DEAD;
+               }
+            }
+         }
+      }
+   }
+
+   for ( auto& entity : enities )
+   {
+      entity->activeAttacks.erase( std::remove_if( entity->activeAttacks.begin(),
+                                                  entity->activeAttacks.end(),
+                                                  []( const Attack_t& a )
+                                                  { return !a.active; } ),
+                                  entity->activeAttacks.end() );
    }
 }
 
@@ -434,4 +501,27 @@ void GameWorldManager_t::imgui_debug() const
       ImGui::BulletText( "Number of Enemies: %d", NUM_ENEMIES );
    }
    player->drawAttackDebugInfo();
+}
+
+//-----------------------------------------------------------------------------
+void GameWorldManager_t::updateCollisionGrid()
+{
+   grid.collisionGrid.clear();
+
+   // Updating grid data
+   for ( auto& entity : enities )
+   {
+      int32_t cellIndex = grid.getCellIndex( entity->playerPosition );
+      grid.collisionGrid[ cellIndex ].entities.push_back( entity.get() );
+
+      for ( auto& attack : entity->activeAttacks )
+      {
+         if ( attack.active )
+         {
+            int32_t attackCellIndex = grid.getCellIndex( attack.position );
+            grid.collisionGrid[ attackCellIndex ].attacks.emplace_back(
+                entity.get(), &attack );
+         }
+      }
+   }
 }

@@ -111,11 +111,6 @@ void Player_t::draw()
 
    drawLifeBar();
 
-   activeAttacks.erase(
-       std::remove_if( activeAttacks.begin(), activeAttacks.end(),
-                       []( const Attack& a ) { return !a.active; } ),
-       activeAttacks.end() );
-
 #ifdef DEBUG
    DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
 #endif

@@ -7,9 +7,10 @@
 #include "log.h"
 
 //-----------------------------------------------------------------------------
-GameWorldManager_t::GameWorldManager_t( std::unique_ptr<World_t> world_ )
-    : world{ std::move( world_ ) }
+GameWorldManager_t::GameWorldManager_t()
+    : world{ std::make_unique<World_t>() }
 {
+   world->preapreWorld();
    // Camera setup
    camera.offset   = ( Vector2 ){ ( float ) screenWidth / 2.0f,
                                   ( float ) screenHeight / 2.0f };

@@ -20,15 +20,10 @@ int main()
 
    rlImGuiSetup( true );
 
-   // Creating World
-   auto world = std::make_unique<World_t>();
-   // Prepare world (tilemap,layout and so on)
-   world->preapreWorld();
-
    // Adding all objects to senior manager
    // The sequence of adding objects to the world is important because if world
    // is added after player the player will be drawn behind the map.
-   GameWorldManager_t gameWorldManager{ std::move( world ) };
+   GameWorldManager_t gameWorldManager;
    gameWorldManager.spawnPlayer();
    gameWorldManager.spawnEnemies( NUM_ENEMIES );
    gameWorldManager.prepareManager();

@@ -158,7 +158,7 @@ class Entity_t
 
    int32_t attackRange{ 10 };
    float   attackSpeed{ FIRE_RATE };
-   int32_t attackPower{ 10 };
+   int32_t attackPower{ 50 };
 };
 
 //-----------------------------------------------------------------------------

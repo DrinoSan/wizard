@@ -1,6 +1,8 @@
 // System Headers
 #include <algorithm>
 #include <cassert>
+#include <random>
+#include <sstream>
 
 #include "GameWorldManager.h"
 #include "imgui.h"
@@ -41,6 +43,35 @@ void GameWorldManager_t::draw() const
       e->draw();
    }
    EndMode2D();
+
+   if ( isLevelCleared() )
+   {
+      // Dark overlay
+      DrawRectangle( 0, 0, GetScreenWidth(), GetScreenHeight(),
+                     ( Color ){ 0, 0, 0, 128 } );
+
+      int32_t     screenW  = GetScreenWidth();
+      int32_t     screenH  = GetScreenHeight();
+      const char* msg      = "Level Passed!";
+      Vector2     textSize = MeasureTextEx( GetFontDefault(), msg, 48, 1 );
+      DrawText( msg, ( screenW - textSize.x ) / 2, screenH / 2 - 100, 48,
+                LIME );
+
+      int32_t            countdown = ( int32_t ) ceilf( levelBreakTimer );
+      std::ostringstream os;
+      os << "Next level in: " << countdown;
+      std::string timerText = os.str();
+      textSize = MeasureTextEx( GetFontDefault(), timerText.c_str(), 32, 1 );
+      DrawText( timerText.c_str(), ( screenW - textSize.x ) / 2, screenH / 2,
+                32, WHITE );
+
+      os.clear();
+      os << "Level " << getCurrentLevel() << " Complete";
+      std::string levelText = os.str();
+      textSize = MeasureTextEx( GetFontDefault(), levelText.c_str(), 24, 1 );
+      DrawText( levelText.c_str(), ( screenW - textSize.x ) / 2,
+                screenH / 2 + 60, 24, GRAY );
+   }
 }
 
 //-----------------------------------------------------------------------------
@@ -146,8 +177,56 @@ void GameWorldManager_t::update( float dt )
    updateEntities( dt );
    handleCollisions( dt );
    applyMovement( dt );
+
+   if ( !levelCleared )
+   {
+      // @TODO: Check if this could be done with our event system
+      livingEnemies = 0;
+      for ( const auto& entity : enities )
+      {
+         if ( entity->type == ENTITY_TYPE::ENEMY && entity->lifePoints >= 0 )
+         {
+            ++livingEnemies;
+         }
+      }
+
+      // Level seems cleared
+      if ( livingEnemies == 0 )
+      {
+         levelCleared    = true;
+         levelBreakTimer = LEVEL_BREAK_DURATION;
+#ifdef DEBUG
+         TraceLog( LOG_INFO, "Level %d cleared!", currentLevel );
+#endif
+      }
+   }
+   else
+   {
+      levelBreakTimer -= dt;
+      if ( levelBreakTimer <= 0.0f )
+      {
+         ++currentLevel;
+         levelCleared = false;
+         spawnLevelEnemies();
+      }
+   }
+
    updateCamera();
-   // lateUpdate( dt );
+   lateUpdate( dt );
+}
+
+//-----------------------------------------------------------------------------
+void GameWorldManager_t::lateUpdate( float dt )
+{
+   enities.erase(
+       std::remove_if( enities.begin(), enities.end(),
+                       []( const auto& entity )
+                       {
+                          return entity->state == ENTITY_STATE::DEAD ||
+                                 ( entity->type == ENTITY_TYPE::ENEMY &&
+                                   entity->lifePoints <= 0 );
+                       } ),
+       enities.end() );
 }
 
 //-----------------------------------------------------------------------------
@@ -222,6 +301,12 @@ void GameWorldManager_t::resolveAttackCollisionsWithEntities()
 
          for ( auto& targetEntity : cell.entities )
          {
+            // Need to check again for attacks which can only affect one enemy
+            if ( !attack->active )
+            {
+               continue;
+            }
+
             if ( targetEntity == sourceEntity )
             {
                continue;
@@ -252,7 +337,7 @@ void GameWorldManager_t::resolveAttackCollisionsWithEntities()
                          << " HP: " << targetEntity->lifePoints << "\n";
 #endif
 
-               if ( targetEntity->lifePoints <= 0 )
+               if ( targetEntity->lifePoints <= 0.0f )
                {
                   targetEntity->state = ENTITY_STATE::DEAD;
                }
@@ -503,6 +588,11 @@ void GameWorldManager_t::imgui_debug() const
                          GetScreenWidth(), GetScreenHeight() );
       ImGui::SeparatorText( "Enemies:" );
       ImGui::BulletText( "Number of Enemies: %d", NUM_ENEMIES );
+      ImGui::SeparatorText( "Level:" );
+      ImGui::BulletText(
+          "Level: %d | Enemies left: %d | Cleared: %s | Break: %.1f",
+          currentLevel, livingEnemies, levelCleared ? "Yes" : "No",
+          levelBreakTimer );
    }
    player->drawAttackDebugInfo();
 }
@@ -528,19 +618,60 @@ void GameWorldManager_t::updateCollisionGrid()
          }
       }
    }
+}
 
-   // for( const auto& [idx, gridCell] : grid.collisionGrid )
-   //{
-   //    for( const auto& entity : gridCell.entities )
-   //    {
-   //       std::cout << "Grid Idx " << idx << " Entity pos.x " <<
-   //       entity->playerPosition.x << "\n";
-   //    }
+//-----------------------------------------------------------------------------
+void GameWorldManager_t::spawnLevelEnemies()
+{
+   enities.erase( std::remove_if( enities.begin(), enities.end(),
+                                  []( const auto& entity ) {
+                                     return entity->type ==
+                                                ENTITY_TYPE::ENEMY &&
+                                            entity->lifePoints <= 0;
+                                  } ),
+                  enities.end() );
 
-   //   for( const auto& [entity, attack] : gridCell.attacks )
-   //   {
-   //      std::cout << "Active Attack position( " << attack->position.x << ","
-   //      << attack->position.y << " )\n";
-   //   }
-   //}
+   // Calculate new enemies
+   enemiesInCurrentLevel = 5 + 3 * ( currentLevel - 1 );
+
+   for ( int i = 0; i < enemiesInCurrentLevel; ++i )
+   {
+      Vector2 spawnPos = getRandomFreeSpawnPosition();
+
+      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>(
+          std::make_unique<A_StarStrategy_t>() ) );
+
+      static_cast<NpcEnemy_t*>( enemy.get() )
+          ->registerOnEventCallback( [ this ]( Event_t& e )
+                                     { this->onEvent( e ); } );
+
+      enemy->playerPosition = spawnPos;
+      enemy->lifePoints     = 100;
+      enemy->attackPower    = 10;
+   }
+}
+
+//-----------------------------------------------------------------------------
+Vector2 GameWorldManager_t::getRandomFreeSpawnPosition()
+{
+   std::vector<Vector2> freeTiles;
+   for ( size_t i = 0; i < world->tileMapLayout.size(); ++i )
+   {
+      if ( world->tileMapLayout[ i ].second == TileType_t::NO_COLLISION )
+      {
+         float x =
+             ( i % MAP_TILES_X ) * FIXED_TILE_SIZE + FIXED_TILE_SIZE / 2.0f;
+         float y =
+             ( i / MAP_TILES_X ) * FIXED_TILE_SIZE + FIXED_TILE_SIZE / 2.0f;
+         freeTiles.push_back( { x, y } );
+      }
+   }
+
+   if ( freeTiles.empty() )
+      return { WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f };
+
+   std::random_device              rd;
+   std::mt19937                    gen( rd() );
+   std::uniform_int_distribution<> dist( 0, freeTiles.size() - 1 );
+   return freeTiles[ dist( gen ) ];
 }

@@ -44,6 +44,7 @@ class GameWorldManager_t
    void prepareManager();
    void executeNpcMovements();
    void spawnEnemies( int32_t numEnemies_ );
+   void lateUpdate( float dt );
 
    // Method on Map resolution updates
    void updateWorld();
@@ -54,6 +55,19 @@ class GameWorldManager_t
    // Methods for imgui output
    void      imgui_debug() const;
    Player_t* getPlayer() const;
+
+   // Members for Level System
+   int32_t     currentLevel          = 1;
+   int32_t     enemiesInCurrentLevel = 0;
+   bool        levelCleared          = false;
+   float       levelBreakTimer       = 0.0f;
+   int32_t     livingEnemies         = 0;
+   const float LEVEL_BREAK_DURATION  = 3.0f;
+   // Methods for Level System
+   void    spawnLevelEnemies();
+   bool    isLevelCleared() const { return levelCleared; }
+   int32_t getCurrentLevel() const { return currentLevel; }
+   Vector2 getRandomFreeSpawnPosition();
 
  private:
    std::vector<std::unique_ptr<Entity_t>> enities;

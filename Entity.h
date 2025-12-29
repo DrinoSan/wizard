@@ -16,6 +16,7 @@ enum class AttackType : std::uint8_t
    EARTH     = 3
 };
 
+// ----------------------------------------------------------------------------
 enum class AttackAttribute : std::uint8_t
 {
    SINGLE = 0,
@@ -157,7 +158,7 @@ class Entity_t
 
    int32_t attackRange{ 10 };
    float   attackSpeed{ FIRE_RATE };
-   int32_t attackPower{ 1 };
+   int32_t attackPower{ 10 };
 };
 
 //-----------------------------------------------------------------------------

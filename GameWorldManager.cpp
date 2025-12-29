@@ -7,8 +7,7 @@
 #include "log.h"
 
 //-----------------------------------------------------------------------------
-GameWorldManager_t::GameWorldManager_t()
-    : world{ std::make_unique<World_t>() }
+GameWorldManager_t::GameWorldManager_t() : world{ std::make_unique<World_t>() }
 {
    world->preapreWorld();
    // Camera setup
@@ -223,9 +222,13 @@ void GameWorldManager_t::resolveAttackCollisionsWithEntities()
 
          for ( auto& targetEntity : cell.entities )
          {
-            if ( targetEntity == sourceEntity ||
-                 ( targetEntity->type != ENTITY_TYPE::NPC &&
-                   targetEntity->type != ENTITY_TYPE::PLAYER ) )
+            if ( targetEntity == sourceEntity )
+            {
+               continue;
+            }
+
+            if ( targetEntity->type != ENTITY_TYPE::ENEMY &&
+                 targetEntity->type != ENTITY_TYPE::PLAYER )
             {
                continue;
             }
@@ -260,11 +263,11 @@ void GameWorldManager_t::resolveAttackCollisionsWithEntities()
 
    for ( auto& entity : enities )
    {
-      entity->activeAttacks.erase( std::remove_if( entity->activeAttacks.begin(),
-                                                  entity->activeAttacks.end(),
-                                                  []( const Attack_t& a )
-                                                  { return !a.active; } ),
-                                  entity->activeAttacks.end() );
+      entity->activeAttacks.erase(
+          std::remove_if( entity->activeAttacks.begin(),
+                          entity->activeAttacks.end(),
+                          []( const Attack_t& a ) { return !a.active; } ),
+          entity->activeAttacks.end() );
    }
 }
 
@@ -525,4 +528,19 @@ void GameWorldManager_t::updateCollisionGrid()
          }
       }
    }
+
+   // for( const auto& [idx, gridCell] : grid.collisionGrid )
+   //{
+   //    for( const auto& entity : gridCell.entities )
+   //    {
+   //       std::cout << "Grid Idx " << idx << " Entity pos.x " <<
+   //       entity->playerPosition.x << "\n";
+   //    }
+
+   //   for( const auto& [entity, attack] : gridCell.attacks )
+   //   {
+   //      std::cout << "Active Attack position( " << attack->position.x << ","
+   //      << attack->position.y << " )\n";
+   //   }
+   //}
 }

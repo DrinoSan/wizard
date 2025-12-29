@@ -156,6 +156,7 @@ void Player_t::castAttack()
    auto& atk     = activeAttacks.emplace_back();
    atk.type      = AttackType::FIRE;
    atk.position  = Vector2Add( playerCenter, spawnOffset );
+   atk.hitbox    = { atk.position.x, atk.position.y, 32, 32 };
    atk.velocity  = Vector2Scale( lastDirection, 200.0f );
    atk.maxFrames = 8;
    // getAttackTexture( atk.type ).width / 8;   // 8 Number of sprites
@@ -249,6 +250,8 @@ void Player_t::updateAttacks( float dt )
       {
          atk.position.x += atk.velocity.x * GetFrameTime();
          atk.position.y += atk.velocity.y * GetFrameTime();
+         atk.hitbox.x = atk.position.x;
+         atk.hitbox.y = atk.position.y;
          atk.timer += GetFrameTime();
 
          if ( atk.timer >= 0.1f )

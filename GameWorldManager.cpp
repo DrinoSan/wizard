@@ -46,12 +46,18 @@ void GameWorldManager_t::draw() const
 
    if ( isLevelCleared() )
    {
-      // Dark overlay
-      DrawRectangle( 0, 0, GetScreenWidth(), GetScreenHeight(),
-                     ( Color ){ 0, 0, 0, 128 } );
+      int32_t screenW = GetScreenWidth();
+      int32_t screenH = GetScreenHeight();
+      if ( IsWindowFullscreen() )
+      {
+         int32_t monitor = GetCurrentMonitor();
+         screenW         = GetMonitorWidth( monitor );
+         screenH         = GetMonitorHeight( monitor );
+      }
 
-      int32_t     screenW  = GetScreenWidth();
-      int32_t     screenH  = GetScreenHeight();
+      // Dark overlay
+      DrawRectangle( 0, 0, screenW, screenH, ( Color ){ 0, 0, 0, 128 } );
+
       const char* msg      = "Level Passed!";
       Vector2     textSize = MeasureTextEx( GetFontDefault(), msg, 48, 1 );
       DrawText( msg, ( screenW - textSize.x ) / 2, screenH / 2 - 100, 48,

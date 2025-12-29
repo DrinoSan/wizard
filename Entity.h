@@ -20,24 +20,24 @@ enum class AttackType : std::uint8_t
 enum class AttackAttribute : std::uint8_t
 {
    SINGLE = 0,
-   MULTI = 1
+   MULTI  = 1
 };
 
 // ----------------------------------------------------------------------------
 struct Attack_t
 {
-   AttackType type;
+   AttackType      type;
    AttackAttribute attribute{ AttackAttribute::SINGLE };
-   Vector2    position;
-   Vector2    velocity;
-   Rectangle  hitbox;
-   int32_t    damageMultiplier{ 1 };
-   Rectangle  sourceRec;   // For animation frames
-   float      timer;       // For anim speed
-   int        currentFrame;
-   int        maxFrames;
-   float      rotation;
-   bool       active = false;
+   Vector2         position;
+   Vector2         velocity;
+   Rectangle       hitbox;
+   int32_t         damageMultiplier{ 1 };
+   Rectangle       sourceRec;   // For animation frames
+   float           timer;       // For anim speed
+   int             currentFrame;
+   int             maxFrames;
+   float           rotation;
+   bool            active = false;
 };
 
 //-----------------------------------------------------------------------------
@@ -45,8 +45,8 @@ enum class ENTITY_TYPE
 {
    PLAYER,
    STATIC,
-   ENEMY,
-   NPC,
+   ENEMY,   // Can take and deal damage
+   NPC,     // Meant to be neutral no damage dealt or received
    ITEM,
 };
 

@@ -53,8 +53,10 @@ Player_t::Player_t( World_t& world )
       if ( world.tileMapLayout[ i ].second == TileType_t::NO_COLLISION )
       {
          // Center of the tile in world coordinates
-         float x = ( i % MAP_TILES_X ) * FIXED_TILE_SIZE + FIXED_TILE_SIZE / 2.0f;
-         float y = ( i / MAP_TILES_X ) * FIXED_TILE_SIZE + FIXED_TILE_SIZE / 2.0f;
+         float x =
+             ( i % MAP_TILES_X ) * FIXED_TILE_SIZE + FIXED_TILE_SIZE / 2.0f;
+         float y =
+             ( i / MAP_TILES_X ) * FIXED_TILE_SIZE + FIXED_TILE_SIZE / 2.0f;
          freeTiles.push_back( { x, y } );
       }
    }

@@ -56,7 +56,7 @@ int main()
             ToggleFullscreen();
          }
 
-         //gameWorldManager.updateWorld();
+         // gameWorldManager.updateWorld();
       }
 
       float dt = GetFrameTime();

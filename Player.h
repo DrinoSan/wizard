@@ -18,10 +18,10 @@ class Player_t : public Graphic_t, public Entity_t
 
    virtual ~Player_t();
 
-   bool       handleKeyEvent( KeyPressedEvent_t& e );
-   void       updateAnimation( float dt );
-   void       updateAttacks( float dt );
-   void       castAttack();
+   bool handleKeyEvent( KeyPressedEvent_t& e );
+   void updateAnimation( float dt );
+   void updateAttacks( float dt );
+   void castAttack();
 
    // IMGUI
    void drawAttackDebugInfo();
@@ -34,5 +34,4 @@ class Player_t : public Graphic_t, public Entity_t
  private:
    float   animTimer     = 0.0f;
    Vector2 lastDirection = { 0.0f, 1.0f };
-
 };

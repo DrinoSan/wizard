@@ -235,8 +235,8 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
          dirVec.x /= len;
          dirVec.y /= len;
          // TODO: add NPC speed variable
-         npc.velocity.x = dirVec.x * ( PLAYER_MOVEMENT_SPEED - .5f );
-         npc.velocity.y = dirVec.y * ( PLAYER_MOVEMENT_SPEED - .5f );
+         //npc.velocity.x = dirVec.x * ( PLAYER_MOVEMENT_SPEED - .5f );
+         //npc.velocity.y = dirVec.y * ( PLAYER_MOVEMENT_SPEED - .5f );
       }
    }
 }

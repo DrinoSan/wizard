@@ -165,6 +165,18 @@ class Entity_t
    int32_t attackRange{ 10 };
    float   attackSpeed{ FIRE_RATE };
    int32_t attackPower{ 50 };
+
+   // Steering behaviors in groups
+   Vector2 steeringForce    = { 0, 0 };
+   float   maxSpeed         = 100.0f;   // Top speed
+   float   maxSteeringForce = 15.0f;   // How hard they turn
+
+   // Separation
+   const float SEPARATION_RADIUS = 60.0f;   // Distance to avoid neighbors
+   const float SEPARATION_WEIGHT = 1.8f;    // How strong the push is
+
+   // Cooldown after level start
+   float spawnDelayTimer{ 1.5f };
 };
 
 //-----------------------------------------------------------------------------

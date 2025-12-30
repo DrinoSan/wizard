@@ -228,7 +228,9 @@ void GameWorldManager_t::lateUpdate( float dt )
    enities.erase(
        std::remove_if( enities.begin(), enities.end(),
                        []( const auto& entity )
-                       { if( entity->type == ENTITY_TYPE::PLAYER ) return false;
+                       {
+                          if ( entity->type == ENTITY_TYPE::PLAYER )
+                             return false;
                           return entity->state == ENTITY_STATE::DEAD ||
                                  ( entity->type == ENTITY_TYPE::ENEMY &&
                                    entity->lifePoints <= 0 );
@@ -325,7 +327,8 @@ void GameWorldManager_t::resolveAttackCollisionsWithEntities()
                continue;
             }
 
-            if( sourceEntity->type == ENTITY_TYPE::ENEMY && targetEntity->type == ENTITY_TYPE::ENEMY )
+            if ( sourceEntity->type == ENTITY_TYPE::ENEMY &&
+                 targetEntity->type == ENTITY_TYPE::ENEMY )
             {
                continue;
             }
@@ -481,8 +484,15 @@ void GameWorldManager_t::executeNpcMovements()
    {
       if ( obj->type == ENTITY_TYPE::ENEMY )
       {
+         if ( obj->spawnDelayTimer > 0 )
+         {
+            obj->spawnDelayTimer -= GetFrameTime();
+            obj->velocity = { 0, 0 };
+            continue;
+         }
+
          auto enemy = static_cast<NpcEnemy_t*>( obj.get() );
-         enemy->handleNpcMovement( *world, player );
+         enemy->handleNpcMovement( *world, player, grid );
       }
    }
 }
@@ -564,7 +574,8 @@ void GameWorldManager_t::spawnEnemies( int32_t numEnemies_ )
    {
       // INIT ENEMIES
       auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>(
-          std::make_unique<A_StarStrategy_t>(), std::make_unique<MeleeAttackStrategy_t>() ) );
+          std::make_unique<A_StarStrategy_t>(),
+          std::make_unique<MeleeAttackStrategy_t>() ) );
 
       static_cast<NpcEnemy_t*>( enemy.get() )
           ->registerOnEventCallback( [ this ]( Event_t& e )
@@ -684,22 +695,24 @@ void GameWorldManager_t::spawnLevelEnemies()
       Vector2 spawnPos = getRandomFreeSpawnPosition();
 
       auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>(
-          std::make_unique<A_StarStrategy_t>(), std::make_unique<MeleeAttackStrategy_t>() ) );
+          std::make_unique<A_StarStrategy_t>(),
+          std::make_unique<MeleeAttackStrategy_t>() ) );
 
       auto* npcEnemy = static_cast<NpcEnemy_t*>( enemy.get() );
       npcEnemy->registerOnEventCallback( [ this ]( Event_t& e )
                                          { this->onEvent( e ); } );
 
-      npcEnemy->playerPosition = spawnPos;
-      npcEnemy->lifePoints     = 100 + ( currentLevel - 1 ) * 10;
-      npcEnemy->attackPower    = 10 + currentLevel;
+      npcEnemy->playerPosition  = spawnPos;
+      npcEnemy->lifePoints      = 100 + ( currentLevel - 1 ) * 10;
+      npcEnemy->attackPower     = 10 + currentLevel;
+      npcEnemy->spawnDelayTimer = 1.5f;
 
       // Raylib function GetRandomValue
       float roll = GetRandomValue( 0, 100 ) / 100.0f;
       if ( roll < rangedRatio )
       {
-         npcEnemy->behaviour   = ENEMY_BEHAVIOUR::RANGE;
-         npcEnemy->attackRange = 200.0f;
+         npcEnemy->behaviour      = ENEMY_BEHAVIOUR::RANGE;
+         npcEnemy->attackRange    = 200.0f;
          npcEnemy->attackStrategy = std::make_unique<RangeAttackStrategy_t>();
       }
       else

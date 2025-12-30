@@ -17,6 +17,8 @@
 #include "Player.h"
 #include "events/KeyEvent.h"
 
+class Grid_t;
+
 //-----------------------------------------------------------------------------
 enum class ENEMY_BEHAVIOUR
 {
@@ -44,7 +46,7 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
    void draw() override;
    void updateAttacks( float dt );
    bool handleMovement( KeyPressedEvent_t& e );
-   bool handleNpcMovement( World_t& world, Player_t* player );
+   bool handleNpcMovement( World_t& world, Player_t* player, Grid_t& grid );
    void onEvent( Event_t& e ) override;
    void registerOnEventCallback( std::function<void( Event_t& )> callback );
    std::function<void( Event_t& )> onEventCallback;
@@ -55,6 +57,10 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
    {
       path->findPath( const_cast<NpcEnemy_t&>( *this ), world, player );
    }
+
+   // Method for A* group handling
+   Vector2 calculateSeekForce( Vector2& target );
+   Vector2 calculateSeparationForce( Grid_t& grid );
 
    void attack( Player_t& player ) const
    {
@@ -79,4 +85,13 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
 
    const float MELEE_DAMAGE_RATE{ 1.0f };
    const float RANGED_FIRE_RATE{ 2.5f };
+
+   // Steering behaviors
+   Vector2 steeringForce    = { 0, 0 };
+   float   maxSpeed         = 80.0f;
+   float   maxSteeringForce = 10.0f;
+
+   // Separation
+   const float SEPARATION_RADIUS = 60.0f;
+   const float SEPARATION_WEIGHT = 1.5f;
 };

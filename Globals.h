@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+#include "raylib.h"
+#include "raymath.h"
+
 constexpr int32_t screenWidth  = 800;
 constexpr int32_t screenHeight = 450;
 
@@ -16,3 +19,18 @@ constexpr float   PLAYER_MOVEMENT_SPEED{ 1.5f };
 constexpr int32_t MAX_ACTIVE_ATTACKS{ 32 };
 
 constexpr int32_t NUM_ENEMIES{ 1 };
+
+namespace
+{
+Vector2 Vector2ClampMagnitude( Vector2 v, float maxLength )
+{
+   float currentLength = Vector2Length( v );
+   if ( currentLength > maxLength && currentLength > 0.0f )
+   {
+      Vector2 normalized = Vector2Normalize( v );
+      return Vector2Scale( normalized, maxLength );
+   }
+
+   return v;   // Return unchanged if within limit
+}
+}   // namespace

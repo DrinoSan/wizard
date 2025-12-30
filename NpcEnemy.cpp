@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "Grid.h"
 #include "NpcEnemy.h"
 #include "World.h"
 #include "events/KeyEvent.h"
@@ -199,6 +200,11 @@ void NpcEnemy_t::draw()
    if ( behaviour == ENEMY_BEHAVIOUR::RANGE )
       tint = ORANGE;
 
+   if ( spawnDelayTimer > 0 )
+   {
+      tint = BLUE;
+   }
+
    DrawTexturePro( playerTexture, frameRec,
                    { playerPosition.x, playerPosition.y, 40, 40 }, { 0, 0 }, 0,
                    tint );
@@ -245,7 +251,8 @@ bool NpcEnemy_t::handleMovement( KeyPressedEvent_t& e )
 }
 
 //-----------------------------------------------------------------------------
-bool NpcEnemy_t::handleNpcMovement( World_t& world, Player_t* player )
+bool NpcEnemy_t::handleNpcMovement( World_t& world, Player_t* player,
+                                    Grid_t& grid )
 {
    ++framesCounter;
 
@@ -290,13 +297,73 @@ bool NpcEnemy_t::handleNpcMovement( World_t& world, Player_t* player )
       }
    }
 
-   // Ensure we have a path (recomputed each call for now). Strategy writes
-   // the path into `pathIndices` and resets `pathCursor`.
-   pathFindingStrategy( world, *player );
+   // Recompute path if needed
+   if ( pathIndices.empty() || pathCursor >= pathIndices.size() ||
+        Vector2Distance( playerPosition, player->playerPosition ) > 100.0f )
+   {
+      pathFindingStrategy( world, *player );
+      pathCursor = 0;
+   }
+
+   // Get current target waypoint
+   Vector2 targetWaypoint = player->playerPosition;   // fallback
+
+   size_t nextIndex = pathCursor + 1;
+   if ( nextIndex < pathIndices.size() )
+   {
+      int32_t tileIdx  = pathIndices[ nextIndex ];
+      targetWaypoint.x = world.worldMap[ tileIdx ].tileDest.x +
+                         world.worldMap[ tileIdx ].tileDest.width / 2.0f;
+      targetWaypoint.y = world.worldMap[ tileIdx ].tileDest.y +
+                         world.worldMap[ tileIdx ].tileDest.height / 2.0f;
+   }
+
+   size_t currentIndex = pathCursor;
+   if ( currentIndex < pathIndices.size() )
+   {
+      int32_t currentTileIdx  = pathIndices[ currentIndex ];
+      Vector2 currentWaypoint = {
+          world.worldMap[ currentTileIdx ].tileDest.x +
+              world.worldMap[ currentTileIdx ].tileDest.width / 2.0f,
+          world.worldMap[ currentTileIdx ].tileDest.y +
+              world.worldMap[ currentTileIdx ].tileDest.height / 2.0f };
+
+      float distToCurrent = Vector2Distance( playerPosition, currentWaypoint );
+      if ( distToCurrent < 16.0f )
+      {
+         pathCursor++;   // Now heading to nextIndex + 1
+      }
+   }
+
+   // === STEERING ===
+   Vector2 desired       = Vector2Subtract( targetWaypoint, playerPosition );
+   float   desiredLength = Vector2Length( desired );
+
+   if ( desiredLength > 0.001f )   // Avoid division by zero
+   {
+      desired = Vector2Normalize( desired );
+      desired = Vector2Scale( desired, maxSpeed );
+   }
+   else
+   {
+      desired = { 0, 0 };   // Already at waypoint
+   }
+
+   Vector2 pathForce = Vector2Subtract( desired, velocity );
+   pathForce = Vector2ClampMagnitude( pathForce, maxSteeringForce * 2.0f );
+
+   Vector2 separation = calculateSeparationForce( grid );
+
+   Vector2 totalForce = Vector2Add( pathForce, separation );
+
+   velocity = Vector2Add( velocity, totalForce );
+   velocity = Vector2ClampMagnitude( velocity, maxSpeed );
 
    if ( boost )
    {
       velocity = Vector2Scale( velocity, 2.0f );
+      velocity = Vector2ClampMagnitude(
+          velocity, maxSpeed * 2.0f );   // Cap boosted speed
    }
 
    // Update sprite animation based on velocity
@@ -323,17 +390,17 @@ bool NpcEnemy_t::handleNpcMovement( World_t& world, Player_t* player )
 //-----------------------------------------------------------------------------
 void NpcEnemy_t::update( float dt )
 {
-   playerPosition.x += velocity.x;
-   playerPosition.y += velocity.y;
+   playerPosition.x += velocity.x * dt;
+   playerPosition.y += velocity.y * dt;
 
    // Need to update the hitbox on each update
    hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
    // draw();
 
    updateAttacks( dt );
-   // Important to reset otherwise we become buz lightyear
-   velocity.x = 0;
-   velocity.y = 0;
+
+   // velocity.x = 0;
+   // velocity.y = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -341,4 +408,58 @@ void NpcEnemy_t::registerOnEventCallback(
     std::function<void( Event_t& )> callback )
 {
    onEventCallback = std::move( callback );
+}
+
+//-----------------------------------------------------------------------------
+Vector2 NpcEnemy_t::calculateSeekForce( Vector2& target )
+{
+   Vector2 desired =
+       Vector2Normalize( Vector2Subtract( target, playerPosition ) );
+   desired       = Vector2Scale( desired, maxSpeed );
+   Vector2 steer = Vector2Subtract( desired, velocity );
+   return Vector2ClampMagnitude( steer, maxSteeringForce );
+}
+
+//-----------------------------------------------------------------------------
+Vector2 NpcEnemy_t::calculateSeparationForce( Grid_t& grid )
+{
+   Vector2 separation    = { 0, 0 };
+   int32_t neighborCount = 0;
+
+   // Use grid to find nearby enemies (fast!)
+   int32_t cellIndex      = grid.getCellIndex( playerPosition );
+   auto    checkNeighbors = [ & ]( int32_t idx )
+   {
+      auto it = grid.collisionGrid.find( idx );
+      if ( it == grid.collisionGrid.end() )
+         return;
+
+      for ( auto* other : it->second.entities )
+      {
+         if ( other == this || other->type != ENTITY_TYPE::ENEMY )
+            continue;
+
+         float dist = Vector2Distance( playerPosition, other->playerPosition );
+         if ( dist < SEPARATION_RADIUS && dist > 0 )
+         {
+            Vector2 diff =
+                Vector2Subtract( playerPosition, other->playerPosition );
+            diff = Vector2Normalize( diff );
+            diff =
+                Vector2Scale( diff, 1.0f / dist );   // Stronger push if closer
+            separation = Vector2Add( separation, diff );
+            neighborCount++;
+         }
+      }
+   };
+
+   checkNeighbors( cellIndex );
+
+   if ( neighborCount > 0 )
+   {
+      separation = Vector2Scale( separation, 1.0f / neighborCount );
+      separation = Vector2ClampMagnitude( separation, maxSteeringForce );
+   }
+
+   return Vector2Scale( separation, SEPARATION_WEIGHT );
 }

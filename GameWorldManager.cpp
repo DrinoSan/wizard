@@ -325,6 +325,11 @@ void GameWorldManager_t::resolveAttackCollisionsWithEntities()
                continue;
             }
 
+            if( sourceEntity->type == ENTITY_TYPE::ENEMY && targetEntity->type == ENTITY_TYPE::ENEMY )
+            {
+               continue;
+            }
+
             if ( CheckCollisionRecs( attack->hitbox, targetEntity->hitbox ) )
             {
                targetEntity->lifePoints -=

@@ -43,6 +43,7 @@ class GameWorldManager_t
    void resolveAttackCollisionsWithEntities();
    void prepareManager();
    void executeNpcMovements();
+   void executeNpcAttacks();
    void spawnEnemies( int32_t numEnemies_ );
    void lateUpdate( float dt );
 

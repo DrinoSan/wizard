@@ -5,9 +5,25 @@
 #include "events/KeyEvent.h"
 
 //-----------------------------------------------------------------------------
-NpcEnemy_t::NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding )
-    : path{ std::move( pathFinding ) }
+NpcEnemy_t::NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding,
+                        std::unique_ptr<AttackStrategy_t>      attackStrategy_ )
+    : path{ std::move( pathFinding ) },
+      attackStrategy{ std::move( attackStrategy_ ) }
 {
+   attackTextures[ static_cast<std::size_t>( AttackType::LIGHTNING ) ] =
+       LoadTexture( "resources/attackSprites/magicAttackSprites/10FireBall/"
+                    "Fire-ball.png" );
+   attackTextures[ static_cast<std::size_t>( AttackType::FIRE ) ] = LoadTexture(
+       "resources/attackSprites/magicAttackSprites/10FireBall/Fire-ball.png" );
+   attackTextures[ static_cast<std::size_t>( AttackType::WATER ) ] =
+       LoadTexture( "resources/attackSprites/magicAttackSprites/10FireBall/"
+                    "Fire-ball.png" );
+   attackTextures[ static_cast<std::size_t>( AttackType::EARTH ) ] =
+       LoadTexture( "resources/attackSprites/magicAttackSprites/10FireBall/"
+                    "Fire-ball.png" );
+
+   activeAttacks.reserve( 32 );
+
    playerPosition = { ( float ) screenWidth / 2 + 20,
                       ( float ) screenHeight / 2 + 20 };
 
@@ -32,6 +48,22 @@ NpcEnemy_t::NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding )
 NpcEnemy_t::NpcEnemy_t( Vector2 pos )
 {
    playerPosition = { pos.x, pos.y };
+
+   attackStrategy = std::make_unique<MeleeAttackStrategy_t>();
+
+   attackTextures[ static_cast<std::size_t>( AttackType::LIGHTNING ) ] =
+       LoadTexture( "resources/attackSprites/magicAttackSprites/10FireBall/"
+                    "Fire-ball.png" );
+   attackTextures[ static_cast<std::size_t>( AttackType::FIRE ) ] = LoadTexture(
+       "resources/attackSprites/magicAttackSprites/10FireBall/Fire-ball.png" );
+   attackTextures[ static_cast<std::size_t>( AttackType::WATER ) ] =
+       LoadTexture( "resources/attackSprites/magicAttackSprites/10FireBall/"
+                    "Fire-ball.png" );
+   attackTextures[ static_cast<std::size_t>( AttackType::EARTH ) ] =
+       LoadTexture( "resources/attackSprites/magicAttackSprites/10FireBall/"
+                    "Fire-ball.png" );
+
+   activeAttacks.reserve( 32 );
 
    playerTexture         = LoadTexture( "spritesheets/wizard01.png" );
    ANIMATION_WALK_UP_Y   = static_cast<float>( playerTexture.height / 54 ) * 8;
@@ -127,13 +159,63 @@ void NpcEnemy_t::goDown( float movement )
 }
 
 //-----------------------------------------------------------------------------
+void NpcEnemy_t::updateAttacks( float dt )
+{
+   for ( auto& atk : activeAttacks )
+   {
+      if ( atk.active )
+      {
+         atk.position.x += atk.velocity.x * GetFrameTime();
+         atk.position.y += atk.velocity.y * GetFrameTime();
+         atk.hitbox.x = atk.position.x;
+         atk.hitbox.y = atk.position.y;
+         atk.timer += GetFrameTime();
+
+         if ( atk.timer >= 0.1f )
+         {   // 10 FPS anim
+            atk.currentFrame = ( atk.currentFrame + 1 ) % atk.maxFrames;
+            atk.sourceRec.x  = atk.currentFrame * 72;
+            atk.sourceRec.y  = 0;
+            atk.timer        = 0;
+         }
+
+         // Deactivate off-screen or on-hit
+         if ( atk.position.x > GetRenderWidth() + 100 ||
+              atk.position.x < 0 - 100 ||
+              atk.position.y > GetRenderHeight() + 100 ||
+              atk.position.y < 0 - 100 )
+         {
+            atk.active = false;
+         }
+      }
+   }
+}
+//-----------------------------------------------------------------------------
 void NpcEnemy_t::draw()
 {
    // DrawTextureRec( playerTexture, frameRec, playerPosition,
    // WHITE );   // Draw part of the texture
+   Color tint = WHITE;
+   if ( behaviour == ENEMY_BEHAVIOUR::RANGE )
+      tint = ORANGE;
+
    DrawTexturePro( playerTexture, frameRec,
                    { playerPosition.x, playerPosition.y, 40, 40 }, { 0, 0 }, 0,
-                   WHITE );
+                   tint );
+
+   for ( const auto& atk : activeAttacks )
+   {
+      if ( atk.active )
+      {
+         DrawTexturePro( getAttackTexture( atk.type ), atk.sourceRec,
+                         { atk.position.x, atk.position.y, 72.0f, 72.0f },
+                         { 36.0f, 48.0f }, atk.rotation, WHITE );
+#ifdef DEBUG
+         DrawRectangleLines( atk.position.x, atk.position.y, 72, 72, RED );
+#endif
+      }
+   }
+
 #ifdef DEBUG
    DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
 
@@ -166,9 +248,56 @@ bool NpcEnemy_t::handleMovement( KeyPressedEvent_t& e )
 bool NpcEnemy_t::handleNpcMovement( World_t& world, Player_t* player )
 {
    ++framesCounter;
+
+   // First we check if the attackDistance to the player is reached if yes we
+   // attack otherwise we ask pathStrategy for the next path
+   if ( lifePoints <= 0 )
+   {
+      state = ENTITY_STATE::DEAD;
+      return false;
+   }
+
+   state = ENTITY_STATE::ACTIVE;
+
+   // Getting vector from Npc to Player
+   Vector2 toPlayer{ player->playerPosition.x - playerPosition.x,
+                     player->playerPosition.y - playerPosition.y };
+   float   distToPlayer = Vector2Length( toPlayer );
+
+   bool boost{ false };
+
+   if ( behaviour == ENEMY_BEHAVIOUR::MELEE )
+   {
+      boost = false;
+      if ( distToPlayer <= 30.0f )
+      {
+         // Attack possible
+         return true;
+      }
+
+      if ( distToPlayer >= 150 )
+      {
+         boost = true;
+      }
+   }
+   else if ( behaviour == ENEMY_BEHAVIOUR::RANGE )
+   {
+      float desiredDist{ 200.0f };
+      if ( distToPlayer <= desiredDist )
+      {
+         // Attack possible
+         return true;
+      }
+   }
+
    // Ensure we have a path (recomputed each call for now). Strategy writes
    // the path into `pathIndices` and resets `pathCursor`.
    pathFindingStrategy( world, *player );
+
+   if ( boost )
+   {
+      velocity = Vector2Scale( velocity, 2.0f );
+   }
 
    // Update sprite animation based on velocity
    if ( velocity.x > 0 )
@@ -201,6 +330,7 @@ void NpcEnemy_t::update( float dt )
    hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
    // draw();
 
+   updateAttacks( dt );
    // Important to reset otherwise we become buz lightyear
    velocity.x = 0;
    velocity.y = 0;

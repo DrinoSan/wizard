@@ -54,6 +54,7 @@ enum class ENTITY_TYPE
 enum class ENTITY_STATE
 {
    ACTIVE,
+   ATTACKING,
    IDLE,
    BURNING,
    FROZEN,
@@ -67,12 +68,16 @@ inline std::string entityStateToString( ENTITY_STATE state )
    {
    case ENTITY_STATE::ACTIVE:
       return "ACTIVE";
+   case ENTITY_STATE::ATTACKING:
+      return "ATTACKING";
    case ENTITY_STATE::IDLE:
       return "IDLE";
    case ENTITY_STATE::BURNING:
       return "BURNING";
    case ENTITY_STATE::FROZEN:
       return "FROZEN";
+   case ENTITY_STATE::DEAD:
+      return "DEAD";
    default:
       return "UNKNOWN";
    }
@@ -114,7 +119,8 @@ class Entity_t
    virtual std::string str();
 
  protected:
-   void drawLifeBar() const;
+   void       drawLifeBar() const;
+   Texture2D& getAttackTexture( AttackType type );
 
  public:
    ENTITY_TYPE  type;

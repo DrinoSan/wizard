@@ -21,7 +21,6 @@ class Player_t : public Graphic_t, public Entity_t
    bool       handleKeyEvent( KeyPressedEvent_t& e );
    void       updateAnimation( float dt );
    void       updateAttacks( float dt );
-   Texture2D& getAttackTexture( AttackType type );
    void       castAttack();
 
    // IMGUI

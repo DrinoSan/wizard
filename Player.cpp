@@ -275,12 +275,6 @@ void Player_t::updateAttacks( float dt )
 }
 
 //-----------------------------------------------------------------------------
-Texture2D& Player_t::getAttackTexture( AttackType type )
-{
-   return attackTextures[ static_cast<std::size_t>( type ) ];
-}
-
-//-----------------------------------------------------------------------------
 void Player_t::drawAttackDebugInfo()
 {
    if ( !ImGui::CollapsingHeader( "Active Player Attacks" ) )

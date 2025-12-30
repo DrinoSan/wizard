@@ -1,5 +1,11 @@
 #include "Entity.h"
 
+//-----------------------------------------------------------------------------
+Texture2D& Entity_t::getAttackTexture( AttackType type )
+{
+   return attackTextures[ static_cast<std::size_t>( type ) ];
+}
+
 // ----------------------------------------------------------------------------
 void Entity_t::drawLifeBar() const
 {

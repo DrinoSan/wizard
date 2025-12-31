@@ -6,7 +6,8 @@
 
 //-----------------------------------------------------------------------------
 NpcEnemy_t::NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding,
-                        std::unique_ptr<AttackStrategy_t>      attackStrategy_ )
+                        std::unique_ptr<AttackStrategy_t>      attackStrategy_,
+                        Vector2&                               spawnPos )
     : path{ std::move( pathFinding ) },
       attackStrategy{ std::move( attackStrategy_ ) }
 {
@@ -24,8 +25,7 @@ NpcEnemy_t::NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding,
 
    activeAttacks.reserve( 32 );
 
-   playerPosition = { ( float ) screenWidth / 2 + 20,
-                      ( float ) screenHeight / 2 + 20 };
+   playerPosition = spawnPos;
 
    playerTexture         = LoadTexture( "spritesheets/wizard01.png" );
    ANIMATION_WALK_UP_Y   = static_cast<float>( playerTexture.height / 54 ) * 8;
@@ -34,11 +34,12 @@ NpcEnemy_t::NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding,
    ANIMATION_WALK_RIGHT_Y =
        static_cast<float>( playerTexture.height / 54 ) * 11;
 
-   frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
-                static_cast<float>( playerTexture.height / 54 ) };
+   frameWidth  = playerTexture.width / 13;
+   frameHeight = playerTexture.height / 54;
+   frameRec    = { 0.0f, 0.0f, frameWidth, frameHeight };
 
    type          = ENTITY_TYPE::ENEMY;
-   hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
+   hitbox        = { playerPosition.x + 5, playerPosition.y + 3, 32, 37 };
    currentFrame  = 0;
    framesCounter = 0;
    framesSpeed   = 8;   // Number of spritesheet frames shown by second
@@ -72,11 +73,12 @@ NpcEnemy_t::NpcEnemy_t( Vector2 pos )
    ANIMATION_WALK_RIGHT_Y =
        static_cast<float>( playerTexture.height / 54 ) * 11;
 
-   frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
-                static_cast<float>( playerTexture.height / 54 ) };
+   frameWidth  = playerTexture.width / 13;
+   frameHeight = playerTexture.height / 54;
+   frameRec    = { 0.0f, 0.0f, frameWidth, frameHeight };
 
    type          = ENTITY_TYPE::ENEMY;
-   hitbox        = { playerPosition.x + 10, playerPosition.y, 20, 40 };
+   hitbox        = { playerPosition.x + 5, playerPosition.y + 3, 32, 37 };
    currentFrame  = 0;
    framesCounter = 0;
    framesSpeed   = 8;   // Number of spritesheet frames shown by second
@@ -211,13 +213,14 @@ void NpcEnemy_t::draw()
                          { atk.position.x, atk.position.y, 72.0f, 72.0f },
                          { 36.0f, 48.0f }, atk.rotation, WHITE );
 #ifdef DEBUG
-         DrawRectangleLines( atk.position.x, atk.position.y, 72, 72, RED );
+         DrawRectangleLines( atk.position.x, atk.position.y, atk.hitbox.width,
+                             atk.hitbox.height, RED );
 #endif
       }
    }
 
 #ifdef DEBUG
-   DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
+   DrawRectangleLines( hitbox.x, hitbox.y, hitbox.width, hitbox.height, BLUE );
 
    // Draw direction
    // This is not drwan because velocity is 0 at this point, i reset velocity in
@@ -294,6 +297,7 @@ bool NpcEnemy_t::handleNpcMovement( World_t& world, Player_t* player )
    {
       // Compute fresh path (overwrites pathIndices, resets cursor=1)
       pathFindingStrategy( world, *player );
+      repathTimer = 0.0f;
    }
 
    velocity = { 0.0f, 0.0f };   // Default idle
@@ -367,7 +371,7 @@ void NpcEnemy_t::update( float dt )
    playerPosition.y += velocity.y;
 
    // Need to update the hitbox on each update
-   hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
+   // hitbox = { playerPosition.x + hitboxOffset.x, playerPosition.y, 20, 40 };
 
    updateAttacks( dt );
 }

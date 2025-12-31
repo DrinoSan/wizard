@@ -131,9 +131,10 @@ class Entity_t
    Vector2      playerPosition;
    Vector2      velocity;
    Vector2      lastVelocity;   // Used for logging
-   Vector2      hitboxOffset{ 10, 0 };
-   float        frameWidth = 0.0f;
-   const float  SPEED      = 100.0f;
+   Vector2      hitboxOffset{ 5, 3 }; // Used because hitbox is not same as frameRec which is used for draw
+   float        frameWidth  = 0.0f;
+   float        frameHeight = 0.0f;
+   const float  SPEED       = 100.0f;
 
    // Animation stuff
    int32_t ANIMATION_WALK_UP_Y;

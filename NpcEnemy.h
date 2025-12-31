@@ -29,7 +29,8 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
 {
  public:
    explicit NpcEnemy_t( std::unique_ptr<PathFindingStrategy_t> pathFinding,
-                        std::unique_ptr<AttackStrategy_t> attackStrategy_ );
+                        std::unique_ptr<AttackStrategy_t>      attackStrategy_,
+                        Vector2&                               spawnPos );
    explicit NpcEnemy_t( Vector2 pos );
 
    virtual ~NpcEnemy_t() = default;

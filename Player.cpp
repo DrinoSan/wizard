@@ -39,13 +39,11 @@ Player_t::Player_t( World_t& world )
    ANIMATION_IDLE_DOWN_Y  = static_cast<float>( playerTexture.height / 54 ) * 2;
    ANIMATION_IDLE_RIGHT_Y = static_cast<float>( playerTexture.height / 54 ) * 3;
 
-   frameRec = { 0.0f, 0.0f, ( float ) playerTexture.width / 13,
-                static_cast<float>( playerTexture.height / 54 ) };
-
-   frameWidth = playerTexture.width / 13;
+   frameWidth  = playerTexture.width / 13;
+   frameHeight = playerTexture.height / 54;
+   frameRec    = { 0.0f, 0.0f, frameWidth, frameHeight };
 
    type   = ENTITY_TYPE::PLAYER;
-   hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
 
    std::vector<Vector2> freeTiles;
    for ( int i = 0; i < world.tileMapLayout.size(); ++i )
@@ -77,7 +75,8 @@ Player_t::Player_t( World_t& world )
    }
 
    // Set hitbox centered on playerPosition
-   hitbox = { playerPosition.x - 10, playerPosition.y - 20, 20, 40 };
+   //hitbox = { playerPosition.x - 10, playerPosition.y - 20, 20, 40 };
+   hitbox = { playerPosition.x + 5, playerPosition.y + 3, 32, 37 };
 }
 
 //-----------------------------------------------------------------------------
@@ -106,7 +105,8 @@ void Player_t::draw()
                          { atk.position.x, atk.position.y, 72.0f, 72.0f },
                          { 36.0f, 48.0f }, atk.rotation, WHITE );
 #ifdef DEBUG
-         DrawRectangleLines( atk.position.x, atk.position.y, 72, 72, RED );
+         DrawRectangleLines( atk.position.x, atk.position.y, atk.hitbox.width,
+                             atk.hitbox.height, RED );
 #endif
       }
    }
@@ -114,7 +114,9 @@ void Player_t::draw()
    drawLifeBar();
 
 #ifdef DEBUG
-   DrawRectangleLines( playerPosition.x + 10, playerPosition.y, 20, 40, RED );
+   DrawRectangleLines( hitbox.x, hitbox.y, hitbox.width, hitbox.height, BLUE );
+   DrawRectangleLines( playerPosition.x, playerPosition.y, frameWidth,
+                       frameHeight, RED );
 #endif
 }
 
@@ -133,7 +135,7 @@ bool Player_t::handleKeyEvent( KeyPressedEvent_t& e )
    {
       fireCooldown -= GetFrameTime();
 
-      //if ( fireCooldown <= 0.0f )
+      // if ( fireCooldown <= 0.0f )
       {
          castAttack();
          fireCooldown = FIRE_RATE;
@@ -146,10 +148,10 @@ bool Player_t::handleKeyEvent( KeyPressedEvent_t& e )
 //-----------------------------------------------------------------------------
 void Player_t::castAttack()
 {
-   //if ( activeAttacks.size() >= MAX_ACTIVE_ATTACKS )
+   // if ( activeAttacks.size() >= MAX_ACTIVE_ATTACKS )
    //{
-   //   return;
-   //}
+   //    return;
+   // }
 
    Vector2 playerCenter = { playerPosition.x + 20.0f,
                             playerPosition.y + 20.0f };

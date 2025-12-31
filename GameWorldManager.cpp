@@ -566,9 +566,11 @@ void GameWorldManager_t::spawnEnemies( int32_t numEnemies_ )
    for ( int32_t i = 0; i < numEnemies; ++i )
    {
       // INIT ENEMIES
-      auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>(
+      Vector2 spawnPos = { ( float ) screenWidth / 2 + 20,
+                           ( float ) screenHeight / 2 + 20 };
+      auto&   enemy    = enities.emplace_back( std::make_unique<NpcEnemy_t>(
           std::make_unique<A_StarStrategy_t>(),
-          std::make_unique<MeleeAttackStrategy_t>() ) );
+          std::make_unique<MeleeAttackStrategy_t>(), spawnPos ) );
 
       static_cast<NpcEnemy_t*>( enemy.get() )
           ->registerOnEventCallback( [ this ]( Event_t& e )
@@ -673,7 +675,7 @@ void GameWorldManager_t::spawnLevelEnemies()
                   enities.end() );
 
    // Calculate new enemies
-   enemiesInCurrentLevel = 1;// 5 + 3 * ( currentLevel - 1 );
+   enemiesInCurrentLevel = 1;   // 5 + 3 * ( currentLevel - 1 );
 
    float rangedRatio{};
    if ( currentLevel >= 4 )
@@ -689,15 +691,15 @@ void GameWorldManager_t::spawnLevelEnemies()
 
       auto& enemy = enities.emplace_back( std::make_unique<NpcEnemy_t>(
           std::make_unique<A_StarStrategy_t>(),
-          std::make_unique<MeleeAttackStrategy_t>() ) );
+          std::make_unique<MeleeAttackStrategy_t>(), spawnPos ) );
 
       auto* npcEnemy = static_cast<NpcEnemy_t*>( enemy.get() );
       npcEnemy->registerOnEventCallback( [ this ]( Event_t& e )
                                          { this->onEvent( e ); } );
 
-      npcEnemy->playerPosition = spawnPos;
-      npcEnemy->lifePoints     = 100 + ( currentLevel - 1 ) * 10;
-      npcEnemy->attackPower    = 10 + currentLevel;
+      npcEnemy->playerPosition    = spawnPos;
+      npcEnemy->lifePoints        = 100 + ( currentLevel - 1 ) * 10;
+      npcEnemy->attackPower       = 10 + currentLevel;
       npcEnemy->waypointThreshold = FIXED_TILE_SIZE / 3;
 
       // Raylib function GetRandomValue
@@ -707,6 +709,7 @@ void GameWorldManager_t::spawnLevelEnemies()
          npcEnemy->behaviour      = ENEMY_BEHAVIOUR::RANGE;
          npcEnemy->attackRange    = 200.0f;
          npcEnemy->attackStrategy = std::make_unique<RangeAttackStrategy_t>();
+         npcEnemy->repathInterval = 0.5f;
       }
       else
       {

@@ -673,7 +673,7 @@ void GameWorldManager_t::spawnLevelEnemies()
                   enities.end() );
 
    // Calculate new enemies
-   enemiesInCurrentLevel = 5 + 3 * ( currentLevel - 1 );
+   enemiesInCurrentLevel = 1;// 5 + 3 * ( currentLevel - 1 );
 
    float rangedRatio{};
    if ( currentLevel >= 4 )
@@ -698,6 +698,7 @@ void GameWorldManager_t::spawnLevelEnemies()
       npcEnemy->playerPosition = spawnPos;
       npcEnemy->lifePoints     = 100 + ( currentLevel - 1 ) * 10;
       npcEnemy->attackPower    = 10 + currentLevel;
+      npcEnemy->waypointThreshold = FIXED_TILE_SIZE / 3;
 
       // Raylib function GetRandomValue
       float roll = GetRandomValue( 0, 100 ) / 100.0f;

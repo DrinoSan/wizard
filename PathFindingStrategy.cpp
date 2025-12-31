@@ -214,29 +214,15 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
    std::reverse( pathIdx.begin(), pathIdx.end() );
    // Store the path in the NPC so it can follow it across frames
    npc.pathIndices = std::move( pathIdx );
-   npc.pathCursor  = 0;
+   npc.pathCursor  = 1;   // Idx 0 would be the start index we are already on...
 
-   // Also immediately set the npc velocity toward the next path node so
-   // the NPC starts moving without waiting for the manager to compute
-   // the direction. This helps the NPC react faster to newly computed
-   // paths.
-   if ( npc.pathIndices.size() >= 2 )
+   if ( npc.pathIndices.size() < 2 )
    {
-      int32_t nextIdx = npc.pathIndices[ 1 ];
-      float   targetX = world.worldMap[ nextIdx ].tileDest.x +
-                      world.worldMap[ nextIdx ].tileDest.width * 0.5f;
-      float targetY = world.worldMap[ nextIdx ].tileDest.y +
-                      world.worldMap[ nextIdx ].tileDest.height * 0.5f;
-      Vector2 dirVec = { targetX - npc.playerPosition.x,
-                         targetY - npc.playerPosition.y };
-      float   len    = std::sqrt( dirVec.x * dirVec.x + dirVec.y * dirVec.y );
-      if ( len > 0.0001f )
-      {
-         dirVec.x /= len;
-         dirVec.y /= len;
-         // TODO: add NPC speed variable
-         npc.velocity.x = dirVec.x * ( PLAYER_MOVEMENT_SPEED - .5f );
-         npc.velocity.y = dirVec.y * ( PLAYER_MOVEMENT_SPEED - .5f );
-      }
+      npc.pathCursor  = static_cast<int>( npc.pathIndices.size() );
+      npc.needsRepath = true;
    }
+
+   npc.repathTimer = 0.0f;
+   npc.needsRepath = false;
+   TraceLog(LOG_INFO, "A* called");
 }

@@ -79,4 +79,10 @@ class NpcEnemy_t : public Graphic_t, public Entity_t
 
    const float MELEE_DAMAGE_RATE{ 1.0f };
    const float RANGED_FIRE_RATE{ 2.5f };
+
+   float repathTimer       = 0.0f;
+   float repathInterval    = 0.35f;
+   bool  needsRepath       = true;
+   float lastPlayerDist    = 99999.0f;
+   float waypointThreshold = 12.0f;
 };

@@ -265,38 +265,78 @@ bool NpcEnemy_t::handleNpcMovement( World_t& world, Player_t* player )
    float   distToPlayer = Vector2Length( toPlayer );
 
    bool boost{ false };
+   bool shouldAttack{ false };
 
-   if ( behaviour == ENEMY_BEHAVIOUR::MELEE )
+   if ( distToPlayer <= attackRange )
    {
-      boost = false;
-      if ( distToPlayer <= 30.0f )
-      {
-         // Attack possible
-         return true;
-      }
-
-      if ( distToPlayer >= 150 )
-      {
-         boost = true;
-      }
-   }
-   else if ( behaviour == ENEMY_BEHAVIOUR::RANGE )
-   {
-      float desiredDist{ 200.0f };
-      if ( distToPlayer <= desiredDist )
-      {
-         // Attack possible
-         return true;
-      }
+      shouldAttack = true;
    }
 
-   // Ensure we have a path (recomputed each call for now). Strategy writes
-   // the path into `pathIndices` and resets `pathCursor`.
-   pathFindingStrategy( world, *player );
-
-   if ( boost )
+   if ( distToPlayer >= 150 )
    {
-      velocity = Vector2Scale( velocity, 2.0f );
+      boost = true;
+   }
+
+   lastPlayerDist = distToPlayer;
+
+   if ( shouldAttack )
+   {
+      return true;
+   }
+
+   repathTimer += GetFrameTime();
+   bool repathNow =
+       pathIndices.empty() ||
+       ( pathCursor >= static_cast<int32_t>( pathIndices.size() ) ) ||
+       ( repathTimer >= repathInterval );
+
+   if ( repathNow )
+   {
+      // Compute fresh path (overwrites pathIndices, resets cursor=1)
+      pathFindingStrategy( world, *player );
+   }
+
+   velocity = { 0.0f, 0.0f };   // Default idle
+   if ( !pathIndices.empty() &&
+        pathCursor < static_cast<int32_t>( pathIndices.size() ) )
+   {
+      // Advance through waypoints
+      bool advanced = true;
+      while ( advanced &&
+              pathCursor < static_cast<int32_t>( pathIndices.size() ) )
+      {
+         int32_t nextIdx = pathIndices[ pathCursor ];
+         Vector2 target  = { world.worldMap[ nextIdx ].tileDest.x +
+                                 world.worldMap[ nextIdx ].tileDest.width * 0.5f,
+                             world.worldMap[ nextIdx ].tileDest.y +
+                                 world.worldMap[ nextIdx ].tileDest.height *
+                                     0.5f };
+         Vector2 dirVec  = Vector2Subtract( target, playerPosition );
+         float   dist    = Vector2Length( dirVec );
+
+         if ( dist <= waypointThreshold )
+         {
+            pathCursor++;
+         }
+         else
+         {
+            advanced = false;
+            if ( dist > 0.001f )
+            {
+               dirVec      = Vector2Normalize( dirVec );
+               float speed = PLAYER_MOVEMENT_SPEED - 0.5f;
+               if ( boost )
+               {
+                  speed *= 1.2f;
+               }
+
+               velocity = Vector2Scale( dirVec, speed );
+            }
+         }
+      }
+
+      if ( pathCursor >= static_cast<int32_t>( pathIndices.size() ) )
+         needsRepath = true;
    }
 
    // Update sprite animation based on velocity
@@ -328,12 +368,8 @@ void NpcEnemy_t::update( float dt )
 
    // Need to update the hitbox on each update
    hitbox = { playerPosition.x + 10, playerPosition.y, 20, 40 };
-   // draw();
 
    updateAttacks( dt );
-   // Important to reset otherwise we become buz lightyear
-   velocity.x = 0;
-   velocity.y = 0;
 }
 
 //-----------------------------------------------------------------------------

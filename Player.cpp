@@ -133,7 +133,7 @@ bool Player_t::handleKeyEvent( KeyPressedEvent_t& e )
    {
       fireCooldown -= GetFrameTime();
 
-      if ( fireCooldown <= 0.0f )
+      //if ( fireCooldown <= 0.0f )
       {
          castAttack();
          fireCooldown = FIRE_RATE;
@@ -146,10 +146,10 @@ bool Player_t::handleKeyEvent( KeyPressedEvent_t& e )
 //-----------------------------------------------------------------------------
 void Player_t::castAttack()
 {
-   if ( activeAttacks.size() >= MAX_ACTIVE_ATTACKS )
-   {
-      return;
-   }
+   //if ( activeAttacks.size() >= MAX_ACTIVE_ATTACKS )
+   //{
+   //   return;
+   //}
 
    Vector2 playerCenter = { playerPosition.x + 20.0f,
                             playerPosition.y + 20.0f };

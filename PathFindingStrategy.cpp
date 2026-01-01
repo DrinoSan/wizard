@@ -224,5 +224,5 @@ void A_StarStrategy_t::findPath( NpcEnemy_t& npc, const World_t& world,
 
    npc.repathTimer = 0.0f;
    npc.needsRepath = false;
-   TraceLog(LOG_INFO, "A* called");
+   TraceLog( LOG_INFO, "A* called" );
 }

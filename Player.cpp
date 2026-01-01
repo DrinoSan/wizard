@@ -43,7 +43,7 @@ Player_t::Player_t( World_t& world )
    frameHeight = playerTexture.height / 54;
    frameRec    = { 0.0f, 0.0f, frameWidth, frameHeight };
 
-   type   = ENTITY_TYPE::PLAYER;
+   type = ENTITY_TYPE::PLAYER;
 
    std::vector<Vector2> freeTiles;
    for ( int i = 0; i < world.tileMapLayout.size(); ++i )
@@ -75,7 +75,7 @@ Player_t::Player_t( World_t& world )
    }
 
    // Set hitbox centered on playerPosition
-   //hitbox = { playerPosition.x - 10, playerPosition.y - 20, 20, 40 };
+   // hitbox = { playerPosition.x - 10, playerPosition.y - 20, 20, 40 };
    hitbox = { playerPosition.x + 5, playerPosition.y + 3, 32, 37 };
 }
 
@@ -105,8 +105,8 @@ void Player_t::draw()
                          { atk.position.x, atk.position.y, 72.0f, 72.0f },
                          { 36.0f, 36.0f }, atk.rotation, WHITE );
 #ifdef DEBUG
-         DrawRectangleLines( atk.position.x, atk.position.y, 72.0f,
-                             72.0f, RED );
+         DrawRectangleLines( atk.position.x, atk.position.y, 72.0f, 72.0f,
+                             RED );
          DrawRectangleLines( atk.hitbox.x, atk.hitbox.y, atk.hitbox.width,
                              atk.hitbox.height, BLUE );
 #endif
@@ -163,7 +163,7 @@ void Player_t::castAttack()
    atk.type      = AttackType::FIRE;
    atk.position  = Vector2Add( playerCenter, spawnOffset );
    atk.hitbox    = { atk.position.x, atk.position.y + 4, 22, 22 };
-   atk.velocity  = {0,0};//Vector2Scale( lastDirection, 200.0f );
+   atk.velocity  = { 0, 0 };   // Vector2Scale( lastDirection, 200.0f );
    atk.maxFrames = 8;
    atk.sourceRec = { 0, 0, 72, 72 };
    atk.rotation  = Vector2Angle( lastDirection, { 1, 0 } ) * RAD2DEG *
